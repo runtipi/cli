@@ -1,5 +1,7 @@
 mod args;
 mod commands;
+mod components;
+mod utils;
 
 use args::RuntipiArgs;
 use clap::Parser;
