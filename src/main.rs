@@ -9,6 +9,8 @@ use clap::Parser;
 fn main() {
     let args = RuntipiArgs::parse();
 
+    println!("Welcome to Runtipi CLI ✨\n");
+
     match args.command {
         args::RuntipiMainCommand::Start(start_args) => {
             commands::start::run(start_args);

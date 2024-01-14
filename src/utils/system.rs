@@ -47,3 +47,30 @@ pub fn derive_entropy(entropy: &str, seed: &String) -> String {
     let result = hasher.finalize();
     encode(result)
 }
+
+pub fn ensure_docker() -> Result<(), String> {
+    let output = std::process::Command::new("docker")
+        .arg("--version")
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    if !output.status.success() {
+        return Err("Docker is not installed".to_string());
+    }
+
+    Ok(())
+}
+
+pub fn ensure_docker_compose_plugin() -> Result<(), String> {
+    let output = std::process::Command::new("docker")
+        .arg("compose")
+        .arg("version")
+        .output()
+        .map_err(|e| e.to_string())?;
+
+    if !output.status.success() {
+        return Err("Docker Compose plugin is not installed".to_string());
+    }
+
+    Ok(())
+}
