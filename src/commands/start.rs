@@ -36,6 +36,16 @@ pub fn run(args: StartArgs) {
 
     spin.succeed("Generated .env file");
 
+    // System files
+    spin.set_message("Copying system files...");
+
+    if let Err(_) = system::copy_system_files() {
+        spin.fail("Failed to copy system files");
+        spin.finish();
+        return;
+    }
+    spin.succeed("Copied system files");
+
     spin.set_message("Pulling images...");
     spin.finish();
 }

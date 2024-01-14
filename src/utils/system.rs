@@ -1,9 +1,13 @@
 use hex::encode;
 
 use sha2::{Digest, Sha256};
-use std::path::PathBuf;
+use std::env;
+use std::io::{Error, Write};
+use std::{fs::File, path::PathBuf};
 
 use get_if_addrs::get_if_addrs;
+
+use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
 pub fn get_architecture() -> Result<String, String> {
     #[cfg(target_arch = "aarch64")]
@@ -71,6 +75,21 @@ pub fn ensure_docker_compose_plugin() -> Result<(), String> {
     if !output.status.success() {
         return Err("Docker Compose plugin is not installed".to_string());
     }
+
+    Ok(())
+}
+
+/**
+* Copy system files to the root folder
+*/
+pub fn copy_system_files() -> Result<(), Error> {
+    let root_folder: String = env::current_dir()?.display().to_string();
+
+    let mut docker_compose_file = File::create(format!("{}/docker-compose.yml", root_folder))?;
+    docker_compose_file.write_all(DOCKER_COMPOSE_YML.as_bytes())?;
+
+    let mut version_file = File::create(format!("{}/VERSION", root_folder))?;
+    version_file.write_all(VERSION.as_bytes())?;
 
     Ok(())
 }
