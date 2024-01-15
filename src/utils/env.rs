@@ -46,10 +46,10 @@ pub fn env_map_to_string(env_map: &HashMap<String, String>) -> String {
 }
 
 pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Error> {
-    let root_folder: String = env::current_dir()?.display().to_string();
-    let env_file_path = format!("{}/.env", root_folder);
-    let state_path = format!("{}/state", root_folder);
-    let settings_file_path = format!("{}/settings.json", state_path);
+    let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
+    let env_file_path = root_folder.join(".env");
+    let state_path = root_folder.join("state");
+    let settings_file_path = state_path.join("settings.json");
 
     // Create state folder if it doesn't exist
     std::fs::create_dir_all(state_path)?;
@@ -72,7 +72,7 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     let json_string = std::fs::read_to_string(&settings_file_path)?;
     let parsed_json: schemas::SettingsSchema = serde_json::from_str(&json_string)?;
 
-    let version = std::fs::read_to_string(format!("{}/VERSION", root_folder))?;
+    let version = std::fs::read_to_string(root_folder.join("VERSION"))?;
 
     // Create a new env map with the default values
     let mut new_env_map: HashMap<String, String> = HashMap::new();
@@ -97,7 +97,10 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         get_architecture().unwrap().to_string(),
     );
     new_env_map.insert("TIPI_VERSION".to_string(), version);
-    new_env_map.insert("ROOT_FOLDER_HOST".to_string(), root_folder.to_string());
+    new_env_map.insert(
+        "ROOT_FOLDER_HOST".to_string(),
+        root_folder.display().to_string(),
+    );
     new_env_map.insert(
         "NGINX_PORT".to_string(),
         parsed_json
@@ -114,7 +117,9 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     );
     new_env_map.insert(
         "STORAGE_PATH".to_string(),
-        parsed_json.storage_path.unwrap_or(root_folder),
+        parsed_json
+            .storage_path
+            .unwrap_or(root_folder.display().to_string()),
     );
     new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
     new_env_map.insert(

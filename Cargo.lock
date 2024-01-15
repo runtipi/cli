@@ -340,6 +340,7 @@ dependencies = [
  "get_if_addrs",
  "hex",
  "indicatif",
+ "libc",
  "rand",
  "semver",
  "serde",

@@ -1,9 +1,9 @@
-use std::{fs, path::Path};
+use std::{fs, path::PathBuf};
 
 use rand::{distributions::Alphanumeric, Rng};
 
-pub fn generate_seed(root_folder: &String) -> Result<(), std::io::Error> {
-    let seed_path = Path::new(&root_folder).join("state").join("seed");
+pub fn generate_seed(root_folder: &PathBuf) -> Result<(), std::io::Error> {
+    let seed_path = root_folder.join("state").join("seed");
 
     // Check if the seed file exists
     if !seed_path.exists() {
