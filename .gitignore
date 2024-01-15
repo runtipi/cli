@@ -1,6 +1,12 @@
 # Folders
 /target
 /state
+/data
+/logs
+/repos
+/traefik
+/apps
+/app-data
 
 # Files
 .env

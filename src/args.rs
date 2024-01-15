@@ -55,6 +55,9 @@ pub struct StartArgs {
     /// Path to a custom .env file. Can be relative to the current directory or absolute.
     #[clap(short, long)]
     pub env_file: Option<PathBuf>,
+    /// Skip setting file permissions (not recommended)
+    #[clap(long)]
+    pub no_permissions: bool,
 }
 
 #[derive(Parser, Debug)]

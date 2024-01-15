@@ -10,6 +10,7 @@ clap = { version = "4.4.16", features = ["derive"] }
 get_if_addrs = "0.5.3"
 hex = "0.4.3"
 indicatif = "0.17.7"
+libc = "0.2.152"
 rand = "0.8.5"
 semver = "1.0.21"
 serde = { version = "1.0.195", features = ["derive"] }
