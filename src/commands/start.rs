@@ -65,7 +65,7 @@ pub fn run(args: StartArgs) {
 
     spin.set_message("Pulling images...");
 
-    let root_folder: PathBuf = current_dir().unwrap();
+    let root_folder: PathBuf = current_dir().expect("Unable to get current directory");
 
     let env_file_path = format!("{}/.env", root_folder.display());
     let output = std::process::Command::new("docker")

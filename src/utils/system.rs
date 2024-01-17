@@ -59,11 +59,21 @@ pub fn ensure_docker() -> Result<(), Error> {
         .output()
         .map_err(|e| e.to_string());
 
-    if !output.unwrap().status.success() {
-        return Err(Error::new(
-            ErrorKind::Other,
-            "Your user is not allowed to run docker commands. Please add your user to the docker group or run the CLI as root.".to_string(),
-        ));
+    match output {
+        Ok(output) => {
+            if !output.status.success() {
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information".to_string(),
+                ));
+            }
+        }
+        Err(_) => {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information".to_string(),
+            ));
+        }
     }
 
     let output = std::process::Command::new("docker")
@@ -71,11 +81,21 @@ pub fn ensure_docker() -> Result<(), Error> {
         .arg("version")
         .output();
 
-    if !output.unwrap().status.success() {
-        return Err(Error::new(
-            ErrorKind::Other,
-            "Docker compose plugin is not installed. See https://docs.docker.com/compose/install/linux/ for more information".to_string(),
-        ));
+    match output {
+        Ok(output) => {
+            if !output.status.success() {
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    "Docker compose plugin is not installed. See https://docs.docker.com/compose/install/linux/ for more information".to_string(),
+                ));
+            }
+        }
+        Err(_) => {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "Docker compose plugin is not installed. See https://docs.docker.com/compose/install/linux/ for more information".to_string(),
+            ));
+        }
     }
 
     Ok(())
@@ -85,7 +105,7 @@ pub fn ensure_docker() -> Result<(), Error> {
 * Copy system files to the root folder
 */
 pub fn copy_system_files() -> Result<(), Error> {
-    let root_folder: PathBuf = env::current_dir().unwrap();
+    let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
 
     let mut docker_compose_file = File::create(root_folder.join("docker-compose.yml"))?;
     docker_compose_file.write_all(DOCKER_COMPOSE_YML.as_bytes())?;
@@ -104,7 +124,7 @@ pub fn copy_system_files() -> Result<(), Error> {
 }
 
 pub fn ensure_file_permissions() -> Result<(), Error> {
-    let root_folder: PathBuf = env::current_dir().unwrap();
+    let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
 
     let is_root = unsafe { libc::getuid() == 0 };
 
