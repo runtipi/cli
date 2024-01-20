@@ -96,6 +96,15 @@ pub enum AppSubcommand {
     Start(StartApp),
     /// Stop an app
     Stop(StopApp),
+    /// Uninstall an app
+    Uninstall(UninstallApp),
+    /// Reset an app
+    Reset(ResetApp),
+    /// Update an app
+    Update(UpdateApp),
+    /// Start all apps
+    StartAll(StartAll),
+
 }
 
 #[derive(Debug, Args)]
@@ -109,3 +118,25 @@ pub struct StopApp {
     /// The id of the app to stop
     pub id: String,
 }
+
+#[derive(Debug, Args)]
+pub struct UninstallApp {
+    /// The id of the app to uninstall
+    pub id: String,
+}
+
+#[derive(Debug, Args)]
+pub struct ResetApp {
+    /// The id of the app to reset
+    pub id: String,
+}
+
+#[derive(Debug, Args)]
+pub struct UpdateApp {
+    /// The id of the app to update
+    pub id: String,
+}
+
+#[derive(Debug, Args)]
+pub struct StartAll {}
+

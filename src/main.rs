@@ -11,7 +11,7 @@ use crate::commands::update::UpdateArgs;
 fn main() {
     let args = RuntipiArgs::parse();
 
-    println!("Welcome to Runtipi CLI ✨\n");
+    println!("Welcome to Runtipi CLI ✨");
 
     match args.command {
         args::RuntipiMainCommand::Start(args) => {
@@ -35,7 +35,7 @@ fn main() {
             commands::update::run(args);
         }
         args::RuntipiMainCommand::App(app_command) => {
-            println!("{:?}", app_command);
+            commands::app::run(app_command).await;
         }
         args::RuntipiMainCommand::Debug => {
             commands::debug::run();
