@@ -27,5 +27,8 @@ fn main() {
         args::RuntipiMainCommand::App(app_command) => {
             println!("{:?}", app_command);
         }
+        args::RuntipiMainCommand::Debug => {
+            commands::debug::run();
+        }
     }
 }

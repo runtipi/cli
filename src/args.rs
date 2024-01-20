@@ -41,6 +41,8 @@ pub enum RuntipiMainCommand {
     Update(UpdateCommand),
     /// Manage your apps
     App(AppCommand),
+    /// Debug your runtipi instance
+    Debug,
 }
 
 #[derive(Debug, Parser)]

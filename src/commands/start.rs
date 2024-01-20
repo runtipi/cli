@@ -97,24 +97,11 @@ pub fn run(args: StartArgs) {
 
     // Stop and remove containers
     spin.set_message("Stopping existing containers...");
-    let container_names = vec![
-        "tipi-reverse-proxy",
-        "tipi-db",
-        "tipi-redis",
-        "tipi-worker",
-        "tipi-dashboard",
-    ];
+    let container_names = vec!["tipi-reverse-proxy", "tipi-db", "tipi-redis", "tipi-worker", "tipi-dashboard"];
 
     for container_name in container_names {
-        let _ = std::process::Command::new("docker")
-            .arg("stop")
-            .arg(container_name)
-            .output();
-
-        let _ = std::process::Command::new("docker")
-            .arg("rm")
-            .arg(container_name)
-            .output();
+        let _ = std::process::Command::new("docker").arg("stop").arg(container_name).output();
+        let _ = std::process::Command::new("docker").arg("rm").arg(container_name).output();
     }
 
     spin.succeed("Existing containers stopped");
@@ -122,10 +109,7 @@ pub fn run(args: StartArgs) {
     spin.set_message("Starting containers...");
     let user_compose_file = root_folder.join("user-config").join("tipi-compose.yml");
 
-    let mut args = vec![
-        "-f".to_string(),
-        root_folder.join("docker-compose.yml").display().to_string(),
-    ];
+    let mut args = vec!["-f".to_string(), root_folder.join("docker-compose.yml").display().to_string()];
 
     if user_compose_file.exists() {
         args.push("-f".to_string());
