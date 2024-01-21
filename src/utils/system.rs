@@ -54,32 +54,28 @@ pub fn derive_entropy(entropy: &str, seed: &String) -> String {
 }
 
 pub fn ensure_docker() -> Result<(), Error> {
-    let output = std::process::Command::new("docker")
-        .arg("--version")
-        .output()
-        .map_err(|e| e.to_string());
+    let output = std::process::Command::new("docker").arg("--version").output().map_err(|e| e.to_string());
 
     match output {
         Ok(output) => {
             if !output.status.success() {
                 return Err(Error::new(
                     ErrorKind::Other,
-                    "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information".to_string(),
+                    "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information"
+                        .to_string(),
                 ));
             }
         }
         Err(_) => {
             return Err(Error::new(
                 ErrorKind::Other,
-                "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information".to_string(),
+                "Docker is not installed or user has not the right permissions. See https://docs.docker.com/engine/install/ for more information"
+                    .to_string(),
             ));
         }
     }
 
-    let output = std::process::Command::new("docker")
-        .arg("compose")
-        .arg("version")
-        .output();
+    let output = std::process::Command::new("docker").arg("compose").arg("version").output();
 
     match output {
         Ok(output) => {
@@ -129,7 +125,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let is_root = unsafe { libc::getuid() == 0 };
 
     let items = vec![
-        ("775", vec!["state", "apps", "app-data", "logs", "repos"]),
+        ("775", vec!["state", "apps", "app-data", "logs", "traefik", "repos"]),
         (
             "660",
             vec![
@@ -161,36 +157,21 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
             }
 
             if is_root {
-                let chmod_status = std::process::Command::new("chmod")
-                    .arg("-R")
-                    .arg(perms)
-                    .arg(&full_path)
-                    .output()?;
+                let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
 
                 if !chmod_status.status.success() {
-                    return Err(Error::from_raw_os_error(
-                        chmod_status.status.code().unwrap_or(-1),
-                    ));
+                    return Err(Error::from_raw_os_error(chmod_status.status.code().unwrap_or(-1)));
                 }
 
-                let chown_status = std::process::Command::new("chown")
-                    .arg("-R")
-                    .arg("1000:1000")
-                    .arg(&full_path)
-                    .output()?;
+                let chown_status = std::process::Command::new("chown").arg("-Rf").arg("1000:1000").arg(&full_path).output()?;
 
                 if !chown_status.status.success() {
-                    return Err(Error::from_raw_os_error(
-                        chown_status.status.code().unwrap_or(-1),
-                    ));
+                    return Err(Error::from_raw_os_error(chown_status.status.code().unwrap_or(-1)));
                 }
             } else {
                 return Err(Error::new(
                     ErrorKind::Other,
-                    format!(
-                        "{} has incorrect permissions. Please run the CLI as root to fix this.",
-                        path
-                    ),
+                    format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
                 ));
             }
         }
