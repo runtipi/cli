@@ -87,29 +87,32 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         .unwrap_or(&derive_entropy("redis_password", &seed))
         .to_string();
 
+    if parsed_json.storage_path.is_some() {
+        // Test if the storage path is valid
+        let storage_path = PathBuf::from(&parsed_json.storage_path.as_ref().unwrap());
+
+        if !storage_path.exists() {
+            return Err(Error::new(
+                std::io::ErrorKind::NotFound,
+                format!(
+                    "Storage path '{}' does not exist on your system. Make sure it is an absolute path or remove it from settings.json.",
+                    storage_path.display()
+                ),
+            ));
+        }
+    }
+
     // Insert the default values into the new env map
-    new_env_map.insert(
-        "INTERNAL_IP".to_string(),
-        parsed_json.internal_ip.unwrap_or(get_internal_ip()),
-    );
-    new_env_map.insert(
-        "ARCHITECTURE".to_string(),
-        get_architecture().unwrap().to_string(),
-    );
+    new_env_map.insert("INTERNAL_IP".to_string(), parsed_json.internal_ip.unwrap_or(get_internal_ip()));
+    new_env_map.insert("ARCHITECTURE".to_string(), get_architecture().unwrap().to_string());
     new_env_map.insert("TIPI_VERSION".to_string(), version);
-    new_env_map.insert(
-        "ROOT_FOLDER_HOST".to_string(),
-        root_folder.display().to_string(),
-    );
+    new_env_map.insert("ROOT_FOLDER_HOST".to_string(), root_folder.display().to_string());
     new_env_map.insert(
         "NGINX_PORT".to_string(),
-        parsed_json
-            .nginx_port
-            .unwrap_or(StringOrInt::from(DEFAULT_NGINX_PORT))
-            .as_string(),
+        parsed_json.nginx_port.unwrap_or(StringOrInt::from(DEFAULT_NGINX_PORT)).as_string(),
     );
     new_env_map.insert(
-        "NGNIX_PORT_SSL".to_string(),
+        "NGINX_PORT_SSL".to_string(),
         parsed_json
             .nginx_ssl_port
             .unwrap_or(StringOrInt::from(DEFAULT_NGINX_PORT_SSL))
@@ -117,29 +120,19 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     );
     new_env_map.insert(
         "STORAGE_PATH".to_string(),
-        parsed_json
-            .storage_path
-            .unwrap_or(root_folder.display().to_string()),
+        parsed_json.storage_path.unwrap_or(root_folder.display().to_string()),
     );
     new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
     new_env_map.insert(
         "POSTGRES_PORT".to_string(),
-        parsed_json
-            .postgres_port
-            .unwrap_or(StringOrInt::from(DEFAULT_POSTGRES_PORT))
-            .as_string(),
+        parsed_json.postgres_port.unwrap_or(StringOrInt::from(DEFAULT_POSTGRES_PORT)).as_string(),
     );
     new_env_map.insert("REDIS_HOST".to_string(), "tipi-redis".to_string());
     new_env_map.insert("REDIS_PASSWORD".to_string(), redis_password);
-    new_env_map.insert(
-        "DOMAIN".to_string(),
-        parsed_json.domain.unwrap_or(DEFAULT_DOMAIN.to_string()),
-    );
+    new_env_map.insert("DOMAIN".to_string(), parsed_json.domain.unwrap_or(DEFAULT_DOMAIN.to_string()));
     new_env_map.insert(
         "LOCAL_DOMAIN".to_string(),
-        parsed_json
-            .local_domain
-            .unwrap_or(DEFAULT_LOCAL_DOMAIN.to_string()),
+        parsed_json.local_domain.unwrap_or(DEFAULT_LOCAL_DOMAIN.to_string()),
     );
 
     if let Some(custom_env_file_path) = custom_env_file_path {

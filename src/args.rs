@@ -29,6 +29,15 @@ impl FromStr for VersionEnum {
     }
 }
 
+impl ToString for VersionEnum {
+    fn to_string(&self) -> String {
+        match self {
+            VersionEnum::Version(version) => version.to_string(),
+            VersionEnum::Latest => "latest".to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Subcommand)]
 pub enum RuntipiMainCommand {
     /// Start your runtipi instance
@@ -36,7 +45,7 @@ pub enum RuntipiMainCommand {
     /// Stop your runtipi instance
     Stop,
     /// Restart your runtipi instance
-    Restart(RestartArgs),
+    Restart(StartArgs),
     /// Update your runtipi instance
     Update(UpdateCommand),
     /// Manage your apps
@@ -62,13 +71,6 @@ pub struct StartArgs {
     pub no_permissions: bool,
 }
 
-#[derive(Parser, Debug)]
-pub struct RestartArgs {
-    /// Path to a custom .env file. Can be relative to the current directory or absolute.
-    #[clap(short, long)]
-    pub env_file: Option<PathBuf>,
-}
-
 #[derive(Debug, Args)]
 pub struct UpdateCommand {
     /// The version to update to eg: v2.5.0 or latest
@@ -76,6 +78,9 @@ pub struct UpdateCommand {
     /// Path to a custom .env file. Can be relative to the current directory or absolute.
     #[clap(short, long)]
     pub env_file: Option<PathBuf>,
+    /// Skip setting file permissions (not recommended)
+    #[clap(long)]
+    pub no_permissions: bool,
 }
 
 #[derive(Debug, Args)]
