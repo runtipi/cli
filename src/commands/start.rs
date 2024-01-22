@@ -6,8 +6,6 @@ use crate::components::spinner;
 use crate::utils::{env, system};
 
 pub fn run(args: StartArgs) {
-    println!("Starting Runtipi...\n");
-
     let spin = spinner::new("");
 
     // User permissions
@@ -97,7 +95,14 @@ pub fn run(args: StartArgs) {
 
     // Stop and remove containers
     spin.set_message("Stopping existing containers...");
-    let container_names = vec!["tipi-reverse-proxy", "tipi-db", "tipi-redis", "tipi-worker", "tipi-dashboard"];
+    let container_names = vec![
+        "tipi-reverse-proxy",
+        "tipi-docker-proxy",
+        "tipi-db",
+        "tipi-redis",
+        "tipi-worker",
+        "tipi-dashboard",
+    ];
 
     for container_name in container_names {
         let _ = std::process::Command::new("docker").arg("stop").arg(container_name).output();

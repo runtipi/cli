@@ -12,14 +12,15 @@ fn main() {
     println!("Welcome to Runtipi CLI ✨\n");
 
     match args.command {
-        args::RuntipiMainCommand::Start(start_args) => {
-            commands::start::run(start_args);
+        args::RuntipiMainCommand::Start(args) => {
+            commands::start::run(args);
         }
         args::RuntipiMainCommand::Stop => {
-            println!("Stop");
+            commands::stop::run();
         }
-        args::RuntipiMainCommand::Restart(restart_args) => {
-            println!("{:?}", restart_args);
+        args::RuntipiMainCommand::Restart(args) => {
+            commands::stop::run();
+            commands::start::run(args);
         }
         args::RuntipiMainCommand::Update(update_command) => {
             println!("{:?}", update_command);
