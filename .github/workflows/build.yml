@@ -43,7 +43,7 @@ jobs:
             os: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
             bin: runtipi-cli
-            name: runtipi-cli-linux-arm64
+            name: runtipi-cli-linux-aarch64
             command: build
 
           - release_for: linux-x86_64
@@ -77,9 +77,6 @@ jobs:
           args: "--locked --release"
           strip: true
 
-      - name: List artifacts
-        run: tree target
-
       - name: Upload CLI
         uses: actions/upload-artifact@v4
         with:
@@ -101,6 +98,9 @@ jobs:
 
       - name: Move artifacts
         run: for dir in runtipi-cli-linux-*; do mv "$dir/runtipi-cli" "${dir}.cli" && rm -rf "$dir" && mv "${dir}.cli" "$dir"; done
+
+      - name: Compress artifacts
+        run: for file in runtipi-cli-linux-*; do tar -czvf "$file.tar.gz" "$file" && rm -rf "$file"; done
 
       - name: List artifacts
         run: tree .
