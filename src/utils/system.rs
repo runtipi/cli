@@ -115,6 +115,9 @@ pub fn copy_system_files() -> Result<(), Error> {
     fs::create_dir_all(root_folder.join("state"))?;
     fs::create_dir_all(root_folder.join("repos"))?;
     fs::create_dir_all(root_folder.join("media").join("torrents"))?;
+    fs::create_dir_all(root_folder.join("traefik"))?;
+    fs::create_dir_all(root_folder.join("user-config"))?;
+    fs::create_dir_all(root_folder.join("logs"))?;
 
     Ok(())
 }
@@ -158,21 +161,22 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
 
             if is_root {
                 let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
-
-                if !chmod_status.status.success() {
-                    return Err(Error::from_raw_os_error(chmod_status.status.code().unwrap_or(-1)));
-                }
-
                 let chown_status = std::process::Command::new("chown").arg("-Rf").arg("1000:1000").arg(&full_path).output()?;
 
-                if !chown_status.status.success() {
-                    return Err(Error::from_raw_os_error(chown_status.status.code().unwrap_or(-1)));
+                if !chmod_status.status.success() || !chown_status.status.success() {
+                    return Err(Error::new(ErrorKind::Other, format!("Unable to set permissions for {}", path)));
                 }
             } else {
-                return Err(Error::new(
-                    ErrorKind::Other,
-                    format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
-                ));
+                // Try to fix permissions even if the user is not root
+                let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
+                let chown_status = std::process::Command::new("chown").arg("-Rf").arg("1000:1000").arg(&full_path).output()?;
+
+                if !chmod_status.status.success() || !chown_status.status.success() {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
+                    ));
+                }
             }
         }
     }
@@ -190,8 +194,6 @@ pub fn ensure_user_and_group() -> Result<(), String> {
     if cfg!(target_os = "windows") {
         return Ok(());
     }
-
-    println!("Ensuring user and group...");
 
     let output = std::process::Command::new("getent")
         .arg("group")
@@ -213,13 +215,29 @@ pub fn ensure_user_and_group() -> Result<(), String> {
         }
     }
 
-    // Add the current user to the group 1000
-    std::process::Command::new("usermod")
-        .arg("-aG")
-        .arg("1000")
-        .arg("$(whoami)")
-        .output()
-        .map_err(|e| e.to_string())?;
+    // Check if the current user is in group 1000
+    let output = std::process::Command::new("id").arg("-G").output().map_err(|e| e.to_string())?;
+
+    if !output.status.success() {
+        return Err("Failed to get user groups".to_string());
+    }
+
+    let groups = String::from_utf8_lossy(&output.stdout).to_string();
+    let groups_list: Vec<&str> = groups.split(" ").collect();
+
+    if !groups_list.contains(&"1000") {
+        // Add the current user to the group 1000
+        let output = std::process::Command::new("usermod")
+            .arg("-aG")
+            .arg("1000")
+            .arg("$(whoami)")
+            .output()
+            .map_err(|e| e.to_string())?;
+
+        if !output.status.success() {
+            return Err("Failed to add user to group 1000".to_string());
+        }
+    }
 
     Ok(())
 }

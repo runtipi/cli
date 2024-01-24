@@ -6,6 +6,8 @@ mod utils;
 use args::RuntipiArgs;
 use clap::Parser;
 
+use crate::commands::update::UpdateArgs;
+
 fn main() {
     let args = RuntipiArgs::parse();
 
@@ -23,7 +25,14 @@ fn main() {
             commands::start::run(args);
         }
         args::RuntipiMainCommand::Update(update_command) => {
-            println!("{:?}", update_command);
+            let args = UpdateArgs {
+                version: update_command.version.to_string(),
+                env_file: update_command.env_file,
+                no_permissions: update_command.no_permissions,
+            };
+
+            commands::stop::run();
+            commands::update::run(args);
         }
         args::RuntipiMainCommand::App(app_command) => {
             println!("{:?}", app_command);
