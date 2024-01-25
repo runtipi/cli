@@ -12,6 +12,19 @@ use crate::utils::system::{derive_entropy, get_architecture, get_internal_ip, ge
 use super::constants::{DEFAULT_DOMAIN, DEFAULT_LOCAL_DOMAIN, DEFAULT_POSTGRES_PORT};
 use super::schemas::StringOrInt;
 
+pub fn get_env_map() -> HashMap<String, String> {
+    let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
+    let env_file_path = root_folder.join(".env");
+
+    let env_file = std::fs::read_to_string(&env_file_path).expect("Unable to read .env file");
+    env_string_to_map(&env_file)
+}
+
+pub fn get_env_value(key: &str) -> Option<String> {
+    let env_map = get_env_map();
+    env_map.get(key).map(|value| value.to_string())
+}
+
 pub fn env_string_to_map(env_string: &str) -> std::collections::HashMap<String, String> {
     let mut env_map = std::collections::HashMap::new();
 
