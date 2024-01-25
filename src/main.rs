@@ -35,7 +35,7 @@ fn main() {
             commands::update::run(args);
         }
         args::RuntipiMainCommand::App(app_command) => {
-            commands::app::run(app_command).await;
+            commands::app::run(app_command);
         }
         args::RuntipiMainCommand::Debug => {
             commands::debug::run();
