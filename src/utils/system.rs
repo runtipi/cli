@@ -115,6 +115,7 @@ pub fn copy_system_files() -> Result<(), Error> {
     fs::create_dir_all(root_folder.join("state"))?;
     fs::create_dir_all(root_folder.join("repos"))?;
     fs::create_dir_all(root_folder.join("media").join("torrents"))?;
+    fs::create_dir_all(root_folder.join("backups"))?;
 
     Ok(())
 }

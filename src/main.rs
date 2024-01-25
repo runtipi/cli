@@ -31,5 +31,8 @@ fn main() {
         args::RuntipiMainCommand::Debug => {
             commands::debug::run();
         }
+        args::RuntipiMainCommand::Backup => {
+            commands::backup::run();
+        }
     }
 }
