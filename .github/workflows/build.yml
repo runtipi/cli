@@ -69,6 +69,9 @@ jobs:
         run: |
           echo "${{ needs.create-tag.outputs.tagname }}" > src/assets/VERSION
 
+      - name: Install libssl-dev
+        run: sudo apt-get install libssl-dev pkg-config
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
