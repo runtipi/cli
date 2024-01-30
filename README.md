@@ -1,12 +1,7 @@
 # Runtipi CLI - Manage your Runtipi instance from the command line!
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![License](https://img.shields.io/github/license/runtipi/cli)](https://github.com/runtipi/cli/blob/main/LICENSE)
-[![Version](https://img.shields.io/github/v/release/runtipi/cli?color=%235351FB&label=version)](https://github.com/runtipi/cli/releases)
-![Issues](https://img.shields.io/github/issues/runtipi/cli)
-[![All Contributors](https://img.shields.io/badge/all_contributors-49-orange.svg?color=0b86e7)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 > 💡 Runtipi CLI is written in Rust! If you want to collaborate on a cool project, join the discussion on Discord!
@@ -65,6 +60,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://meienberger.dev/"><img src="https://avatars.githubusercontent.com/u/47644445?v=4?s=100" width="100px;" alt="Nicolas Meienberger"/><br /><sub><b>Nicolas Meienberger</b></sub></a><br /><a href="#code-meienberger" title="Code">💻</a> <a href="#test-meienberger" title="Tests">⚠️</a> <a href="#infra-meienberger" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
