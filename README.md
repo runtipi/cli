@@ -41,7 +41,7 @@ The CLI will be in the `target/debug/` folder named `runtipi-cli`
 
 ## ❤️ Contributing
 
-Rust is a new language for the runtipi team. If you have any rust knowledge we are happy to accept contributions and your name will be added in the table bellow.
+Rust is a new language for the runtipi team. If you have any rust knowledge we are happy to accept contributions and your name will be added in the "Contributors" section below.
 
 ## 📜 License
 
