@@ -69,13 +69,22 @@ jobs:
         run: |
           echo "${{ needs.create-tag.outputs.tagname }}" > src/assets/VERSION
 
-      - name: Build binary
-        uses: houseabsolute/actions-rust-cross@v0
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          command: ${{ matrix.platform.command }}
-          target: ${{ matrix.platform.target }}
-          args: "--locked --release"
-          strip: true
+          targets: "${{ matrix.platform.target }}"
+
+      - name: Setup Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build Binary
+        run: cargo build --verbose --locked --release --target ${{ matrix.platform.target }}
+
+      - name: List artifacts
+        run: tree .
+
+      - name: Strip Binary
+        run: strip target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
 
       - name: Upload CLI
         uses: actions/upload-artifact@v4
