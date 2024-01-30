@@ -13,7 +13,7 @@
 
 <img alt="Runtipi CLI" src="images/cli.png" width=50% height=50%>
 
-> ⚠️ Tipi is built and maintained by volunteers. There is no guarantee of support or security when you use Tipi. While the system is considered stable, it is still in active development and may contain bugs.
+> ⚠️ Runtipi CLI is built and maintained by volunteers. There is no guarantee of support or security when you use Runtipi CLI. While the system is considered stable, it is still in active development and may contain bugs.
 
 Runtipi CLI is an updated version of the old typescript based CLI that many of you used. The old CLI was slow, big in size and insecure. So we are happy to present you the all new Rust CLI. It is just a few killobytes, extremely fast and very secure. With the new CLI we don't need to depend on a node js runtime so the speed is faster than ever! To get started follow the instructions bellow.
 
@@ -41,7 +41,7 @@ The CLI will be in the `target/debug/` folder named `runtipi-cli`
 
 ## ❤️ Contributing
 
-Rust is a new language for the runtipi team. If you have any rust knowledge we are happy to accept contributions and your name will be added in the table bellow.
+Rust is a new language for the runtipi team. If you have any rust knowledge we are happy to accept contributions and your name will be added in the "Contributors" section below.
 
 ## 📜 License
 
