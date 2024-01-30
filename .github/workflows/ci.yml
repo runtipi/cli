@@ -10,9 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install libssl-dev
-        run: sudo apt-get install libssl-dev
-
       - name: Set version in src/assets/VERSION
         run: |
           echo "0.0.0" > src/assets/VERSION
