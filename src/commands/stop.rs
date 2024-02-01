@@ -33,5 +33,19 @@ pub fn run() {
         }
     }
 
+    let container_names = vec![
+        "tipi-reverse-proxy",
+        "tipi-docker-proxy",
+        "tipi-db",
+        "tipi-redis",
+        "tipi-worker",
+        "tipi-dashboard",
+    ];
+
+    for container_name in container_names {
+        let _ = std::process::Command::new("docker").arg("stop").arg(container_name).output();
+        let _ = std::process::Command::new("docker").arg("rm").arg(container_name).output();
+    }
+
     spin.succeed("Tipi successfully stopped");
 }

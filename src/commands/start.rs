@@ -2,6 +2,7 @@ use std::env::current_dir;
 use std::path::PathBuf;
 
 use crate::args::StartArgs;
+use crate::components::console_box::ConsoleBox;
 use crate::components::spinner;
 use crate::utils::{env, system};
 
@@ -46,6 +47,7 @@ pub fn run(args: StartArgs) {
         println!("\nError: {}", e);
         return;
     }
+    let env_map = env::get_env_map();
 
     spin.succeed("Generated .env file");
 
@@ -153,6 +155,23 @@ pub fn run(args: StartArgs) {
     }
 
     spin.succeed("Containers started");
-
     spin.finish();
+    println!("\n");
+
+    let ip_and_port = format!(
+        "Visit http://{}:{} to access the dashboard",
+        env_map.get("INTERNAL_IP").unwrap(),
+        env_map.get("NGINX_PORT").unwrap()
+    );
+
+    let box_title = "Runtipi started successfully".to_string();
+    let box_body = format!(
+        "{}\n\n{}\n\n{}",
+        ip_and_port,
+        "Find documentation and guides at: https://runtipi.io",
+        "Tipi is entirely written in TypeScript and we are looking for contributors!"
+    );
+
+    let console_box = ConsoleBox::new(box_title, box_body, 80, "green".to_string());
+    console_box.print();
 }

@@ -31,13 +31,8 @@ pub struct ConsoleBox {
 }
 
 impl ConsoleBox {
-    pub fn new(title: &str, body: &str, width: usize, color: &str) -> ConsoleBox {
-        ConsoleBox {
-            title: title.to_string(),
-            body: body.to_string(),
-            width,
-            color: color.to_string(),
-        }
+    pub fn new(title: String, body: String, width: usize, color: String) -> ConsoleBox {
+        ConsoleBox { title, body, width, color }
     }
 
     fn print_empty_line(&self) {
