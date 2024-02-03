@@ -5,13 +5,14 @@ mod utils;
 
 use args::RuntipiArgs;
 use clap::Parser;
+use colored::Colorize;
 
 use crate::commands::update::UpdateArgs;
 
 fn main() {
     let args = RuntipiArgs::parse();
 
-    println!("Welcome to Runtipi CLI ✨");
+    println!("{}", "Welcome to Runtipi CLI ✨\n".green());
 
     match args.command {
         args::RuntipiMainCommand::Start(args) => {
