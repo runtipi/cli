@@ -50,6 +50,8 @@ pub enum RuntipiMainCommand {
     Update(UpdateCommand),
     /// Manage your apps
     App(AppCommand),
+    /// Update the app store repository
+    RepoUpdate,
     /// Debug your runtipi instance
     Debug,
 }
