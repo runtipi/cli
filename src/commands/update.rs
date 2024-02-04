@@ -5,6 +5,8 @@ use std::{env::current_dir, fs::File};
 use self_update::self_replace::self_replace;
 use serde::Deserialize;
 
+use crate::components::console_box::ConsoleBox;
+use crate::utils::env;
 use crate::{components::spinner, utils::system::get_architecture};
 
 #[derive(Deserialize, Debug)]
@@ -149,7 +151,7 @@ pub fn run(args: UpdateArgs) {
         }
     }
 
-    spin.set_message("Starting Tipi");
+    spin.set_message("Starting Tipi... This may take a while.");
 
     // Start new CLI
     let mut run_args = vec!["start".to_string()];
@@ -184,4 +186,25 @@ pub fn run(args: UpdateArgs) {
     }
 
     spin.finish();
+
+    let env_map = env::get_env_map();
+
+    println!("\n");
+
+    let ip_and_port = format!(
+        "Visit http://{}:{} to access the dashboard",
+        env_map.get("INTERNAL_IP").unwrap(),
+        env_map.get("NGINX_PORT").unwrap()
+    );
+
+    let box_title = "Runtipi started successfully".to_string();
+    let box_body = format!(
+        "{}\n\n{}\n\n{}",
+        ip_and_port,
+        format!("You are now running version {}", release.version),
+        "Tipi is entirely written in TypeScript and we are looking for contributors!"
+    );
+
+    let console_box = ConsoleBox::new(box_title, box_body, 80, "green".to_string());
+    console_box.print();
 }
