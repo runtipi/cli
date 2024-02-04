@@ -36,6 +36,14 @@ impl CustomSpinner {
         self.spinner.println(failure_message);
     }
 
+    pub fn warn(&self, message: &str) {
+        const WARNING: &str = "\u{001b}[33;1m\u{26A0}\u{001b}[0m";
+
+        let warning_message = format!("{} {}", WARNING, message);
+
+        self.spinner.println(warning_message);
+    }
+
     pub fn set_message(&self, message: &str) {
         self.spinner.set_message(message.to_string());
     }

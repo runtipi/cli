@@ -8,6 +8,8 @@ use std::{fs::File, path::PathBuf};
 
 use get_if_addrs::get_if_addrs;
 
+use crate::components::spinner::CustomSpinner;
+
 use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
 pub fn get_architecture() -> Result<String, String> {
@@ -184,7 +186,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     Ok(())
 }
 
-pub fn ensure_user_and_group() -> Result<(), String> {
+pub fn ensure_user_and_group(spin: &CustomSpinner) -> Result<(), String> {
     // Skip on Darwin
     if cfg!(target_os = "macos") {
         return Ok(());
@@ -194,6 +196,8 @@ pub fn ensure_user_and_group() -> Result<(), String> {
     if cfg!(target_os = "windows") {
         return Ok(());
     }
+
+    let is_root = unsafe { libc::getuid() == 0 };
 
     let output = std::process::Command::new("getent")
         .arg("group")
@@ -211,7 +215,7 @@ pub fn ensure_user_and_group() -> Result<(), String> {
             .map_err(|e| e.to_string())?;
 
         if !output.status.success() {
-            return Err("Failed to create group 1000".to_string());
+            return Err("Failed to create group 1000. Error: ".to_string() + &String::from_utf8_lossy(&output.stderr));
         }
     }
 
@@ -219,24 +223,21 @@ pub fn ensure_user_and_group() -> Result<(), String> {
     let output = std::process::Command::new("id").arg("-G").output().map_err(|e| e.to_string())?;
 
     if !output.status.success() {
-        return Err("Failed to get user groups".to_string());
+        return Err("Failed to get user groups. Error: ".to_string() + &String::from_utf8_lossy(&output.stderr));
     }
 
     let groups = String::from_utf8_lossy(&output.stdout).to_string();
     let groups_list: Vec<&str> = groups.split(" ").collect();
 
-    if !groups_list.contains(&"1000") {
-        // Add the current user to the group 1000
-        let output = std::process::Command::new("usermod")
-            .arg("-aG")
-            .arg("1000")
-            .arg("$(whoami)")
-            .output()
-            .map_err(|e| e.to_string())?;
+    if !groups_list.contains(&"1000") && !is_root {
+        let whoami = std::process::Command::new("whoami").output().map_err(|e| e.to_string())?.stdout;
+        let user = String::from_utf8_lossy(&whoami).to_string().trim().to_string();
 
-        if !output.status.success() {
-            return Err("Failed to add user to group 1000".to_string());
-        }
+        let warn = format!(
+            "User {} is not in group 1000. Consider running the command `sudo usermod -aG 1000 {}` to be able to navigate the files created by Runtipi without using sudo.",
+            user, user
+        );
+        spin.warn(warn.as_str());
     }
 
     Ok(())
