@@ -77,6 +77,11 @@ services:
     container_name: tipi-worker
     image: ghcr.io/runtipi/worker:${TIPI_VERSION}
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
     healthcheck:
       test:
         ["CMD", "curl", "-f", "http://localhost:3000/worker-api/healthcheck"]
@@ -187,6 +192,7 @@ services:
     environment:
       NODE_ENV: production
       TIPI_VERSION: ${TIPI_VERSION}
+      NEXT_PUBLIC_TIPI_VERSION: 0.0.0
     labels:
       # Main
       traefik.enable: true
