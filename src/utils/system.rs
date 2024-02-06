@@ -113,6 +113,7 @@ pub fn copy_system_files() -> Result<(), Error> {
 
     // Create the base folders
     fs::create_dir_all(root_folder.join("apps"))?;
+    fs::create_dir_all(root_folder.join("data"))?;
     fs::create_dir_all(root_folder.join("app-data"))?;
     fs::create_dir_all(root_folder.join("state"))?;
     fs::create_dir_all(root_folder.join("repos"))?;

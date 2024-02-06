@@ -67,7 +67,7 @@ services:
     ports:
       - 6379:6379
     volumes:
-      - redisdata:/data
+      - ./data/redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -225,6 +225,3 @@ networks:
     name: runtipi_tipi_main_network
   socket_proxy:
     name: runtipi_socket_proxy
-
-volumes:
-  redisdata:
