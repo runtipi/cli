@@ -116,7 +116,7 @@ pub fn copy_system_files() -> Result<(), Error> {
     fs::create_dir_all(root_folder.join("app-data"))?;
     fs::create_dir_all(root_folder.join("state"))?;
     fs::create_dir_all(root_folder.join("repos"))?;
-    fs::create_dir_all(root_folder.join("media").join("torrents"))?;
+    fs::create_dir_all(root_folder.join("media"))?;
     fs::create_dir_all(root_folder.join("traefik"))?;
     fs::create_dir_all(root_folder.join("user-config"))?;
     fs::create_dir_all(root_folder.join("logs"))?;
@@ -130,7 +130,10 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let is_root = unsafe { libc::getuid() == 0 };
 
     let items = vec![
-        ("775", vec!["state", "apps", "app-data", "logs", "traefik", "repos"]),
+        (
+            "775",
+            vec!["state", "apps", "app-data", "logs", "traefik", "repos", "media", "user-config"],
+        ),
         (
             "660",
             vec![

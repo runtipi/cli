@@ -51,7 +51,7 @@ pub fn run(args: StartArgs) {
 
     spin.succeed("Generated .env file");
 
-    spin.set_message("Ensuring file permissions...");
+    spin.set_message("Ensuring file permissions... This may take a while depending on how many files there are to fix");
 
     if !args.no_permissions {
         if let Err(e) = system::ensure_file_permissions() {
