@@ -19,6 +19,7 @@ services:
 
   tipi-reverse-proxy:
     container_name: tipi-reverse-proxy
+    user: 1000:1000
     depends_on:
       - tipi-docker-proxy
       - tipi-dashboard
