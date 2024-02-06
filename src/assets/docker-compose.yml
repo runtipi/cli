@@ -30,7 +30,7 @@ services:
       - ${NGINX_PORT_SSL:-443}:443
     command: --providers.docker
     volumes:
-      - ./traefik:/root/.config
+      - ./traefik:/etc/traefik
       - ./traefik/shared:/shared
     networks:
       - tipi_main_network
@@ -38,6 +38,7 @@ services:
 
   tipi-db:
     container_name: tipi-db
+    user: 1000:1000
     image: postgres:14
     restart: unless-stopped
     stop_grace_period: 1m
@@ -59,6 +60,7 @@ services:
 
   tipi-redis:
     container_name: tipi-redis
+    user: 1000:1000
     image: redis:7.2.0
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD} --stop-writes-on-bgsave-error no

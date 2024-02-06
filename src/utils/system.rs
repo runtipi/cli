@@ -132,7 +132,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let items = vec![
         (
             "775",
-            vec!["state", "apps", "app-data", "logs", "traefik", "repos", "media", "user-config"],
+            vec!["state", "data", "apps", "app-data", "logs", "traefik", "repos", "media", "user-config"],
         ),
         (
             "660",
