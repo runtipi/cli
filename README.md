@@ -1,7 +1,13 @@
 # Runtipi CLI - Manage your Runtipi instance from the command line!
 
+[![License](https://img.shields.io/github/license/runtipi/cli)](https://github.com/runtipi/cli/blob/main/LICENSE)
+[![Version](https://img.shields.io/github/v/release/runtipi/cli?color=%235351FB&label=version)](https://github.com/runtipi/cli/releases)
+![Issues](https://img.shields.io/github/issues/runtipi/cli)
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 > 💡 Runtipi CLI is written in Rust! If you want to collaborate on a cool project, join the discussion on Discord!
