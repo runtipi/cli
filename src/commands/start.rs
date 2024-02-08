@@ -18,13 +18,6 @@ pub fn run(args: StartArgs) {
         return;
     }
 
-    if let Err(e) = system::ensure_user_and_group(&spin) {
-        spin.fail("Unable to create user and group. Please run the CLI as root to fix the permissions");
-        spin.finish();
-        println!("\nError: {}", e);
-        return;
-    }
-
     spin.succeed("User permissions are ok");
 
     // System files

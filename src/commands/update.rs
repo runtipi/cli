@@ -171,9 +171,7 @@ pub fn run(args: UpdateArgs) {
 
     match result {
         Ok(output) => {
-            if output.status.success() {
-                return;
-            } else {
+            if !output.status.success() {
                 spin.fail("Failed to start new CLI");
                 println!("\nDebug: {}", String::from_utf8_lossy(&output.stderr));
             }

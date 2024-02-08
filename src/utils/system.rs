@@ -133,7 +133,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let items = vec![
         (
             "775",
-            vec!["state", "data", "apps", "app-data", "logs", "traefik", "repos", "media", "user-config"],
+            vec!["state", "data", "apps", "app-data", "logs", "traefik", "repos", "user-config"],
         ),
         (
             "660",
@@ -167,17 +167,15 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
 
             if is_root {
                 let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
-                let chown_status = std::process::Command::new("chown").arg("-Rf").arg("1000:1000").arg(&full_path).output()?;
 
-                if !chmod_status.status.success() || !chown_status.status.success() {
+                if !chmod_status.status.success() {
                     return Err(Error::new(ErrorKind::Other, format!("Unable to set permissions for {}", path)));
                 }
             } else {
                 // Try to fix permissions even if the user is not root
                 let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
-                let chown_status = std::process::Command::new("chown").arg("-Rf").arg("1000:1000").arg(&full_path).output()?;
 
-                if !chmod_status.status.success() || !chown_status.status.success() {
+                if !chmod_status.status.success() {
                     return Err(Error::new(
                         ErrorKind::Other,
                         format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
@@ -185,63 +183,6 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
                 }
             }
         }
-    }
-
-    Ok(())
-}
-
-pub fn ensure_user_and_group(spin: &CustomSpinner) -> Result<(), String> {
-    // Skip on Darwin
-    if cfg!(target_os = "macos") {
-        return Ok(());
-    }
-
-    // Skip on Windows
-    if cfg!(target_os = "windows") {
-        return Ok(());
-    }
-
-    let is_root = unsafe { libc::getuid() == 0 };
-
-    let output = std::process::Command::new("getent")
-        .arg("group")
-        .arg("1000")
-        .output()
-        .map_err(|e| e.to_string())?;
-
-    // If group 1000 doesn't exist, create it
-    if !output.status.success() {
-        let output = std::process::Command::new("groupadd")
-            .arg("-g")
-            .arg("1000")
-            .arg("runtipi")
-            .output()
-            .map_err(|e| e.to_string())?;
-
-        if !output.status.success() {
-            return Err("Failed to create group 1000. Error: ".to_string() + &String::from_utf8_lossy(&output.stderr));
-        }
-    }
-
-    // Check if the current user is in group 1000
-    let output = std::process::Command::new("id").arg("-G").output().map_err(|e| e.to_string())?;
-
-    if !output.status.success() {
-        return Err("Failed to get user groups. Error: ".to_string() + &String::from_utf8_lossy(&output.stderr));
-    }
-
-    let groups = String::from_utf8_lossy(&output.stdout).to_string();
-    let groups_list: Vec<&str> = groups.split(" ").collect();
-
-    if !groups_list.contains(&"1000") && !is_root {
-        let whoami = std::process::Command::new("whoami").output().map_err(|e| e.to_string())?.stdout;
-        let user = String::from_utf8_lossy(&whoami).to_string().trim().to_string();
-
-        let warn = format!(
-            "User {} is not in group 1000. Consider running the command `sudo usermod -aG 1000 {}` to be able to navigate the files created by Runtipi without using sudo.",
-            user, user
-        );
-        spin.warn(warn.as_str());
     }
 
     Ok(())
