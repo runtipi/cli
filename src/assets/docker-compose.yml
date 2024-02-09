@@ -80,6 +80,7 @@ services:
     volumes:
       # Core
       - /proc:/host/proc
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       # App
       - ./.env:/app/.env
       - ./state:/app/state
