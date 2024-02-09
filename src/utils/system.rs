@@ -8,8 +8,6 @@ use std::{fs::File, path::PathBuf};
 
 use get_if_addrs::get_if_addrs;
 
-use crate::components::spinner::CustomSpinner;
-
 use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
 pub fn get_architecture() -> Result<String, String> {

@@ -1,26 +1,9 @@
 version: "3.7"
 
 services:
-  tipi-docker-proxy:
-    container_name: tipi-docker-proxy
-    image: zoeyvid/docker-socket-proxy
-    restart: unless-stopped
-    networks:
-      - socket_proxy
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      POST: 1
-      CONTAINERS: 1
-      ALLOW_START: 1
-      ALLOW_STOP: 1
-      IMAGES: 1
-      NETWORKS: 1
-
   tipi-reverse-proxy:
     container_name: tipi-reverse-proxy
     depends_on:
-      - tipi-docker-proxy
       - tipi-dashboard
     image: traefik:v2.11
     restart: unless-stopped
@@ -31,9 +14,9 @@ services:
     volumes:
       - ./traefik:/etc/traefik
       - ./traefik/shared:/shared
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - tipi_main_network
-      - socket_proxy
 
   tipi-db:
     container_name: tipi-db
@@ -89,14 +72,11 @@ services:
         condition: service_healthy
       tipi-redis:
         condition: service_healthy
-      tipi-docker-proxy:
-        condition: service_started
     env_file:
       - .env
     environment:
       NODE_ENV: production
       TIPI_VERSION: ${TIPI_VERSION}
-      DOCKER_HOST: tcp://tipi-docker-proxy:2375
     volumes:
       # Core
       - /proc:/host/proc
@@ -112,7 +92,6 @@ services:
       - ${STORAGE_PATH:-.}:/storage
     networks:
       - tipi_main_network
-      - socket_proxy
     labels:
       # Main
       traefik.enable: true
@@ -220,5 +199,3 @@ networks:
   tipi_main_network:
     driver: bridge
     name: runtipi_tipi_main_network
-  socket_proxy:
-    name: runtipi_socket_proxy
