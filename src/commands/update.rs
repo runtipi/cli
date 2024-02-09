@@ -46,6 +46,8 @@ pub fn run(args: UpdateArgs) {
             let latest: GithubRelease = response.json().unwrap();
 
             latest.tag_name[1..].to_string()
+        } else if args.version == "nightly" {
+            "nightly".to_string()
         } else {
             spin.fail("Failed to fetch latest release");
             spin.finish();

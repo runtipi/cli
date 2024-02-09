@@ -7,6 +7,7 @@ use clap::{Args, Parser, Subcommand};
 pub enum VersionEnum {
     Version(Version),
     Latest,
+    Nightly,
 }
 
 impl FromStr for VersionEnum {
@@ -15,13 +16,11 @@ impl FromStr for VersionEnum {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s == "latest" {
             Ok(VersionEnum::Latest)
+        } else if s == "nightly" {
+            Ok(VersionEnum::Nightly)
         } else {
             // Remove the 'v' prefix if present
-            let version_str = if s.starts_with('v') || s.starts_with('V') {
-                &s[1..]
-            } else {
-                s
-            };
+            let version_str = if s.starts_with('v') || s.starts_with('V') { &s[1..] } else { s };
 
             let version = Version::parse(version_str)?;
             Ok(VersionEnum::Version(version))
@@ -34,6 +33,7 @@ impl ToString for VersionEnum {
         match self {
             VersionEnum::Version(version) => version.to_string(),
             VersionEnum::Latest => "latest".to_string(),
+            VersionEnum::Nightly => "nightly".to_string(),
         }
     }
 }
@@ -104,7 +104,6 @@ pub enum AppSubcommand {
     Update(UpdateApp),
     /// Start all apps
     StartAll(StartAll),
-
 }
 
 #[derive(Debug, Args)]
@@ -139,4 +138,3 @@ pub struct UpdateApp {
 
 #[derive(Debug, Args)]
 pub struct StartAll {}
-
