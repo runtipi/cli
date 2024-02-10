@@ -140,6 +140,7 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         "POSTGRES_PORT".to_string(),
         parsed_json.postgres_port.unwrap_or(StringOrInt::from(DEFAULT_POSTGRES_PORT)).as_string(),
     );
+    new_env_map.insert("POSTGRES_HOST".to_string(), "tipi-db".to_string());
     new_env_map.insert("REDIS_HOST".to_string(), "tipi-redis".to_string());
     new_env_map.insert("REDIS_PASSWORD".to_string(), redis_password);
     new_env_map.insert("DOMAIN".to_string(), parsed_json.domain.unwrap_or(DEFAULT_DOMAIN.to_string()));
