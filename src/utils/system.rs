@@ -129,10 +129,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let is_root = unsafe { libc::getuid() == 0 };
 
     let items = vec![
-        (
-            "776",
-            vec!["state", "data", "apps", "app-data", "logs", "traefik", "repos", "user-config"],
-        ),
+        ("776", vec!["state", "data", "apps", "logs", "traefik", "repos", "user-config"]),
         ("666", vec!["state/settings.json"]),
         ("664", vec![".env", "docker-compose.yml", "VERSION"]),
         ("600", vec!["traefik/shared/acme.json", "state/seed"]),
@@ -142,15 +139,6 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
         for path in paths {
             let full_path = root_folder.join(path);
             if !full_path.exists() {
-                continue;
-            }
-
-            let metadata = fs::metadata(&full_path)?;
-            let current_perms = metadata.mode() & 0o777;
-            let is_owned_by_1000 = metadata.uid() == 1000;
-            let octal_current_perms = format!("{:o}", current_perms);
-
-            if octal_current_perms.to_string() == perms && is_owned_by_1000 {
                 continue;
             }
 
