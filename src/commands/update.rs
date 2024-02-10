@@ -21,6 +21,17 @@ pub struct UpdateArgs {
     pub no_permissions: bool,
 }
 
+fn is_major_bump(current_version: &str, new_version: &str) -> bool {
+    let current_version = current_version.split(".").collect::<Vec<&str>>();
+    let new_version = new_version.split(".").collect::<Vec<&str>>();
+
+    if current_version[0] < new_version[0] {
+        return true;
+    }
+
+    false
+}
+
 pub fn run(args: UpdateArgs) {
     let spin = spinner::new("");
 
@@ -57,6 +68,15 @@ pub fn run(args: UpdateArgs) {
     } else {
         args.version
     };
+
+    let env_map = env::get_env_map();
+
+    let current_version = env_map.get("TIPI_VERSION").unwrap().replace("v", "");
+    if is_major_bump(&current_version, &wanted_version) {
+        spin.fail("You are trying to update to a new major version. Please update manually using the update instructions on the website. https://runtipi.io/docs/reference/breaking-updates");
+        spin.finish();
+        return;
+    }
 
     let release = fetch.iter().find(|r| r.version.as_str() == wanted_version);
 
@@ -186,8 +206,6 @@ pub fn run(args: UpdateArgs) {
     }
 
     spin.finish();
-
-    let env_map = env::get_env_map();
 
     println!("\n");
 
