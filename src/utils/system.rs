@@ -130,21 +130,12 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
 
     let items = vec![
         (
-            "775",
+            "776",
             vec!["state", "data", "apps", "app-data", "logs", "traefik", "repos", "user-config"],
         ),
-        (
-            "660",
-            vec![
-                ".env",
-                "docker-compose.yml",
-                "VERSION",
-                "state/seed",
-                "state/settings.json",
-                "state/system-info.json",
-            ],
-        ),
-        ("600", vec!["traefik/shared/acme.json"]),
+        ("666", vec!["state/settings.json"]),
+        ("664", vec![".env", "docker-compose.yml", "VERSION"]),
+        ("600", vec!["traefik/shared/acme.json", "state/seed"]),
     ];
 
     for (perms, paths) in items {
