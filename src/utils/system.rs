@@ -129,7 +129,7 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
     let is_root = unsafe { libc::getuid() == 0 };
 
     let items = vec![
-        ("776", vec!["state", "data", "apps", "logs", "traefik", "repos", "user-config"]),
+        ("777", vec!["state", "data", "apps", "logs", "traefik", "repos", "user-config", "state"]),
         ("666", vec!["state/settings.json"]),
         ("664", vec![".env", "docker-compose.yml", "VERSION"]),
         ("600", vec!["traefik/shared/acme.json", "state/seed"]),
