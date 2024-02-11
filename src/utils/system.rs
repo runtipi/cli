@@ -2,7 +2,6 @@ use hex::encode;
 
 use sha2::{Digest, Sha256};
 use std::io::{Error, ErrorKind, Write};
-use std::os::unix::fs::MetadataExt;
 use std::{env, fs};
 use std::{fs::File, path::PathBuf};
 

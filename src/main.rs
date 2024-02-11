@@ -12,7 +12,7 @@ use crate::commands::update::UpdateArgs;
 fn main() {
     let args = RuntipiArgs::parse();
 
-    println!("{}", "Welcome to Runtipi CLI ✨\n".green());
+    println!("{}", "Welcome to Runtipi CLI ✨".green());
 
     match args.command {
         args::RuntipiMainCommand::Start(args) => {
@@ -34,6 +34,9 @@ fn main() {
 
             commands::stop::run();
             commands::update::run(args);
+        }
+        args::RuntipiMainCommand::ResetPassword => {
+            commands::reset_password::run();
         }
         args::RuntipiMainCommand::App(app_command) => {
             commands::app::run(app_command);

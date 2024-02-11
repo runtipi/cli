@@ -50,6 +50,8 @@ pub enum RuntipiMainCommand {
     Update(UpdateCommand),
     /// Manage your apps
     App(AppCommand),
+    /// Reset your runtipi password
+    ResetPassword,
     /// Debug your runtipi instance
     Debug,
 }
