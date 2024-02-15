@@ -33,10 +33,10 @@ pub struct SettingsSchema {
     #[serde(rename = "listenIp")]
     pub internal_ip: Option<String>,
 
-    #[serde(rename = "nginxPort")]
+    #[serde(rename = "port")]
     pub nginx_port: Option<StringOrInt>,
 
-    #[serde(rename = "nginxPortSsl")]
+    #[serde(rename = "sslPort")]
     pub nginx_ssl_port: Option<StringOrInt>,
 
     #[serde(rename = "storagePath")]
