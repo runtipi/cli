@@ -21,25 +21,18 @@ jobs:
       matrix:
         platform:
           - release_for: linux-aarch64
-            os: ubuntu-20.04
+            os: ubuntu-latest
             target: aarch64-unknown-linux-musl
             bin: runtipi-cli
             name: runtipi-cli-linux-aarch64
             command: build
 
           - release_for: linux-x86_64
-            os: ubuntu-20.04
+            os: ubuntu-latest
             target: x86_64-unknown-linux-musl
             bin: runtipi-cli
             name: runtipi-cli-linux-x86_64
             command: build
-
-          # - release_for: macOS-aarch64
-          #   os: macOS-latest
-          #   target: aarch64-apple-darwin
-          #   bin: runtipi-cli
-          #   name: runtipi-cli-Darwin-aarch64
-          #   command: build
 
     runs-on: ${{ matrix.platform.os }}
     steps:
@@ -50,13 +43,24 @@ jobs:
         run: |
           echo "nightly" > src/assets/VERSION
 
+      - name: Install and configure dependencies
+        run: |
+          # https://github.com/nicolas-van/rust-cross-compile-example/blob/main/.github/workflows/rust.yml
+          sudo apt-get install -qq crossbuild-essential-arm64 musl-tools gcc-aarch64-linux-gnu
+
+          mkdir -p ~/.cargo
+          # some additional configuration for cross-compilation on linux
+          cat >>~/.cargo/config <<EOF
+          [target.aarch64-unknown-linux-musl]
+          linker = "aarch64-linux-gnu-gcc"
+          rustflags = [ "-C", "target-feature=+crt-static", "-C", "link-arg=-lgcc" ]
+          EOF
+
+      - name: Install rust target
+        run: rustup target add ${{ matrix.platform.target }}
+
       - name: Build binary
-        uses: houseabsolute/actions-rust-cross@v0
-        with:
-          command: ${{ matrix.platform.command }}
-          target: ${{ matrix.platform.target }}
-          args: "--locked --release"
-          strip: true
+        run: cargo ${{ matrix.platform.command }} --target ${{ matrix.platform.target }} --release --verbose
 
       - name: Upload CLI
         uses: actions/upload-artifact@v4

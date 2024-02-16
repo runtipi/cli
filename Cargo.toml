@@ -12,10 +12,8 @@ get_if_addrs = "0.5.3"
 hex = "0.4.3"
 indicatif = "0.17.7"
 jsonwebtoken = "9.2.0"
-openssl = { version = "0.10.63", features = ["vendored"] }
 prettytable = "0.10.0"
 rand = "0.8.5"
-reqwest = "0.11.23"
 self_update = { version = "0.39.0", features = ["archive-tar"] }
 semver = "1.0.21"
 serde = { version = "1.0.195", features = ["derive"] }
@@ -23,3 +21,8 @@ serde_json = "1.0.111"
 sha2 = "0.10.8"
 sys-info = "0.9.1"
 tempfile = "3.9.0"
+
+[dependencies.reqwest]
+version = "0.11.23"
+default-features = false
+features = ["rustls"]
