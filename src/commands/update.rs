@@ -22,6 +22,10 @@ pub struct UpdateArgs {
 }
 
 fn is_major_bump(current_version: &str, new_version: &str) -> bool {
+    if new_version == "nightly" {
+        return false;
+    }
+
     let current_version = current_version.split(".").collect::<Vec<&str>>();
     let new_version = new_version.split(".").collect::<Vec<&str>>();
 
