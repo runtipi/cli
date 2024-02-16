@@ -125,8 +125,6 @@ pub fn copy_system_files() -> Result<(), Error> {
 pub fn ensure_file_permissions() -> Result<(), Error> {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
 
-    let is_root = unsafe { libc::getuid() == 0 };
-
     let items = vec![
         ("777", vec!["state", "data", "apps", "logs", "traefik", "repos", "user-config", "state"]),
         ("666", vec!["state/settings.json"]),
@@ -141,22 +139,14 @@ pub fn ensure_file_permissions() -> Result<(), Error> {
                 continue;
             }
 
-            if is_root {
-                let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
+            // Try to fix permissions even if the user is not root
+            let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
 
-                if !chmod_status.status.success() {
-                    return Err(Error::new(ErrorKind::Other, format!("Unable to set permissions for {}", path)));
-                }
-            } else {
-                // Try to fix permissions even if the user is not root
-                let chmod_status = std::process::Command::new("chmod").arg("-Rf").arg(perms).arg(&full_path).output()?;
-
-                if !chmod_status.status.success() {
-                    return Err(Error::new(
-                        ErrorKind::Other,
-                        format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
-                    ));
-                }
+            if !chmod_status.status.success() {
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    format!("{} has incorrect permissions. Please run the CLI as root to fix this.", path),
+                ));
             }
         }
     }

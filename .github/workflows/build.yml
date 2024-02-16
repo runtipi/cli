@@ -41,24 +41,17 @@ jobs:
         platform:
           - release_for: linux-aarch64
             os: ubuntu-20.04
-            target: aarch64-unknown-linux-gnu
+            target: aarch64-unknown-linux-musl
             bin: runtipi-cli
             name: runtipi-cli-linux-aarch64
             command: build
 
           - release_for: linux-x86_64
             os: ubuntu-20.04
-            target: x86_64-unknown-linux-gnu
+            target: x86_64-unknown-linux-musl
             bin: runtipi-cli
             name: runtipi-cli-linux-x86_64
             command: build
-
-          # - release_for: macOS-aarch64
-          #   os: macOS-latest
-          #   target: aarch64-apple-darwin
-          #   bin: runtipi-cli
-          #   name: runtipi-cli-Darwin-aarch64
-          #   command: build
 
     runs-on: ${{ matrix.platform.os }}
     steps:
@@ -92,9 +85,6 @@ jobs:
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
-
-      - name: List artifacts
-        run: tree .
 
       - name: Move artifacts
         run: for dir in runtipi-cli-linux-*; do mv "$dir/runtipi-cli" "${dir}.cli" && rm -rf "$dir" && mv "${dir}.cli" "$dir"; done
