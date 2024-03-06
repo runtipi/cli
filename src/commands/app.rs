@@ -1,15 +1,21 @@
 use std::io::Error;
 
 use crate::args::{AppCommand, AppSubcommand};
-use crate::utils::env::get_env_value;
+use crate::utils::env::{EnvMap, get_env_value};
 use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 
 use crate::components::spinner;
 use reqwest::blocking::{Client, Response};
+use crate::utils::constants::DEFAULT_NGINX_PORT;
 
-pub fn run(args: AppCommand) {
-    let base_url = "http://localhost/worker-api/apps";
+pub fn run(args: AppCommand, env_map: EnvMap) {
+
+    let base_url = format!(
+        "http://{}:{}/worker-api/apps",
+        env_map.get("INTERNAL_IP").unwrap_or(&"localhost".to_string()),
+        env_map.get("NGINX_PORT").unwrap_or(&DEFAULT_NGINX_PORT.to_string()),
+    );
 
     match args.subcommand {
         AppSubcommand::Start(args) => {
