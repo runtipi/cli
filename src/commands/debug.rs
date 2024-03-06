@@ -3,9 +3,9 @@ use colored::Colorize;
 use prettytable::{format, row, Table};
 use serde_json::{to_string_pretty, Value};
 
-use crate::utils::{env::env_string_to_map, system::get_architecture};
+use crate::utils::{system::get_architecture, env::EnvMap};
 
-pub fn run() {
+pub fn run(env_map: EnvMap) {
     println!("⚠️ Make sure you have started tipi before running this command\n");
     // Gather system information
     let os = std::env::consts::OS;
@@ -57,10 +57,6 @@ pub fn run() {
     println!("\n--- {} ---", "Environment variables".blue());
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_BOX_CHARS);
-
-    let env_file_path = current_dir.join(".env");
-    let env_file = std::fs::read_to_string(&env_file_path).unwrap_or_default();
-    let env_map = env_string_to_map(env_file.as_str());
 
     let pg_password = env_map
         .get("POSTGRES_PASSWORD")

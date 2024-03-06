@@ -12,7 +12,9 @@ use crate::utils::system::{derive_entropy, get_architecture, get_internal_ip, ge
 use super::constants::{DEFAULT_DOMAIN, DEFAULT_LOCAL_DOMAIN, DEFAULT_POSTGRES_PORT};
 use super::schemas::StringOrInt;
 
-pub fn get_env_map() -> HashMap<String, String> {
+pub type EnvMap = HashMap<String, String>;
+
+pub fn get_env_map() -> EnvMap {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
     let env_file_path = root_folder.join(".env");
 
@@ -25,7 +27,7 @@ pub fn get_env_value(key: &str) -> Option<String> {
     env_map.get(key).map(|value| value.to_string())
 }
 
-pub fn env_string_to_map(env_string: &str) -> std::collections::HashMap<String, String> {
+pub fn env_string_to_map(env_string: &str) -> EnvMap {
     let mut env_map = std::collections::HashMap::new();
 
     for line in env_string.lines() {
@@ -48,7 +50,7 @@ pub fn env_string_to_map(env_string: &str) -> std::collections::HashMap<String, 
     env_map
 }
 
-pub fn env_map_to_string(env_map: &HashMap<String, String>) -> String {
+pub fn env_map_to_string(env_map: &EnvMap) -> String {
     let mut env_string = String::new();
 
     for (key, value) in env_map {
@@ -88,7 +90,7 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     let version = std::fs::read_to_string(root_folder.join("VERSION"))?;
 
     // Create a new env map with the default values
-    let mut new_env_map: HashMap<String, String> = HashMap::new();
+    let mut new_env_map: EnvMap = HashMap::new();
 
     let seed = get_seed(&root_folder);
     let postgres_password: String = env_map
