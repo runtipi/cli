@@ -34,12 +34,18 @@ pub fn run() {
     }
 
     let container_names = vec![
+        // Legacy naming
         "tipi-reverse-proxy",
         "tipi-docker-proxy",
         "tipi-db",
         "tipi-redis",
         "tipi-worker",
         "tipi-dashboard",
+        // New naming
+        "runtipi",
+        "runtipi-reverse-proxy",
+        "runtipi-db",
+        "runtipi-redis",
     ];
 
     for container_name in container_names {
