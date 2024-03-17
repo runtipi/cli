@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.9"
 
 services:
   runtipi-reverse-proxy:
@@ -40,7 +40,7 @@ services:
       - tipi_main_network
 
   runtipi-redis:
-    container_name: tipi-redis
+    container_name: runtipi-redis
     image: redis:7.2.0
     restart: unless-stopped
     command: redis-server --requirepass ${REDIS_PASSWORD} --stop-writes-on-bgsave-error no
@@ -58,15 +58,8 @@ services:
 
   runtipi:
     container_name: runtipi
-    image: ghcr.io/runtipi/worker:${TIPI_VERSION}
+    image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
-    healthcheck:
-      test:
-        ["CMD", "curl", "-f", "http://localhost:3000/worker-api/healthcheck"]
-      interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 5s
     depends_on:
       runtipi-db:
         condition: service_healthy
@@ -74,10 +67,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-    environment:
-      NODE_ENV: production
-      TIPI_VERSION: ${TIPI_VERSION}
-      NEXT_PUBLIC_TIPI_VERSION: ${TIPI_VERSION}
     volumes:
       # Data
       - ./media:/data/media
@@ -87,11 +76,15 @@ services:
       - ./logs:/data/logs
       - ./traefik:/data/traefik
       - ./user-config:/data/user-config
-      - ${STORAGE_PATH:-$PWD}:/app-data
+      - ${STORAGE_PATH:-$PWD}/app-data:/app-data
       # Static
       - ./.env:/data/.env
-      - /proc:/host/proc
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc
+    environment:
+      NODE_ENV: production
+      TIPI_VERSION: ${TIPI_VERSION}
+      NEXT_PUBLIC_TIPI_VERSION: ${TIPI_VERSION}
     networks:
       - tipi_main_network
     labels:
