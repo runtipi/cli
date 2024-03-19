@@ -4,7 +4,8 @@ services:
   runtipi-reverse-proxy:
     container_name: runtipi-reverse-proxy
     depends_on:
-      - runtipi
+      runtipi:
+        condition: service_healthy
     image: traefik:v2.11
     restart: unless-stopped
     ports:
@@ -58,6 +59,12 @@ services:
 
   runtipi:
     container_name: runtipi
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:5000/worker-api/healthcheck"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
     depends_on:
