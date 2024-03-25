@@ -3,7 +3,7 @@ use colored::Colorize;
 use prettytable::{format, row, Table};
 use serde_json::{to_string_pretty, Value};
 
-use crate::utils::{system::get_architecture, env::EnvMap};
+use crate::utils::{env::EnvMap, system::get_architecture};
 
 pub fn run(env_map: EnvMap) {
     println!("⚠️ Make sure you have started tipi before running this command\n");
@@ -24,7 +24,7 @@ pub fn run(env_map: EnvMap) {
     table.add_row(row!["Architecture", arch]);
 
     // Does the file user_config/tipi-config.yml exist?
-    let config_file = std::path::Path::new("user-config/tipi-config.yml");
+    let config_file = std::path::Path::new("user-config/tipi-compose.yml");
 
     // Print the table
     table.printstd();
