@@ -117,7 +117,7 @@ pub fn run(env_map: EnvMap) {
         .arg("ps")
         .arg("-a")
         .arg("--filter")
-        .arg("name=tipi-")
+        .arg("name=runtipi-")
         .arg("--format")
         .arg("{{.Names}} {{.Status}}")
         .output()
