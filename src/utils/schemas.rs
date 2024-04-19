@@ -39,8 +39,12 @@ pub struct SettingsSchema {
     #[serde(rename = "sslPort")]
     pub nginx_ssl_port: Option<StringOrInt>,
 
+    // Deprecated
     #[serde(rename = "storagePath")]
     pub storage_path: Option<String>,
+
+    #[serde(rename = "appDataPath")]
+    pub app_data_path: Option<String>,
 
     #[serde(rename = "postgresPort")]
     pub postgres_port: Option<StringOrInt>,

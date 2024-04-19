@@ -102,16 +102,18 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         .unwrap_or(&derive_entropy("redis_password", &seed))
         .to_string();
 
-    if parsed_json.storage_path.is_some() {
-        // Test if the storage path is valid
-        let storage_path = PathBuf::from(&parsed_json.storage_path.as_ref().unwrap());
+    let app_data_path = parsed_json.app_data_path.or(parsed_json.storage_path.clone());
 
-        if !storage_path.exists() {
+    if app_data_path.is_some() {
+        // Test if the path is valid
+        let temp_app_data_path = PathBuf::from(&app_data_path.as_ref().unwrap());
+
+        if !temp_app_data_path.exists() {
             return Err(Error::new(
                 std::io::ErrorKind::NotFound,
                 format!(
-                    "Storage path '{}' does not exist on your system. Make sure it is an absolute path or remove it from settings.json.",
-                    storage_path.display()
+                    "Path '{}' does not exist on your system. Make sure it is an absolute path or remove it from settings.json.",
+                    temp_app_data_path.display()
                 ),
             ));
         }
@@ -134,8 +136,8 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
             .as_string(),
     );
     new_env_map.insert(
-        "STORAGE_PATH".to_string(),
-        parsed_json.storage_path.unwrap_or(root_folder.display().to_string()),
+        "RUNTIPI_APP_DATA_PATH".to_string(),
+        app_data_path.unwrap_or(root_folder.display().to_string()),
     );
     new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
     new_env_map.insert(
