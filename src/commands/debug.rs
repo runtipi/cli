@@ -87,7 +87,10 @@ pub fn run(env_map: EnvMap) {
         "ROOT_FOLDER_HOST",
         env_map.get("ROOT_FOLDER_HOST").unwrap_or(&"Not set".red().to_string())
     ]);
-    table.add_row(row!["STORAGE_PATH", env_map.get("STORAGE_PATH").unwrap_or(&"Not set".red().to_string())]);
+    table.add_row(row![
+        "RUNTIPI_APP_DATA_PATH",
+        env_map.get("RUNTIPI_APP_DATA_PATH").unwrap_or(&"Not set".red().to_string())
+    ]);
     table.add_row(row!["NGINX_PORT", env_map.get("NGINX_PORT").unwrap_or(&"Not set".red().to_string())]);
     table.add_row(row![
         "NGINX_PORT_SSL",
