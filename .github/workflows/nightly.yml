@@ -9,12 +9,6 @@ on:
         required: false
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: echo distinct ID ${{ github.event.inputs.distinct_id }}
-        run: echo ${{ github.event.inputs.distinct_id }}
-
   build:
     name: Release - ${{ matrix.platform.release_for }}
     strategy:
@@ -36,6 +30,9 @@ jobs:
 
     runs-on: ${{ matrix.platform.os }}
     steps:
+      - name: echo distinct ID ${{ github.event.inputs.distinct_id }}
+        run: echo ${{ github.event.inputs.distinct_id }}
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
