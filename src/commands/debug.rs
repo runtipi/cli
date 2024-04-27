@@ -3,7 +3,7 @@ use colored::Colorize;
 use prettytable::{format, row, Table};
 use serde_json::{to_string_pretty, Value};
 
-use crate::utils::{system::get_architecture, env::EnvMap};
+use crate::utils::{env::EnvMap, system::get_architecture};
 
 pub fn run(env_map: EnvMap) {
     println!("⚠️ Make sure you have started tipi before running this command\n");
@@ -24,7 +24,7 @@ pub fn run(env_map: EnvMap) {
     table.add_row(row!["Architecture", arch]);
 
     // Does the file user_config/tipi-config.yml exist?
-    let config_file = std::path::Path::new("user-config/tipi-config.yml");
+    let config_file = std::path::Path::new("user-config/tipi-compose.yml");
 
     // Print the table
     table.printstd();
@@ -87,7 +87,10 @@ pub fn run(env_map: EnvMap) {
         "ROOT_FOLDER_HOST",
         env_map.get("ROOT_FOLDER_HOST").unwrap_or(&"Not set".red().to_string())
     ]);
-    table.add_row(row!["STORAGE_PATH", env_map.get("STORAGE_PATH").unwrap_or(&"Not set".red().to_string())]);
+    table.add_row(row![
+        "RUNTIPI_APP_DATA_PATH",
+        env_map.get("RUNTIPI_APP_DATA_PATH").unwrap_or(&"Not set".red().to_string())
+    ]);
     table.add_row(row!["NGINX_PORT", env_map.get("NGINX_PORT").unwrap_or(&"Not set".red().to_string())]);
     table.add_row(row![
         "NGINX_PORT_SSL",
@@ -117,7 +120,7 @@ pub fn run(env_map: EnvMap) {
         .arg("ps")
         .arg("-a")
         .arg("--filter")
-        .arg("name=tipi-")
+        .arg("name=runtipi-")
         .arg("--format")
         .arg("{{.Names}} {{.Status}}")
         .output()
