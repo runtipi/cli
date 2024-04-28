@@ -1,13 +1,9 @@
-use std::io::{Error, ErrorKind};
-
 use crate::args::{AppCommand, AppSubcommand};
-use crate::utils::env::{get_env_value, EnvMap};
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
-use serde::{Deserialize, Serialize};
+use crate::utils::api::api_request;
+use crate::utils::env::EnvMap;
 
 use crate::components::spinner;
 use crate::utils::constants::DEFAULT_NGINX_PORT;
-use reqwest::blocking::{Client, Response};
 
 pub fn run(args: AppCommand, env_map: EnvMap) {
     let base_url = format!(
@@ -143,51 +139,5 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 }
             }
         }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String,
-}
-
-fn create_client() -> Result<Client, Error> {
-    let client = Client::builder().build();
-
-    match client {
-        Ok(c) => Ok(c),
-        Err(err) => return Err(Error::new(ErrorKind::Other, format!("{}", err))),
-    }
-}
-
-fn create_token() -> Result<String, Error> {
-    let claims = Claims { sub: "1".to_string() };
-
-    let jwt_secret = get_env_value("JWT_SECRET");
-
-    match jwt_secret {
-        Some(secret) => {
-            let encoding_key = EncodingKey::from_secret(secret.as_ref());
-            let encoded = encode(&Header::new(Algorithm::HS256), &claims, &encoding_key);
-
-            match encoded {
-                Ok(t) => Ok(t),
-                Err(err) => Err(Error::new(ErrorKind::Other, format!("Error creating token: {:?}", err))),
-            }
-        }
-        None => Err(Error::new(ErrorKind::Other, "JWT_SECRET not found in environment variables")),
-    }
-}
-
-fn api_request(url: String) -> Result<Response, Error> {
-    let client = create_client()?;
-
-    let token = create_token()?;
-    let auth_token = format!("Bearer {}", token);
-    let response = client.post(url).header("Authorization", auth_token).send();
-
-    match response {
-        Ok(r) => Ok(r),
-        Err(err) => Err(Error::new(ErrorKind::Other, format!("{}", err))),
     }
 }
