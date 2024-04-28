@@ -5,3 +5,8 @@ pub mod release;
 pub mod schemas;
 pub mod seed;
 pub mod system;
+
+#[cfg(test)]
+mod tests {
+    mod release;
+}
