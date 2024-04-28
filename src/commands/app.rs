@@ -1,16 +1,15 @@
-use std::io::Error;
+use std::io::{Error, ErrorKind};
 
 use crate::args::{AppCommand, AppSubcommand};
-use crate::utils::env::{EnvMap, get_env_value};
+use crate::utils::env::{get_env_value, EnvMap};
 use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 
 use crate::components::spinner;
-use reqwest::blocking::{Client, Response};
 use crate::utils::constants::DEFAULT_NGINX_PORT;
+use reqwest::blocking::{Client, Response};
 
 pub fn run(args: AppCommand, env_map: EnvMap) {
-
     let base_url = format!(
         "http://{}:{}/worker-api/apps",
         env_map.get("INTERNAL_IP").unwrap_or(&"localhost".to_string()),
@@ -152,23 +151,43 @@ struct Claims {
     sub: String,
 }
 
-fn api_request(url: String) -> Result<Response, Error> {
-    let client = Client::builder().user_agent("reqwest").build().unwrap();
+fn create_client() -> Result<Client, Error> {
+    let client = Client::builder().build();
 
+    match client {
+        Ok(c) => Ok(c),
+        Err(err) => return Err(Error::new(ErrorKind::Other, format!("{}", err))),
+    }
+}
+
+fn create_token() -> Result<String, Error> {
     let claims = Claims { sub: "1".to_string() };
 
-    let encoding_key = EncodingKey::from_secret(get_env_value("JWT_SECRET").unwrap_or("secret".to_string()).as_ref());
-    let token = match encode(&Header::new(Algorithm::HS256), &claims, &encoding_key) {
-        Ok(t) => t,
-        Err(err) => panic!("Error creating token: {:?}", err),
-    };
+    let jwt_secret = get_env_value("JWT_SECRET");
 
-    let auth_token = format!("Bearer {}", token);
-    let response = client.post(url).header("Authorization", auth_token).send().unwrap();
+    match jwt_secret {
+        Some(secret) => {
+            let encoding_key = EncodingKey::from_secret(secret.as_ref());
+            let encoded = encode(&Header::new(Algorithm::HS256), &claims, &encoding_key);
 
-    if response.status().is_success() {
-        return Ok(response);
+            match encoded {
+                Ok(t) => Ok(t),
+                Err(err) => Err(Error::new(ErrorKind::Other, format!("Error creating token: {:?}", err))),
+            }
+        }
+        None => Err(Error::new(ErrorKind::Other, "JWT_SECRET not found in environment variables")),
     }
+}
 
-    Err(Error::new(std::io::ErrorKind::Other, format!("Error: {}", response.status())))
+fn api_request(url: String) -> Result<Response, Error> {
+    let client = create_client()?;
+
+    let token = create_token()?;
+    let auth_token = format!("Bearer {}", token);
+    let response = client.post(url).header("Authorization", auth_token).send();
+
+    match response {
+        Ok(r) => Ok(r),
+        Err(err) => Err(Error::new(ErrorKind::Other, format!("{}", err))),
+    }
 }
