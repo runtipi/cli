@@ -40,14 +40,12 @@ pub fn get_latest_release() -> Result<String, Error> {
             if response.status().is_success() {
                 let latest = response.json::<GithubRelease>();
 
-                if latest.is_err() {
-                    return Err(Error::new(
-                        ErrorKind::Other,
-                        format!("Failed to parse latest release: {:?}", latest.err()),
-                    ));
-                } else {
-                    return Ok(latest.unwrap().tag_name[1..].to_string());
-                }
+                return match latest {
+                    Ok(latest) => Ok(latest.tag_name[1..].to_string()),
+                    Err(e) => {
+                        return Err(Error::new(ErrorKind::Other, format!("Failed to parse latest release: {:?}", e)));
+                    }
+                };
             } else {
                 return Err(Error::new(
                     ErrorKind::Other,
