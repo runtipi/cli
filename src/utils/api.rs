@@ -10,8 +10,8 @@ struct Claims {
     sub: String,
 }
 
-fn create_client() -> Result<Client, Error> {
-    let client = Client::builder().build();
+pub fn create_client() -> Result<Client, Error> {
+    let client = Client::builder().user_agent("reqwest").build();
 
     match client {
         Ok(c) => Ok(c),
