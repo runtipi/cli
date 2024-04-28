@@ -15,10 +15,10 @@ use super::schemas::StringOrInt;
 pub type EnvMap = HashMap<String, String>;
 
 pub fn get_env_map() -> EnvMap {
-    let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
+    let root_folder: PathBuf = env::current_dir().unwrap_or_default();
     let env_file_path = root_folder.join(".env");
 
-    let env_file = std::fs::read_to_string(&env_file_path).expect("Unable to read .env file");
+    let env_file = std::fs::read_to_string(&env_file_path).unwrap_or_default();
     env_string_to_map(&env_file)
 }
 
