@@ -92,7 +92,8 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     // Create a new env map with the default values
     let mut new_env_map: EnvMap = HashMap::new();
 
-    let seed = get_seed(&root_folder);
+    let seed = get_seed(&root_folder)?;
+
     let postgres_password: String = env_map
         .get("POSTGRES_PASSWORD")
         .unwrap_or(&derive_entropy("postgres_password", &seed))
