@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use crate::args::StartArgs;
 use crate::components::console_box::ConsoleBox;
 use crate::components::spinner;
+use crate::utils::env::get_env_value;
 use crate::utils::{env, system};
 
 pub fn run(args: StartArgs) {
@@ -40,7 +41,6 @@ pub fn run(args: StartArgs) {
         println!("\nError: {}", e);
         return;
     }
-    let env_map = env::get_env_map();
 
     spin.succeed("Generated .env file");
 
@@ -151,11 +151,10 @@ pub fn run(args: StartArgs) {
     spin.finish();
     println!("\n");
 
-    let ip_and_port = format!(
-        "Visit http://{}:{} to access the dashboard",
-        env_map.get("INTERNAL_IP").unwrap(),
-        env_map.get("NGINX_PORT").unwrap()
-    );
+    let internal_ip = get_env_value("INTERNAL_IP").unwrap_or("localhost".to_string());
+    let nginx_port = get_env_value("NGINX_PORT").unwrap_or("80".to_string());
+
+    let ip_and_port = format!("Visit http://{}:{} to access the dashboard", internal_ip, nginx_port);
 
     let box_title = "Runtipi started successfully".to_string();
     let box_body = format!(

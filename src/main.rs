@@ -14,7 +14,6 @@ fn main() {
     let args = RuntipiArgs::parse();
 
     println!("{}", "Welcome to Runtipi CLI ✨\n".green());
-    let env_map = get_env_map();
 
     match args.command {
         args::RuntipiMainCommand::Start(args) => {
@@ -41,9 +40,13 @@ fn main() {
             commands::reset_password::run();
         }
         args::RuntipiMainCommand::App(app_command) => {
+            let env_map = get_env_map();
+
             commands::app::run(app_command, env_map);
         }
         args::RuntipiMainCommand::Debug => {
+            let env_map = get_env_map();
+
             commands::debug::run(env_map);
         }
     }

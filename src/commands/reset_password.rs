@@ -2,7 +2,7 @@ use colored::Colorize;
 use std::env;
 use std::{fs::File, path::PathBuf};
 
-use crate::utils::env::get_env_map;
+use crate::utils::env::get_env_value;
 
 pub fn run() {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
@@ -10,12 +10,12 @@ pub fn run() {
 
     match reset_password_request {
         Ok(_) => {
-            let env_map = get_env_map();
+            let internal_ip = get_env_value("INTERNAL_IP").unwrap_or("localhost".to_string());
+            let nginx_port = get_env_value("NGINX_PORT").unwrap_or("80".to_string());
 
             let ip_and_port = format!(
                 "Head back to http://{}:{}/reset-password to set your new password.",
-                env_map.get("INTERNAL_IP").unwrap_or(&"localhost".to_string()),
-                env_map.get("NGINX_PORT").unwrap_or(&"80".to_string())
+                internal_ip, nginx_port
             );
 
             println!("{} Password reset request created. {}", "✓".green(), ip_and_port)

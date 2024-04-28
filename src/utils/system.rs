@@ -9,7 +9,7 @@ use get_if_addrs::get_if_addrs;
 
 use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
-pub fn get_architecture() -> Result<String, String> {
+pub fn get_architecture() -> Result<String, Error> {
     #[cfg(target_arch = "aarch64")]
     {
         Ok("arm64".to_string())
