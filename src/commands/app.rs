@@ -1,16 +1,11 @@
-use std::io::Error;
-
 use crate::args::{AppCommand, AppSubcommand};
-use crate::utils::env::{EnvMap, get_env_value};
-use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
-use serde::{Deserialize, Serialize};
+use crate::utils::api::api_request;
+use crate::utils::env::EnvMap;
 
 use crate::components::spinner;
-use reqwest::blocking::{Client, Response};
 use crate::utils::constants::DEFAULT_NGINX_PORT;
 
 pub fn run(args: AppCommand, env_map: EnvMap) {
-
     let base_url = format!(
         "http://{}:{}/worker-api/apps",
         env_map.get("INTERNAL_IP").unwrap_or(&"localhost".to_string()),
@@ -145,30 +140,4 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
             }
         }
     }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String,
-}
-
-fn api_request(url: String) -> Result<Response, Error> {
-    let client = Client::builder().user_agent("reqwest").build().unwrap();
-
-    let claims = Claims { sub: "1".to_string() };
-
-    let encoding_key = EncodingKey::from_secret(get_env_value("JWT_SECRET").unwrap_or("secret".to_string()).as_ref());
-    let token = match encode(&Header::new(Algorithm::HS256), &claims, &encoding_key) {
-        Ok(t) => t,
-        Err(err) => panic!("Error creating token: {:?}", err),
-    };
-
-    let auth_token = format!("Bearer {}", token);
-    let response = client.post(url).header("Authorization", auth_token).send().unwrap();
-
-    if response.status().is_success() {
-        return Ok(response);
-    }
-
-    Err(Error::new(std::io::ErrorKind::Other, format!("Error: {}", response.status())))
 }

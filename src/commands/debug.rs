@@ -120,7 +120,7 @@ pub fn run(env_map: EnvMap) {
         .arg("ps")
         .arg("-a")
         .arg("--filter")
-        .arg("name=runtipi-")
+        .arg("name=runtipi")
         .arg("--format")
         .arg("{{.Names}} {{.Status}}")
         .output()

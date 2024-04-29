@@ -9,7 +9,7 @@ use get_if_addrs::get_if_addrs;
 
 use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
-pub fn get_architecture() -> Result<String, String> {
+pub fn get_architecture() -> Result<String, Error> {
     #[cfg(target_arch = "aarch64")]
     {
         Ok("arm64".to_string())
@@ -38,10 +38,17 @@ pub fn get_internal_ip() -> String {
     "0.0.0.0".to_string()
 }
 
-pub fn get_seed(root_folder: &PathBuf) -> String {
+pub fn get_seed(root_folder: &PathBuf) -> Result<String, Error> {
     let seed_file_path = root_folder.join("state").join("seed");
-    let seed = std::fs::read_to_string(&seed_file_path).unwrap_or_default();
-    seed
+    let seed = std::fs::read_to_string(&seed_file_path);
+
+    match seed {
+        Ok(seed) => Ok(seed),
+        Err(_) => Err(Error::new(
+            ErrorKind::Other,
+            "Unable to read the seed file. Please run the start command first.".to_string(),
+        )),
+    }
 }
 
 pub fn derive_entropy(entropy: &str, seed: &String) -> String {
