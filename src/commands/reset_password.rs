@@ -7,7 +7,7 @@ use crate::utils::env::get_env_value;
 
 pub fn run() {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
-    let reset_password_request = write(root_folder.join("state").join("password-change-request"), (SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() + (15 * 60)).to_string());
+    let reset_password_request = write(root_folder.join("state").join("password-change-request"), SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs().to_string());
 
     match reset_password_request {
         Ok(_) => {
