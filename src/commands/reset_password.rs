@@ -1,13 +1,20 @@
 use colored::Colorize;
 use std::env;
-use std::{fs::write, path::PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::{fs::write, path::PathBuf};
 
 use crate::utils::env::get_env_value;
 
 pub fn run() {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
-    let reset_password_request = write(root_folder.join("state").join("password-change-request"), SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs().to_string());
+    let timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(duration) => duration.as_secs().to_string(),
+        Err(e) => {
+            println!("Error calculating timestamp: {}", e);
+            return;
+        }
+    };
+    let reset_password_request = write(root_folder.join("state").join("password-change-request"), timestamp);
 
     match reset_password_request {
         Ok(_) => {
