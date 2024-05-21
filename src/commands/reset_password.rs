@@ -30,7 +30,7 @@ pub fn run() {
         }
         Err(e) => {
             println!(
-                "{} Unable to create password reset request. You can manually create a file with `echo $(($(date +%s) + 900)) >> {}` to initiate a password reset. Error: {}",
+                "{} Unable to create password reset request. You can manually create a file with `echo $(($(date +%s))) >> {}` to initiate a password reset. Error: {}",
                 "✗".red(),
                 root_folder
                     .join("state")
