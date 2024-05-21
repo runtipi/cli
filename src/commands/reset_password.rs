@@ -5,6 +5,8 @@ use std::{fs::write, path::PathBuf};
 
 use crate::utils::env::get_env_value;
 
+use crate::utils::env::get_env_value;
+
 pub fn run() {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
     let timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
