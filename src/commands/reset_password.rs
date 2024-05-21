@@ -1,12 +1,20 @@
 use colored::Colorize;
 use std::env;
-use std::{fs::File, path::PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
+use std::{fs::write, path::PathBuf};
 
 use crate::utils::env::get_env_value;
 
 pub fn run() {
     let root_folder: PathBuf = env::current_dir().expect("Unable to get current directory");
-    let reset_password_request = File::create(root_folder.join("state").join("password-change-request"));
+    let timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(duration) => duration.as_secs().to_string(),
+        Err(e) => {
+            println!("Error calculating timestamp: {}", e);
+            return;
+        }
+    };
+    let reset_password_request = write(root_folder.join("state").join("password-change-request"), timestamp);
 
     match reset_password_request {
         Ok(_) => {
@@ -22,7 +30,7 @@ pub fn run() {
         }
         Err(e) => {
             println!(
-                "{} Unable to create password reset request. You can manually create an empty file at {} to initiate a password reset. Error: {}",
+                "{} Unable to create password reset request. You can manually create a file with `echo $(($(date +%s))) >> {}` to initiate a password reset. Error: {}",
                 "✗".red(),
                 root_folder
                     .join("state")
