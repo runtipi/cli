@@ -70,6 +70,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://meienberger.dev/"><img src="https://avatars.githubusercontent.com/u/47644445?v=4?s=100" width="100px;" alt="Nicolas Meienberger"/><br /><sub><b>Nicolas Meienberger</b></sub></a><br /><a href="#code-meienberger" title="Code">💻</a> <a href="#test-meienberger" title="Tests">⚠️</a> <a href="#infra-meienberger" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/steveiliop56"><img src="https://avatars.githubusercontent.com/u/106091011?v=4?s=100" width="100px;" alt="Stavros"/><br /><sub><b>Stavros</b></sub></a><br /><a href="#code-steveiliop56" title="Code">💻</a> <a href="#doc-steveiliop56" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/hex-developer"><img src="https://avatars.githubusercontent.com/u/77530549?v=4?s=100" width="100px;" alt="hex-developer"/><br /><sub><b>hex-developer</b></sub></a><br /><a href="#code-hex-developer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jnth"><img src="https://avatars.githubusercontent.com/u/7796167?v=4?s=100" width="100px;" alt="Jonathan Virga"/><br /><sub><b>Jonathan Virga</b></sub></a><br /><a href="#code-jnth" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
