@@ -29,6 +29,15 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "jnth",
+      "name": "Jonathan Virga",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7796167?v=4",
+      "profile": "https://github.com/jnth",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
