@@ -88,8 +88,6 @@ services:
       - /proc:/host/proc
     environment:
       NODE_ENV: production
-      TIPI_VERSION: ${TIPI_VERSION}
-      NEXT_PUBLIC_TIPI_VERSION: ${TIPI_VERSION}
     networks:
       - tipi_main_network
     labels:
