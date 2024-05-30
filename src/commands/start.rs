@@ -109,7 +109,12 @@ pub fn run(args: StartArgs) {
     spin.set_message("Starting containers...");
     let user_compose_file = root_folder.join("user-config").join("tipi-compose.yml");
 
-    let mut args = vec!["-f".to_string(), root_folder.join("docker-compose.yml").display().to_string()];
+    let mut args = vec![
+        "--project-name".to_string(),
+        "runtipi".to_string(),
+        "-f".to_string(),
+        root_folder.join("docker-compose.yml").display().to_string(),
+    ];
 
     if user_compose_file.exists() {
         args.push("-f".to_string());
