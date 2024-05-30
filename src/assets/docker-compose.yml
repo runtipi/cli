@@ -84,6 +84,7 @@ services:
       - ${RUNTIPI_APP_DATA_PATH:-.}/app-data:/app-data
       # Static
       - ./.env:/data/.env
+      - ./docker-compose.yml:/data/docker-compose.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc:/host/proc
     environment:
