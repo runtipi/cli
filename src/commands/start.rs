@@ -91,12 +91,18 @@ pub fn run(args: StartArgs) {
     // Stop and remove containers
     spin.set_message("Stopping existing containers...");
     let container_names = vec![
+        // Legacy naming
         "tipi-reverse-proxy",
         "tipi-docker-proxy",
         "tipi-db",
         "tipi-redis",
         "tipi-worker",
         "tipi-dashboard",
+        // New naming
+        "runtipi",
+        "runtipi-reverse-proxy",
+        "runtipi-db",
+        "runtipi-redis",
     ];
 
     for container_name in container_names {
@@ -109,7 +115,12 @@ pub fn run(args: StartArgs) {
     spin.set_message("Starting containers...");
     let user_compose_file = root_folder.join("user-config").join("tipi-compose.yml");
 
-    let mut args = vec!["-f".to_string(), root_folder.join("docker-compose.yml").display().to_string()];
+    let mut args = vec![
+        "--project-name".to_string(),
+        "runtipi".to_string(),
+        "-f".to_string(),
+        root_folder.join("docker-compose.yml").display().to_string(),
+    ];
 
     if user_compose_file.exists() {
         args.push("-f".to_string());
