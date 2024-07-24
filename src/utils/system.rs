@@ -125,6 +125,7 @@ pub fn copy_system_files() -> Result<(), Error> {
     fs::create_dir_all(root_folder.join("traefik"))?;
     fs::create_dir_all(root_folder.join("user-config"))?;
     fs::create_dir_all(root_folder.join("logs"))?;
+    fs::create_dir_all(root_folder.join("backups"))?;
 
     Ok(())
 }
