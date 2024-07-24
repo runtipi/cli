@@ -7,7 +7,7 @@
   "commitType": "docs",
   "commitConvention": "angular",
   "contributorsPerLine": 7,
-  "badgeTemplate": "[![All Contributors](https://img.shields.io/github/runtipi/cli](#contributors)",
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/github/runtipi/cli)](#contributors)",
   "contributors": [
     {
       "login": "meienberger",
