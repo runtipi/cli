@@ -82,11 +82,14 @@ services:
       - ${RUNTIPI_TRAEFIK_PATH:-.}/traefik:/data/traefik
       - ${RUNTIPI_USER_CONFIG_PATH:-.}/user-config:/data/user-config
       - ${RUNTIPI_APP_DATA_PATH:-.}/app-data:/app-data
+      - ${RUNTIPI_BACKUPS_PATH:-.}/backups:/data/backups
       # Static
       - ./.env:/data/.env
       - ./docker-compose.yml:/data/docker-compose.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /proc:/host/proc
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
       NODE_ENV: production
     networks:
