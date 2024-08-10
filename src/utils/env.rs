@@ -140,12 +140,14 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         "RUNTIPI_APP_DATA_PATH".to_string(),
         app_data_path.unwrap_or(root_folder.display().to_string()),
     );
-    new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
+    new_env_map.insert("POSTGRES_HOST".to_string(), "runtipi-db".to_string());
     new_env_map.insert(
         "POSTGRES_PORT".to_string(),
         parsed_json.postgres_port.unwrap_or(StringOrInt::from(DEFAULT_POSTGRES_PORT)).as_string(),
     );
-    new_env_map.insert("POSTGRES_HOST".to_string(), "runtipi-db".to_string());
+    new_env_map.insert("POSTGRES_DBNAME".to_string(), "tipi".to_string());
+    new_env_map.insert("POSTGRES_USERNAME".to_string(), "tipi".to_string());
+    new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
     new_env_map.insert("REDIS_HOST".to_string(), "runtipi-redis".to_string());
     new_env_map.insert("REDIS_PASSWORD".to_string(), redis_password);
     new_env_map.insert("DOMAIN".to_string(), parsed_json.domain.unwrap_or(DEFAULT_DOMAIN.to_string()));
