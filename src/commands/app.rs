@@ -28,7 +28,7 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 }
                 Err(err) => {
                     spin.fail("Failed to start app.");
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
             spin.finish();
@@ -48,7 +48,7 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 }
                 Err(err) => {
                     spin.fail("Failed to stop app.");
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
             spin.finish();
@@ -68,7 +68,7 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 }
                 Err(err) => {
                     spin.fail("Failed to uninstall app.");
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
             spin.finish();
@@ -91,7 +91,7 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 Err(err) => {
                     spin.fail("Failed to reset app.");
                     spin.finish();
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
         }
@@ -113,14 +113,14 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                 Err(err) => {
                     spin.fail("Failed to update app.");
                     spin.finish();
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
         }
         AppSubcommand::StartAll(_) => {
             let spin = spinner::new("Starting all apps...");
             let api_response = api_request(format!("{}/{}", base_url, "start-all"));
-            let error_message = format!("Failed to start apps. See logs/error.log for more details.");
+            let error_message = "Failed to start apps. See logs/error.log for more details.";
 
             match api_response {
                 Ok(response) => {
@@ -128,14 +128,14 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
                         spin.succeed("All apps started successfully!!");
                         spin.finish();
                     } else {
-                        spin.fail(&error_message);
+                        spin.fail(error_message);
                         spin.finish();
                     }
                 }
                 Err(err) => {
                     spin.fail("Failed to start apps.");
                     spin.finish();
-                    println!("{}", format!("Error: {}", err));
+                    println!("Error: {}", err);
                 }
             }
         }

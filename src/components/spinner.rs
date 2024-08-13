@@ -54,7 +54,5 @@ impl CustomSpinner {
 }
 
 pub fn new(message: &str) -> CustomSpinner {
-    let spinner = CustomSpinner::new(message.to_string());
-
-    return spinner;
+    CustomSpinner::new(message.to_string())
 }

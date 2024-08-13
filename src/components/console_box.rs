@@ -75,7 +75,7 @@ impl ConsoleBox {
                         current_line = String::new();
                     }
                     current_line.push_str(word);
-                    current_line.push_str(" ");
+                    current_line.push(' ');
                 }
                 split_lines.push(current_line);
                 for line in split_lines {

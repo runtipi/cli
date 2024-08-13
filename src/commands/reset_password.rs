@@ -39,7 +39,6 @@ pub fn run() {
                     .unwrap_or("./state/password-change-request"),
                 e
             );
-            return;
         }
     }
 }
