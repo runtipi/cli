@@ -1,3 +1,4 @@
+use core::fmt;
 use semver::{Error as SemverError, Version};
 use std::{path::PathBuf, str::FromStr};
 
@@ -28,12 +29,12 @@ impl FromStr for VersionEnum {
     }
 }
 
-impl ToString for VersionEnum {
-    fn to_string(&self) -> String {
+impl fmt::Display for VersionEnum {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            VersionEnum::Version(version) => version.to_string(),
-            VersionEnum::Latest => "latest".to_string(),
-            VersionEnum::Nightly => "nightly".to_string(),
+            VersionEnum::Version(version) => write!(f, "{}", version),
+            VersionEnum::Latest => write!(f, "latest"),
+            VersionEnum::Nightly => write!(f, "nightly"),
         }
     }
 }

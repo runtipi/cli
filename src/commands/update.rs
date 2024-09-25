@@ -91,12 +91,9 @@ pub fn run(args: UpdateArgs) {
         run_args.push("--no-permissions".to_string());
     }
 
-    match args.env_file {
-        Some(env_file) => {
-            run_args.push("--env-file".to_string());
-            run_args.push(env_file.display().to_string());
-        }
-        None => {}
+    if let Some(env_file) = args.env_file {
+        run_args.push("--env-file".to_string());
+        run_args.push(env_file.display().to_string());
     }
 
     // Run command start on new CLI
@@ -122,15 +119,14 @@ pub fn run(args: UpdateArgs) {
 
     let internal_ip = get_env_value("INTERNAL_IP").unwrap_or("localhost".to_string());
     let nginx_port = get_env_value("NGINX_PORT").unwrap_or("80".to_string());
-    let ip_and_port = format!("Visit http://{}:{} to access the dashboard", internal_ip, nginx_port);
 
     let box_title = "Runtipi started successfully".to_string();
-    let box_body = format!(
-        "{}\n\n{}\n\n{}",
-        ip_and_port,
-        format!("You are now running version {}", release.version),
-        "Tipi is entirely written in TypeScript and we are looking for contributors!"
-    );
+
+    let ip_and_port = format!("Visit http://{}:{} to access the dashboard", internal_ip, nginx_port);
+    let message = format!("You are now running version {}", release.version);
+    let shameless_plug = "Tipi is entirely written in TypeScript and we are looking for contributors!";
+
+    let box_body = format!("{}\n\n{}\n\n{}", ip_and_port, message, shameless_plug);
 
     let console_box = ConsoleBox::new(box_title, box_body, 80, "green".to_string());
     console_box.print();
