@@ -1,7 +1,10 @@
 use crate::utils::env::get_env_value;
 use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
 
-use reqwest::blocking::{Client, Response};
+use reqwest::{
+    blocking::{Body, Client, Response},
+    Method,
+};
 use serde::{Deserialize, Serialize};
 use std::io::{Error, ErrorKind};
 
@@ -20,7 +23,7 @@ pub fn create_client() -> Result<Client, Error> {
 }
 
 fn create_token() -> Result<String, Error> {
-    let claims = Claims { sub: "1".to_string() };
+    let claims = Claims { sub: "cli".to_string() };
     let jwt_secret = get_env_value("JWT_SECRET");
 
     match jwt_secret {
@@ -37,11 +40,20 @@ fn create_token() -> Result<String, Error> {
     }
 }
 
-pub fn api_request(url: String) -> Result<Response, Error> {
+pub fn api_request(url: String, method: Method, raw_body: &str) -> Result<Response, Error> {
     let client = create_client()?;
     let token = create_token()?;
     let auth_token = format!("Bearer {}", token);
-    let response = client.post(url).header("Authorization", auth_token).send();
+
+    let body = Body::from(raw_body.to_string());
+
+    let response = client
+        .request(method, url)
+        .header("Authorization", auth_token)
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .body(body)
+        .send();
 
     match response {
         Ok(r) => Ok(r),
