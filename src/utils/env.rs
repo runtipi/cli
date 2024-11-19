@@ -167,11 +167,13 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
             merged_env_map.insert(key.clone(), value);
         }
 
-        let merged_env_string = env_map_to_string(&merged_env_map);
+        let mut merged_env_string = env_map_to_string(&merged_env_map);
+        merged_env_string.push('\n'); // Add an EOL to the string
 
         std::fs::write(&env_file_path, merged_env_string)?;
     } else {
-        let new_env_string = env_map_to_string(&new_env_map);
+        let mut new_env_string = env_map_to_string(&new_env_map);
+        new_env_string.push('\n'); // Add an EOL to the string
 
         std::fs::write(&env_file_path, new_env_string)?;
     }
