@@ -55,6 +55,8 @@ pub enum RuntipiMainCommand {
     ResetPassword,
     /// Debug your runtipi instance
     Debug,
+    /// Print your current version of runtipi
+    Version,
 }
 
 #[derive(Debug, Parser)]
