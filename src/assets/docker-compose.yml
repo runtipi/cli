@@ -4,7 +4,7 @@ services:
     depends_on:
       runtipi:
         condition: service_healthy
-    image: traefik:v3.1.4
+    image: traefik:v3.2
     restart: unless-stopped
     ports:
       - ${NGINX_PORT:-80}:80
@@ -123,12 +123,12 @@ services:
       traefik.http.routers.socket-secure.entrypoints: websecure
       traefik.http.routers.socket-secure.tls.certresolver: myresolver
       # Local domain
-      traefik.http.routers.socket-local-insecure.rule: Host(`${LOCAL_DOMAIN}`) && PathPrefix("/api/socket.io")
+      traefik.http.routers.socket-local-insecure.rule: Host(`${LOCAL_DOMAIN}`) && PathPrefix(`/api/socket.io`)
       traefik.http.routers.socket-local-insecure.entrypoints: web
       traefik.http.routers.socket-local-insecure.service: socket
       traefik.http.routers.socket-local-insecure.middlewares: redirect-to-https
       # Secure
-      traefik.http.routers.socket-local.rule: Host(`${LOCAL_DOMAIN}`) && PathPrefix("/api/socket.io")
+      traefik.http.routers.socket-local.rule: Host(`${LOCAL_DOMAIN}`) && PathPrefix(`/api/socket.io`)
       traefik.http.routers.socket-local.entrypoints: websecure
       traefik.http.routers.socket-local.tls: true
       traefik.http.routers.socket-local.service: socket

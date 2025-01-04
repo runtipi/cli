@@ -1,6 +1,7 @@
 mod args;
 mod commands;
 mod components;
+mod structs;
 mod utils;
 
 use args::RuntipiArgs;

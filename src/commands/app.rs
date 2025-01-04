@@ -39,38 +39,39 @@ pub fn run(args: AppCommand, env_map: EnvMap) {
 
     match args.subcommand {
         AppSubcommand::Start(args) => {
-            let spin = spinner::new(&format!("Starting app {}...", args.id));
-            let url = format!("{}/{}/{}", base_url, args.id, "start");
+            let spin = spinner::new(&format!("Starting app {}...", args.urn));
+            let url = format!("{}/{}/{}", base_url, args.urn, "start");
+            println!("url: {}", url);
             let api_response = api_request(url, Method::POST, "{}");
-            let error_message = format!("Failed to start app {}. See logs/error.log for more details.", args.id);
+            let error_message = format!("Failed to start app {}. See logs/error.log for more details.", args.urn);
             handle_api_response(spin, api_response, "App started successfully!", &error_message);
         }
         AppSubcommand::Stop(args) => {
-            let spin = spinner::new(&format!("Stopping app {}...", args.id));
-            let url = format!("{}/{}/{}", base_url, args.id, "stop");
+            let spin = spinner::new(&format!("Stopping app {}...", args.urn));
+            let url = format!("{}/{}/{}", base_url, args.urn, "stop");
             let api_response = api_request(url, Method::POST, "{}");
-            let error_message = format!("Failed to stop app {}. See logs/error.log for more details.", args.id);
+            let error_message = format!("Failed to stop app {}. See logs/error.log for more details.", args.urn);
             handle_api_response(spin, api_response, "App stopped successfully!", &error_message);
         }
         AppSubcommand::Uninstall(args) => {
-            let spin = spinner::new(&format!("Uninstalling app {}...", args.id));
-            let url = format!("{}/{}/{}", base_url, args.id, "uninstall");
+            let spin = spinner::new(&format!("Uninstalling app {}...", args.urn));
+            let url = format!("{}/{}/{}", base_url, args.urn, "uninstall");
             let api_response = api_request(url, Method::DELETE, "{\"removeBackups\": false}");
-            let error_message = format!("Failed to uninstall app {}. See logs/error.log for more details.", args.id);
+            let error_message = format!("Failed to uninstall app {}. See logs/error.log for more details.", args.urn);
             handle_api_response(spin, api_response, "App uninstalled successfully!", &error_message);
         }
         AppSubcommand::Reset(args) => {
-            let spin = spinner::new(&format!("Resetting app {}...", args.id));
-            let url = format!("{}/{}/{}", base_url, args.id, "reset");
+            let spin = spinner::new(&format!("Resetting app {}...", args.urn));
+            let url = format!("{}/{}/{}", base_url, args.urn, "reset");
             let api_response = api_request(url, Method::POST, "{}");
-            let error_message = format!("Failed to reset app {}. See logs/error.log for more details.", args.id);
+            let error_message = format!("Failed to reset app {}. See logs/error.log for more details.", args.urn);
             handle_api_response(spin, api_response, "App reset successfully!", &error_message);
         }
         AppSubcommand::Update(args) => {
-            let spin = spinner::new(&format!("Updating app {}...", args.id));
-            let url = format!("{}/{}/{}", base_url, args.id, "update");
+            let spin = spinner::new(&format!("Updating app {}...", args.urn));
+            let url = format!("{}/{}/{}", base_url, args.urn, "update");
             let api_response = api_request(url, Method::PATCH, "{\"performBackup\": true}");
-            let error_message = format!("Failed to update app {}. See logs/error.log for more details.", args.id);
+            let error_message = format!("Failed to update app {}. See logs/error.log for more details.", args.urn);
             handle_api_response(spin, api_response, "App updated successfully!", &error_message);
         }
         AppSubcommand::StartAll(_) => {
