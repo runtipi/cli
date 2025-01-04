@@ -5,15 +5,12 @@ mod utils;
 
 use args::RuntipiArgs;
 use clap::Parser;
-use colored::Colorize;
 
 use crate::commands::update::UpdateArgs;
 use crate::utils::env::get_env_map;
 
 fn main() {
     let args = RuntipiArgs::parse();
-
-    println!("{}", "Welcome to Runtipi CLI ✨\n".green());
 
     match args.command {
         args::RuntipiMainCommand::Start(args) => {
@@ -48,6 +45,11 @@ fn main() {
             let env_map = get_env_map();
 
             commands::debug::run(env_map);
+        }
+        args::RuntipiMainCommand::Version => {
+            let env_map = get_env_map();
+
+            commands::version::run(env_map);
         }
     }
 }
