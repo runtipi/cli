@@ -2,10 +2,9 @@ use hex::encode;
 
 use sha2::{Digest, Sha256};
 use std::io::{Error, ErrorKind, Write};
+use std::path::Path;
 use std::{env, fs};
 use std::{fs::File, path::PathBuf};
-
-use get_if_addrs::get_if_addrs;
 
 use super::constants::{DOCKER_COMPOSE_YML, VERSION};
 
@@ -21,24 +20,13 @@ pub fn get_architecture() -> Result<String, Error> {
 }
 
 pub fn get_internal_ip() -> String {
-    if let Ok(ifaces) = get_if_addrs() {
-        for iface in ifaces {
-            if iface.is_loopback() || iface.addr.ip().is_loopback() {
-                continue;
-            }
-            if let get_if_addrs::IfAddr::V4(ref ifv4) = iface.addr {
-                // Skip over loopback and check for IPv4
-                if !ifv4.ip.is_loopback() {
-                    return ifv4.ip.to_string();
-                }
-            }
-        }
+    match netdev::get_default_interface() {
+        Ok(iface) => iface.ipv4[0].addr().to_string(),
+        Err(_) => "0.0.0.0".to_string(),
     }
-
-    "0.0.0.0".to_string()
 }
 
-pub fn get_seed(root_folder: &PathBuf) -> Result<String, Error> {
+pub fn get_seed(root_folder: &Path) -> Result<String, Error> {
     let seed_file_path = root_folder.join("state").join("seed");
     let seed = std::fs::read_to_string(&seed_file_path);
 
