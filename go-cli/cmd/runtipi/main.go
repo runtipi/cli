@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/types"
 	"github.com/spf13/cobra"
 )
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use:   "./runtipi-cli",
+		Use:   "runtipi",
 		Short: "Runtipi CLI tool",
 		Long:  `Runtipi is a home server manager that helps you self-host your services easily.`,
 	}
@@ -25,11 +26,10 @@ func main() {
 		Use:   "start",
 		Short: "Start Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement start command using startArgs
-			fmt.Printf("Starting Runtipi with args: %+v\n", startArgs)
+			commands.RunStart(startArgs)
 		},
 	}
-	startCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
+	startCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file")
 	startCmd.Flags().BoolVar(&startArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
 
 	// Stop command
@@ -47,11 +47,10 @@ func main() {
 		Use:   "restart",
 		Short: "Restart Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement restart command using startArgs
-			fmt.Printf("Restarting Runtipi with args: %+v\n", startArgs)
+			commands.RunStart(startArgs)
 		},
 	}
-	restartCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
+	restartCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file")
 	restartCmd.Flags().BoolVar(&startArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
 
 	// Update command
@@ -70,7 +69,7 @@ func main() {
 			fmt.Printf("Updating Runtipi with args: %+v\n", updateArgs)
 		},
 	}
-	updateCmd.Flags().StringVar(&updateArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
+	updateCmd.Flags().StringVar(&updateArgs.EnvFile, "env-file", "", "Path to a custom .env file")
 	updateCmd.Flags().BoolVar(&updateArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
 
 	// App command and subcommands
@@ -114,7 +113,7 @@ func main() {
 
 	appResetCmd := &cobra.Command{
 		Use:   "reset [app-id]",
-		Short: "Reset an app to its initial state. This will delete all data.",
+		Short: "Reset an app",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandReset
@@ -195,4 +194,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
