@@ -53,4 +53,7 @@ pub struct SettingsSchema {
 
     #[serde(rename = "localDomain")]
     pub local_domain: Option<String>,
+
+    #[serde(rename = "forwardAuthUrl")]
+    pub forward_auth_url: Option<String>,
 }
