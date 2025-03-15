@@ -80,7 +80,8 @@ services:
       # ---- General ----- #
       traefik.enable: true
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
-      traefik.http.middlewares.runtipi.forwardauth.address: http://runtipi:3000/api/auth/traefik
+      traefik.http.middlewares.runtipi.forwardauth.address: ${RUNTIPI_FORWARD_AUTH_URL:-http://runtipi:3000/api/auth/traefik}
+
       # ---- Dashboard ----- #
       traefik.http.services.dashboard.loadbalancer.server.port: 3000
       # Local ip

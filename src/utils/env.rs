@@ -9,7 +9,7 @@ use crate::utils::schemas;
 use crate::utils::seed::generate_seed;
 use crate::utils::system::{derive_entropy, get_architecture, get_internal_ip, get_seed};
 
-use super::constants::{DEFAULT_DOMAIN, DEFAULT_LOCAL_DOMAIN, DEFAULT_POSTGRES_PORT};
+use super::constants::{DEFAULT_DOMAIN, DEFAULT_FORWARD_AUTH_URL, DEFAULT_LOCAL_DOMAIN, DEFAULT_POSTGRES_PORT};
 use super::schemas::StringOrInt;
 
 pub type EnvMap = HashMap<String, String>;
@@ -154,6 +154,10 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     new_env_map.insert(
         "LOCAL_DOMAIN".to_string(),
         parsed_json.local_domain.unwrap_or(DEFAULT_LOCAL_DOMAIN.to_string()),
+    );
+    new_env_map.insert(
+        "RUNTIPI_FORWARD_AUTH_URL".to_string(),
+        parsed_json.forward_auth_url.unwrap_or(DEFAULT_FORWARD_AUTH_URL.to_string()),
     );
 
     if let Some(custom_env_file_path) = custom_env_file_path {
