@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/types"
 	"github.com/spf13/cobra"
 )
@@ -26,15 +27,7 @@ func main() {
 		Use:   "start",
 		Short: "Start Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			if startArgs.EnvFile != "" {
-				if _, err := os.Stat(startArgs.EnvFile); os.IsNotExist(err) {
-					fmt.Printf("Error: file %s does not exist\n", startArgs.EnvFile)
-					os.Exit(1)
-				}
-			}
-
-			// TODO: Implement start command using startArgs
-			fmt.Printf("Starting Runtipi with args: %+v\n", startArgs)
+			commands.RunStart(startArgs)
 		},
 	}
 	startCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
@@ -55,14 +48,8 @@ func main() {
 		Use:   "restart",
 		Short: "Restart Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			if restartArgs.EnvFile != "" {
-				if _, err := os.Stat(restartArgs.EnvFile); os.IsNotExist(err) {
-					fmt.Printf("Error: file %s does not exist\n", restartArgs.EnvFile)
-					os.Exit(1)
-				}
-			}
-			// TODO: Implement restart command using startArgs
-			fmt.Printf("Restarting Runtipi with args: %+v\n", restartArgs)
+			// TODO: Implement restart command
+			fmt.Println("Restarting Runtipi...")
 		},
 	}
 	restartCmd.Flags().StringVar(&restartArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
@@ -128,7 +115,8 @@ func main() {
 
 	appResetCmd := &cobra.Command{
 		Use:   "reset [app-id]",
-		Short: "Reset an app to its initial state. This will delete all data.",
+		Short: "Reset an app",
+		Long:  "Reset an app to its initial state. This will delete all data and settings for the app.",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandReset
