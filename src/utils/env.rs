@@ -159,6 +159,7 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         "RUNTIPI_FORWARD_AUTH_URL".to_string(),
         parsed_json.forward_auth_url.unwrap_or(DEFAULT_FORWARD_AUTH_URL.to_string()),
     );
+    new_env_map.insert("LOG_LEVEL".to_string(), parsed_json.log_level.unwrap_or("info".to_string()));
 
     if let Some(custom_env_file_path) = custom_env_file_path {
         let custom_env_file = std::fs::read_to_string(&custom_env_file_path)?;
