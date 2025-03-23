@@ -64,6 +64,8 @@ services:
     depends_on:
       runtipi-db:
         condition: service_healthy
+      runtipi-queue:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
