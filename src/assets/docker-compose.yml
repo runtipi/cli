@@ -36,6 +36,21 @@ services:
     networks:
       - tipi_main_network
 
+  runtipi-queue:
+    container_name: runtipi-queue
+    image: rabbitmq:4-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    environment:
+      RABBITMQ_DEFAULT_USER: tipi
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - tipi_main_network
+
   runtipi:
     container_name: runtipi
     healthcheck:
