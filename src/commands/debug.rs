@@ -62,8 +62,8 @@ pub fn run(env_map: EnvMap) {
         .get("POSTGRES_PASSWORD")
         .map(|_| "<redacted>".to_string())
         .unwrap_or("Not set".red().to_string());
-    let redis_password = env_map
-        .get("REDIS_PASSWORD")
+    let rabbitmq_password = env_map
+        .get("RABBITMQ_PASSWORD")
         .map(|_| "<redacted>".to_string())
         .unwrap_or("Not set".red().to_string());
     let jwt_secret = env_map
@@ -73,7 +73,7 @@ pub fn run(env_map: EnvMap) {
     let domain = env_map.get("DOMAIN").map(|_| "<redacted>").unwrap_or("Not set");
 
     table.add_row(row!["POSTGRES_PASSWORD", pg_password]);
-    table.add_row(row!["REDIS_PASSWORD", redis_password]);
+    table.add_row(row!["RABBITMQ_PASSWORD", rabbitmq_password]);
     table.add_row(row!["APPS_REPO_ID", env_map.get("APPS_REPO_ID").unwrap_or(&"Not set".red().to_string())]);
     table.add_row(row![
         "APPS_REPO_URL",
@@ -107,7 +107,11 @@ pub fn run(env_map: EnvMap) {
         "POSTGRES_PORT",
         env_map.get("POSTGRES_PORT").unwrap_or(&"Not set".red().to_string())
     ]);
-    table.add_row(row!["REDIS_HOST", env_map.get("REDIS_HOST").unwrap_or(&"Not set".to_string())]);
+    table.add_row(row!["RABBITMQ_HOST", env_map.get("RABBITMQ_HOST").unwrap_or(&"Not set".to_string())]);
+    table.add_row(row![
+        "RABBITMQ_USERNAME",
+        env_map.get("RABBITMQ_USERNAME").unwrap_or(&"Not set".to_string())
+    ]);
     table.add_row(row!["DEMO_MODE", env_map.get("DEMO_MODE").unwrap_or(&"Not set".to_string())]);
     table.add_row(row!["LOCAL_DOMAIN", env_map.get("LOCAL_DOMAIN").unwrap_or(&"Not set".to_string())]);
 
