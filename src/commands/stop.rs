@@ -3,12 +3,6 @@ use crate::components::spinner;
 pub fn run() {
     let spin = spinner::new("");
 
-    let root_folder: PathBuf = current_dir().expect("Unable to get current directory");
-    let project_name = root_folder
-        .file_name()
-        .map(|name| name.to_string_lossy().to_string())
-        .unwrap_or_else(|| "runtipi".to_string());
-
     spin.set_message("Stopping containers...");
 
     let args = vec!["down", "--remove-orphans", "--rmi", "local"];
@@ -53,11 +47,11 @@ pub fn run() {
         "runtipi-db",
         "runtipi-redis",
         "runtipi-queue",
-        // New-new naming
-        format!("{}-runtipi-1", project_name),
-        format!("{}-runtipi-reverse-proxy-1", project_name),
-        format!("{}-runtipi-db-1", project_name),
-        format!("{}-runtipi-queue-1", project_name),
+        // Docker naming
+        "runtipi-runtipi-1",
+        "runtipi-runtipi-reverse-proxy-1",
+        "runtipi-runtipi-db-1",
+        "runtipi-runtipi-queue-1",
     ];
 
     for container_name in container_names {
