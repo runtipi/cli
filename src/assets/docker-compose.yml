@@ -1,6 +1,5 @@
 services:
   runtipi-reverse-proxy:
-    container_name: runtipi-reverse-proxy
     depends_on:
       runtipi:
         condition: service_healthy
@@ -18,7 +17,6 @@ services:
       - tipi_main_network
 
   runtipi-db:
-    container_name: runtipi-db
     image: postgres:14
     restart: unless-stopped
     stop_grace_period: 1m
@@ -37,7 +35,6 @@ services:
       - tipi_main_network
 
   runtipi-queue:
-    container_name: runtipi-queue
     image: rabbitmq:4-alpine
     restart: unless-stopped
     healthcheck:
@@ -52,7 +49,6 @@ services:
       - tipi_main_network
 
   runtipi:
-    container_name: runtipi
     healthcheck:
       start_period: 10s
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
