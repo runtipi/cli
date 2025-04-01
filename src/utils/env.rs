@@ -98,9 +98,9 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         .get("POSTGRES_PASSWORD")
         .unwrap_or(&derive_entropy("postgres_password", &seed))
         .to_string();
-    let redis_password: String = env_map
-        .get("REDIS_PASSWORD")
-        .unwrap_or(&derive_entropy("redis_password", &seed))
+    let rabbitmq_password: String = env_map
+        .get("RABBITMQ_PASSWORD")
+        .unwrap_or(&derive_entropy("rabbitmq_password", &seed))
         .to_string();
 
     let app_data_path = parsed_json.app_data_path.or(parsed_json.storage_path.clone());
@@ -148,8 +148,9 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
     new_env_map.insert("POSTGRES_DBNAME".to_string(), "tipi".to_string());
     new_env_map.insert("POSTGRES_USERNAME".to_string(), "tipi".to_string());
     new_env_map.insert("POSTGRES_PASSWORD".to_string(), postgres_password);
-    new_env_map.insert("REDIS_HOST".to_string(), "runtipi-redis".to_string());
-    new_env_map.insert("REDIS_PASSWORD".to_string(), redis_password);
+    new_env_map.insert("RABBITMQ_HOST".to_string(), "runtipi-queue".to_string());
+    new_env_map.insert("RABBITMQ_USERNAME".to_string(), "tipi".to_string());
+    new_env_map.insert("RABBITMQ_PASSWORD".to_string(), rabbitmq_password);
     new_env_map.insert("DOMAIN".to_string(), parsed_json.domain.unwrap_or(DEFAULT_DOMAIN.to_string()));
     new_env_map.insert(
         "LOCAL_DOMAIN".to_string(),
@@ -159,6 +160,7 @@ pub fn generate_env_file(custom_env_file_path: Option<PathBuf>) -> Result<(), Er
         "RUNTIPI_FORWARD_AUTH_URL".to_string(),
         parsed_json.forward_auth_url.unwrap_or(DEFAULT_FORWARD_AUTH_URL.to_string()),
     );
+    new_env_map.insert("LOG_LEVEL".to_string(), parsed_json.log_level.unwrap_or("info".to_string()));
 
     if let Some(custom_env_file_path) = custom_env_file_path {
         let custom_env_file = std::fs::read_to_string(&custom_env_file_path)?;

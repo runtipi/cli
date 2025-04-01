@@ -22,8 +22,6 @@ services:
     image: postgres:14
     restart: unless-stopped
     stop_grace_period: 1m
-    ports:
-      - ${POSTGRES_PORT:-5432}:5432
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     environment:
@@ -35,6 +33,21 @@ services:
       interval: 5s
       timeout: 10s
       retries: 10
+    networks:
+      - tipi_main_network
+
+  runtipi-queue:
+    container_name: runtipi-queue
+    image: rabbitmq:4-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    environment:
+      RABBITMQ_DEFAULT_USER: tipi
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     networks:
       - tipi_main_network
 
@@ -50,6 +63,8 @@ services:
     restart: unless-stopped
     depends_on:
       runtipi-db:
+        condition: service_healthy
+      runtipi-queue:
         condition: service_healthy
     env_file:
       - .env

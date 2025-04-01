@@ -56,4 +56,7 @@ pub struct SettingsSchema {
 
     #[serde(rename = "forwardAuthUrl")]
     pub forward_auth_url: Option<String>,
+
+    #[serde(rename = "logLevel")]
+    pub log_level: Option<String>,
 }

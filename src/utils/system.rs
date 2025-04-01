@@ -59,6 +59,19 @@ pub fn ensure_docker() -> Result<(), Error> {
                         .to_string(),
                 ));
             }
+
+            // Ensure v28 or higher. Example output: Docker version 27.4.0, build bde2b89
+            let version = String::from_utf8_lossy(&output.stdout);
+
+            let version_parts: Vec<&str> = version.split_whitespace().collect();
+            let version_number: Vec<&str> = version_parts[2].split(".").collect();
+
+            if version_number[0].parse::<i32>().unwrap() < 28 {
+                return Err(Error::new(
+                    ErrorKind::Other,
+                    "Docker version 28 or higher is required. See https://docs.docker.com/engine/install/ for more information".to_string(),
+                ));
+            }
         }
         Err(_) => {
             return Err(Error::new(
