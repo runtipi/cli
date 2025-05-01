@@ -32,7 +32,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -d tipi -U tipi"]
       interval: 5s
       timeout: 10s
-      retries: 10
+      retries: 20
+      start_period: 5s
     networks:
       - tipi_main_network
 
@@ -43,8 +44,9 @@ services:
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 5s
-      timeout: 3s
+      timeout: 10s
       retries: 20
+      start_period: 5s
     environment:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -57,8 +59,9 @@ services:
       start_period: 10s
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 5s
-      timeout: 3s
+      timeout: 10s
       retries: 20
+      start_period: 5s
     image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
     depends_on:
