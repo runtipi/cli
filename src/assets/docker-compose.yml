@@ -61,7 +61,6 @@ services:
       interval: 5s
       timeout: 10s
       retries: 20
-      start_period: 5s
     image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
     depends_on:
