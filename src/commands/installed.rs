@@ -13,8 +13,7 @@ fn handle_installed_response(
         Ok(response) => {
             if response.status().is_success() {
                 return response.json::<serde_json::Value>().map_err(|e| e.to_string());
-            }
-            else {
+            } else {
                 return Err(format!("Error code: {}", response.status()));
             }
         }
@@ -32,7 +31,7 @@ pub fn run(env_map: EnvMap) {
     );
 
     let spin = spinner::new("Getting list of installed apps...");
-    let api_response = api_request(base_url, Method::GET, "{}");
+    let api_response = api_request(base_url, Method::GET, "");
     match handle_installed_response(api_response) {
         Ok(apps_json) => {
             if let Some(installed_apps) = apps_json["installed"].as_array() {
@@ -57,7 +56,7 @@ pub fn run(env_map: EnvMap) {
             }
         }
         Err(err) => {
-            spin.fail("Failed to retrieve installed apps");
+            spin.fail("Failed to retrieve installed apps.");
             println!("{}", err);
         }
     }
