@@ -4,5 +4,5 @@ pub mod reset_password;
 pub mod start;
 pub mod stop;
 pub mod update;
-
+pub mod installed;
 pub mod version;
