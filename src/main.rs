@@ -51,5 +51,10 @@ fn main() {
 
             commands::version::run(env_map);
         }
+        args::RuntipiMainCommand::Installed => {
+            let env_map = get_env_map();
+
+            commands::installed::run(env_map);
+        }
     }
 }
