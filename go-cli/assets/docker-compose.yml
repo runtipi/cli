@@ -1,0 +1,131 @@
+services:
+  runtipi-reverse-proxy:
+    container_name: runtipi-reverse-proxy
+    depends_on:
+      runtipi:
+        condition: service_healthy
+    image: traefik:v3.2
+    restart: unless-stopped
+    ports:
+      - ${NGINX_PORT:-80}:80
+      - ${NGINX_PORT_SSL:-443}:443
+    command: --providers.docker
+    volumes:
+      - ./traefik:/etc/traefik
+      - ./traefik/shared:/shared
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - tipi_main_network
+
+  runtipi-db:
+    container_name: runtipi-db
+    image: postgres:14
+    restart: unless-stopped
+    stop_grace_period: 1m
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: tipi
+      POSTGRES_DB: tipi
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d tipi -U tipi"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 5s
+    networks:
+      - tipi_main_network
+
+  runtipi-queue:
+    container_name: runtipi-queue
+    image: rabbitmq:4-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 5s
+    environment:
+      RABBITMQ_DEFAULT_USER: tipi
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - tipi_main_network
+
+  runtipi:
+    container_name: runtipi
+    healthcheck:
+      start_period: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+    image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
+    restart: unless-stopped
+    depends_on:
+      runtipi-db:
+        condition: service_healthy
+      runtipi-queue:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      # Data
+      - ${RUNTIPI_MEDIA_PATH:-.}/media:/data/media
+      - ${RUNTIPI_STATE_PATH:-.}/state:/data/state
+      - ${RUNTIPI_REPOS_PATH:-.}/repos:/data/repos
+      - ${RUNTIPI_APPS_PATH:-.}/apps:/data/apps
+      - ${RUNTIPI_LOGS_PATH:-.}/logs:/data/logs
+      - ${RUNTIPI_TRAEFIK_PATH:-.}/traefik:/data/traefik
+      - ${RUNTIPI_USER_CONFIG_PATH:-.}/user-config:/data/user-config
+      - ${RUNTIPI_APP_DATA_PATH:-.}/app-data:/app-data
+      - ${RUNTIPI_BACKUPS_PATH:-.}/backups:/data/backups
+      # Static
+      - ./.env:/data/.env
+      - ./cache:/cache
+      - ./docker-compose.yml:/data/docker-compose.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      NODE_ENV: production
+    networks:
+      - tipi_main_network
+    labels:
+      # ---- General ----- #
+      traefik.enable: true
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+      traefik.http.middlewares.runtipi.forwardauth.address: ${RUNTIPI_FORWARD_AUTH_URL:-http://runtipi:3000/api/auth/traefik}
+
+      # ---- Dashboard ----- #
+      traefik.http.services.dashboard.loadbalancer.server.port: 3000
+      # Local ip
+      traefik.http.routers.dashboard.rule: PathPrefix("/")
+      traefik.http.routers.dashboard.service: dashboard
+      traefik.http.routers.dashboard.entrypoints: web
+      # Websecure
+      traefik.http.routers.dashboard-insecure.rule: Host(`${DOMAIN}`) && PathPrefix(`/`)
+      traefik.http.routers.dashboard-insecure.service: dashboard
+      traefik.http.routers.dashboard-insecure.entrypoints: web
+      traefik.http.routers.dashboard-insecure.middlewares: redirect-to-https
+      traefik.http.routers.dashboard-secure.rule: Host(`${DOMAIN}`) && PathPrefix(`/`)
+      traefik.http.routers.dashboard-secure.service: dashboard
+      traefik.http.routers.dashboard-secure.entrypoints: websecure
+      traefik.http.routers.dashboard-secure.tls.certresolver: myresolver
+      # Local domain
+      traefik.http.routers.dashboard-local-insecure.rule: Host(`${LOCAL_DOMAIN}`)
+      traefik.http.routers.dashboard-local-insecure.entrypoints: web
+      traefik.http.routers.dashboard-local-insecure.service: dashboard
+      traefik.http.routers.dashboard-local-insecure.middlewares: redirect-to-https
+      # Secure
+      traefik.http.routers.dashboard-local.rule: Host(`${LOCAL_DOMAIN}`)
+      traefik.http.routers.dashboard-local.entrypoints: websecure
+      traefik.http.routers.dashboard-local.tls: true
+      traefik.http.routers.dashboard-local.service: dashboard
+
+networks:
+  tipi_main_network:
+    driver: bridge
+    name: runtipi_tipi_main_network

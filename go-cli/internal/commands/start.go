@@ -22,7 +22,6 @@ func RunStart(args types.StartArgs) {
 
 	spin := components.NewSpinner("")
 
-	// Check user permissions
 	spin.SetMessage("Checking user permissions")
 	if err := utils.EnsureDocker(); err != nil {
 		spin.Fail(err.Error())
@@ -31,7 +30,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("User permissions are ok")
 
-	// Copy system files
 	spin.SetMessage("Copying system files...")
 	if err := utils.CopySystemFiles(); err != nil {
 		spin.Fail("Failed to copy system files")
@@ -41,7 +39,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("Copied system files")
 
-	// Generate env file
 	spin.SetMessage("Generating .env file...")
 	if err := utils.GenerateEnvFile(args.EnvFile); err != nil {
 		spin.Fail("Failed to generate .env file")
@@ -51,7 +48,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("Generated .env file")
 
-	// Ensure file permissions
 	if !args.NoPermissions {
 		spin.SetMessage("Ensuring file permissions... This may take a while depending on how many files there are to fix")
 		if err := utils.EnsureFilePermissions(); err != nil {
@@ -62,7 +58,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("File permissions ok")
 
-	// Pull images
 	spin.SetMessage("Pulling images...")
 	rootDir, err := os.Getwd()
 	if err != nil {
@@ -82,7 +77,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("Images pulled")
 
-	// Stop and remove existing containers
 	spin.SetMessage("Stopping existing containers...")
 	containerNames := []string{
 		"runtipi",
@@ -98,7 +92,6 @@ func RunStart(args types.StartArgs) {
 	}
 	spin.Succeed("Existing containers stopped")
 
-	// Start containers
 	spin.SetMessage("Starting containers...")
 	userComposeFile := filepath.Join(rootDir, "user-config", "tipi-compose.yml")
 	dockerArgs := []string{
@@ -130,7 +123,6 @@ func RunStart(args types.StartArgs) {
 	spin.Finish()
 	fmt.Println()
 
-	// Display success message
 	internalIP := utils.GetEnvValue("INTERNAL_IP")
 	if internalIP == "" {
 		internalIP = "localhost"
