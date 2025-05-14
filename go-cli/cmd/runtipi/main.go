@@ -62,8 +62,8 @@ func main() {
 		Use:   "restart",
 		Short: "Restart Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement restart command
-			fmt.Println("Restarting Runtipi...")
+			commands.RunStop()
+			commands.RunStart(restartArgs)
 		},
 	}
 	restartCmd.Flags().StringVar(&restartArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
