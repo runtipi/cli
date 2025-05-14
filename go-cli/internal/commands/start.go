@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/runtipi/cli/internal/components"
+	"github.com/runtipi/cli/internal/config"
 	"github.com/runtipi/cli/internal/types"
 	"github.com/runtipi/cli/internal/utils"
 )
@@ -58,16 +59,16 @@ func RunStart(args types.StartArgs) {
 	spin.Succeed("File permissions ok")
 
 	spin.SetMessage("Pulling images...")
-	rootDir, err := os.Getwd()
-	if err != nil {
-		spin.Fail("Failed to get current directory")
-		spin.Finish()
-		fmt.Printf("\nError: %v\n", err)
-		os.Exit(1)
-	}
 
-	envFilePath := filepath.Join(rootDir, ".env")
-	cmd := exec.Command("docker", "compose", "--env-file", envFilePath, "pull")
+	envFilePath := filepath.Join(config.RootFolder, ".env")
+	cmd := exec.Command(
+		"docker",
+		"compose",
+		"--env-file",
+		envFilePath,
+		"-f", filepath.Join(config.RootFolder, "docker-compose.yml"),
+		"pull")
+
 	if output, err := cmd.CombinedOutput(); err != nil {
 		spin.Fail("Failed to pull images")
 		spin.Finish()
@@ -92,11 +93,11 @@ func RunStart(args types.StartArgs) {
 	spin.Succeed("Existing containers stopped")
 
 	spin.SetMessage("Starting containers...")
-	userComposeFile := filepath.Join(rootDir, "user-config", "tipi-compose.yml")
+	userComposeFile := filepath.Join(config.RootFolder, "user-config", "tipi-compose.yml")
 	dockerArgs := []string{
 		"compose",
 		"--project-name", "runtipi",
-		"-f", filepath.Join(rootDir, "docker-compose.yml"),
+		"-f", filepath.Join(config.RootFolder, "docker-compose.yml"),
 	}
 
 	if _, err := os.Stat(userComposeFile); err == nil {
@@ -136,8 +137,8 @@ func RunStart(args types.StartArgs) {
 	boxTitle := "Runtipi started successfully 🎉"
 	boxBody := fmt.Sprintf("%s\n\n%s\n\n%s",
 		ipAndPort,
-		"Find documentation and guides at: https://runtipi.io",
-		"Runtipi is entirely written in TypeScript and we are looking for contributors!",
+		"Find documentation and guides at https://runtipi.io",
+		"We are looking for contributors!",
 	)
 
 	consoleBox := components.NewConsoleBox(boxTitle, boxBody, 80, "Green")

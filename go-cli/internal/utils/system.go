@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/runtipi/cli/internal/assets"
+	"github.com/runtipi/cli/internal/config"
 )
 
 // EnsureDocker checks if Docker is available and the user has proper permissions
@@ -32,34 +35,16 @@ func EnsureDocker() error {
 }
 
 func CopySystemFiles() error {
-	rootFolder, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("unable to get current directory: %w", err)
-	}
+	dockerComposeContent := assets.DockerCompose
 
-	assetsDir := filepath.Join(rootFolder, "assets")
-
-	if _, err := os.Stat(assetsDir); os.IsNotExist(err) {
-		return fmt.Errorf("assets directory does not exist: %s", assetsDir)
-	}
-
-	dockerComposeContent, err := os.ReadFile(filepath.Join(assetsDir, "docker-compose.yml"))
-	if err != nil {
-		return fmt.Errorf("failed to read docker-compose.yml from assets: %w", err)
-	}
-
-	err = os.WriteFile(filepath.Join(rootFolder, "docker-compose.yml"), dockerComposeContent, 0664)
+	err := os.WriteFile(filepath.Join(config.RootFolder, "docker-compose.yml"), dockerComposeContent, 0664)
 	if err != nil {
 		return fmt.Errorf("failed to write docker-compose.yml: %w", err)
 	}
 
-	versionContent, err := os.ReadFile(filepath.Join(assetsDir, "VERSION"))
-	if err != nil {
-		// If VERSION file is missing or empty, use a default version
-		versionContent = []byte("1.0.0")
-	}
+	versionContent := assets.Version
 
-	err = os.WriteFile(filepath.Join(rootFolder, "VERSION"), versionContent, 0664)
+	err = os.WriteFile(filepath.Join(config.RootFolder, "VERSION"), versionContent, 0664)
 	if err != nil {
 		return fmt.Errorf("failed to write VERSION file: %w", err)
 	}
@@ -79,14 +64,14 @@ func CopySystemFiles() error {
 	}
 
 	for _, dir := range directories {
-		dirPath := filepath.Join(rootFolder, dir)
+		dirPath := filepath.Join(config.RootFolder, dir)
 		err = os.MkdirAll(dirPath, 0755)
 		if err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", dir, err)
 		}
 	}
 
-	traefikSharedDir := filepath.Join(rootFolder, "traefik", "shared")
+	traefikSharedDir := filepath.Join(config.RootFolder, "traefik", "shared")
 	err = os.MkdirAll(traefikSharedDir, 0755)
 	if err != nil {
 		return fmt.Errorf("failed to create traefik/shared directory: %w", err)
@@ -96,11 +81,6 @@ func CopySystemFiles() error {
 }
 
 func EnsureFilePermissions() error {
-	rootFolder, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("unable to get current directory: %w", err)
-	}
-
 	permissionItems := []struct {
 		perms string
 		paths []string
@@ -113,7 +93,7 @@ func EnsureFilePermissions() error {
 
 	for _, item := range permissionItems {
 		for _, path := range item.paths {
-			fullPath := filepath.Join(rootFolder, path)
+			fullPath := filepath.Join(config.RootFolder, path)
 
 			if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 				continue

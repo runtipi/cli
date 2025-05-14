@@ -7,16 +7,14 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/runtipi/cli/internal/config"
 )
 
 type EnvMap map[string]string
 
 func GetEnvMap() EnvMap {
-	rootDir, err := os.Getwd()
-	if err != nil {
-		return make(EnvMap)
-	}
-	envFilePath := filepath.Join(rootDir, ".env")
+	envFilePath := filepath.Join(config.RootFolder, ".env")
 
 	content, err := os.ReadFile(envFilePath)
 	if err != nil {
@@ -59,15 +57,10 @@ func EnvMapToString(envMap EnvMap) string {
 }
 
 func GenerateEnvFile(customEnvFile string) error {
-	rootDir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("unable to get current directory: %w", err)
-	}
-
 	// Create required directories and files
-	statePath := filepath.Join(rootDir, "state")
+	statePath := filepath.Join(config.RootFolder, "state")
 	settingsPath := filepath.Join(statePath, "settings.json")
-	envFilePath := filepath.Join(rootDir, ".env")
+	envFilePath := filepath.Join(config.RootFolder, ".env")
 
 	if err := os.MkdirAll(statePath, 0755); err != nil {
 		return fmt.Errorf("failed to create state directory: %w", err)
@@ -87,7 +80,7 @@ func GenerateEnvFile(customEnvFile string) error {
 		}
 	}
 
-	if err := GenerateSeed(rootDir); err != nil {
+	if err := GenerateSeed(config.RootFolder); err != nil {
 		return fmt.Errorf("failed to generate seed: %w", err)
 	}
 
@@ -110,13 +103,13 @@ func GenerateEnvFile(customEnvFile string) error {
 	}
 
 	// Read version
-	version, err := os.ReadFile(filepath.Join(rootDir, "VERSION"))
+	version, err := os.ReadFile(filepath.Join(config.RootFolder, "VERSION"))
 	if err != nil {
 		version = []byte("dev")
 	}
 
 	// Get seed
-	seed, err := GetSeed(rootDir)
+	seed, err := GetSeed(config.RootFolder)
 	if err != nil {
 		return fmt.Errorf("failed to get seed: %w", err)
 	}
@@ -143,11 +136,11 @@ func GenerateEnvFile(customEnvFile string) error {
 		appDataPath = settings.StoragePath
 	}
 	if appDataPath == "" {
-		appDataPath = rootDir
+		appDataPath = config.RootFolder
 	}
 
 	// Validate app data path
-	if appDataPath != rootDir {
+	if appDataPath != config.RootFolder {
 		if _, err := os.Stat(appDataPath); os.IsNotExist(err) {
 			return fmt.Errorf("path '%s' does not exist on your system. Make sure it is an absolute path or remove it from settings.json", appDataPath)
 		}
@@ -158,7 +151,7 @@ func GenerateEnvFile(customEnvFile string) error {
 		"INTERNAL_IP":           settings.InternalIP,
 		"ARCHITECTURE":          GetArchitecture(),
 		"TIPI_VERSION":          string(version),
-		"ROOT_FOLDER_HOST":      rootDir,
+		"ROOT_FOLDER_HOST":      config.RootFolder,
 		"NGINX_PORT":            RawToString(settings.NginxPort),
 		"NGINX_PORT_SSL":        RawToString(settings.NginxSSLPort),
 		"RUNTIPI_APP_DATA_PATH": appDataPath,

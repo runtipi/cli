@@ -5,9 +5,24 @@ import (
 	"os"
 
 	"github.com/runtipi/cli/internal/commands"
+	"github.com/runtipi/cli/internal/config"
 	"github.com/runtipi/cli/internal/types"
+
 	"github.com/spf13/cobra"
 )
+
+func init() {
+	var err error
+	config.RootFolder, err = os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting working directory:", err)
+		os.Exit(1)
+	}
+
+	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
+		config.RootFolder = envRootFolder
+	}
+}
 
 func main() {
 	rootCmd := &cobra.Command{
