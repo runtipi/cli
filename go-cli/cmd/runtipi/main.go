@@ -53,8 +53,7 @@ func main() {
 		Use:   "stop",
 		Short: "Stop Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement stop command
-			fmt.Println("Stopping Runtipi...")
+			commands.RunStop()
 		},
 	}
 
