@@ -132,6 +132,11 @@ func GenerateEnvFile(customEnvFile string) error {
 		redisPassword = DeriveEntropy("redis_password", seed)
 	}
 
+	rabbitmqPassword := envMap["RABBITMQ_PASSWORD"]
+	if rabbitmqPassword == "" {
+		rabbitmqPassword = DeriveEntropy("rabbitmq_password", seed)
+	}
+
 	// Handle app data path
 	appDataPath := settings.AppDataPath
 	if appDataPath == "" {
@@ -166,6 +171,9 @@ func GenerateEnvFile(customEnvFile string) error {
 		"REDIS_PASSWORD":        redisPassword,
 		"DOMAIN":                settings.Domain,
 		"LOCAL_DOMAIN":          settings.LocalDomain,
+		"RABBITMQ_HOST":         "runtipi-queue",
+		"RABBITMQ_USERNAME":     "tipi",
+		"RABBITMQ_PASSWORD":     rabbitmqPassword,
 	}
 
 	// Set default values if not present

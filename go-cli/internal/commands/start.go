@@ -20,13 +20,11 @@ func RunStart(args types.StartArgs) {
 		}
 	}
 
-	spin := components.NewSpinner("")
-
-	spin.SetMessage("Checking user permissions")
+	spin := components.NewSpinner("Checking user permissions")
 	if err := utils.EnsureDocker(); err != nil {
 		spin.Fail(err.Error())
 		spin.Finish()
-		return
+		os.Exit(1)
 	}
 	spin.Succeed("User permissions are ok")
 
@@ -35,7 +33,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to copy system files")
 		spin.Finish()
 		fmt.Printf("\nError: %v\n", err)
-		return
+		os.Exit(1)
 	}
 	spin.Succeed("Copied system files")
 
@@ -44,7 +42,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to generate .env file")
 		spin.Finish()
 		fmt.Printf("\nError: %v\n", err)
-		return
+		os.Exit(1)
 	}
 	spin.Succeed("Generated .env file")
 
@@ -53,7 +51,8 @@ func RunStart(args types.StartArgs) {
 		if err := utils.EnsureFilePermissions(); err != nil {
 			spin.Fail(err.Error())
 			spin.Finish()
-			return
+			fmt.Printf("\nError: %v\n", err)
+			os.Exit(1)
 		}
 	}
 	spin.Succeed("File permissions ok")
@@ -64,7 +63,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to get current directory")
 		spin.Finish()
 		fmt.Printf("\nError: %v\n", err)
-		return
+		os.Exit(1)
 	}
 
 	envFilePath := filepath.Join(rootDir, ".env")
@@ -73,7 +72,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to pull images")
 		spin.Finish()
 		fmt.Printf("\nDebug: %s\n", output)
-		return
+		os.Exit(1)
 	}
 	spin.Succeed("Images pulled")
 
@@ -141,6 +140,6 @@ func RunStart(args types.StartArgs) {
 		"Runtipi is entirely written in TypeScript and we are looking for contributors!",
 	)
 
-	consoleBox := components.NewConsoleBox(boxTitle, boxBody, 80, "green")
+	consoleBox := components.NewConsoleBox(boxTitle, boxBody, 80, "Green")
 	consoleBox.Print()
 }

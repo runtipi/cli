@@ -2,8 +2,15 @@ package components
 
 import (
 	"fmt"
-	"github.com/briandowns/spinner"
 	"time"
+
+	"github.com/briandowns/spinner"
+)
+
+const (
+	colorRed   = "\033[31m"
+	colorGreen = "\033[32m"
+	colorReset = "\033[0m" // Reset to default color
 )
 
 // Spinner wraps the spinner functionality
@@ -22,21 +29,23 @@ func NewSpinner(message string) *Spinner {
 // SetMessage updates the spinner message
 func (s *Spinner) SetMessage(message string) {
 	s.s.Suffix = " " + message
+	s.s.Start()
 }
 
 // Succeed shows a success message and stops the spinner
 func (s *Spinner) Succeed(message string) {
 	s.s.Stop()
-	fmt.Printf("✓ %s\n", message)
+	fmt.Printf(colorGreen+"✓"+colorReset+" %s\n", message)
 }
 
 // Fail shows a failure message and stops the spinner
 func (s *Spinner) Fail(message string) {
 	s.s.Stop()
-	fmt.Printf("✗ %s\n", message)
+	fmt.Printf(colorRed+"✗"+colorReset+" %s\n", message)
 }
 
 // Finish stops the spinner
 func (s *Spinner) Finish() {
 	s.s.Stop()
-} 
+}
+
