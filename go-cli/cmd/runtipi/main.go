@@ -100,6 +100,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandStart
 			appArgs.ID = args[0]
+			// TODO: Implement logic to start the app
 			fmt.Printf("Starting app: %s\n", appArgs.ID)
 		},
 	}
@@ -111,6 +112,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandStop
 			appArgs.ID = args[0]
+			// TODO: Implement logic to stop the app
 			fmt.Printf("Stopping app: %s\n", appArgs.ID)
 		},
 	}
@@ -122,6 +124,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandUninstall
 			appArgs.ID = args[0]
+			// TODO: Implement logic to uninstall the app
 			fmt.Printf("Uninstalling app: %s\n", appArgs.ID)
 		},
 	}
@@ -134,6 +137,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandReset
 			appArgs.ID = args[0]
+			// TODO: Implement logic to reset the app
 			fmt.Printf("Resetting app: %s\n", appArgs.ID)
 		},
 	}
@@ -145,6 +149,7 @@ func main() {
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandUpdate
 			appArgs.ID = args[0]
+			// TODO: Implement logic to update the app
 			fmt.Printf("Updating app: %s\n", appArgs.ID)
 		},
 	}
@@ -154,6 +159,7 @@ func main() {
 		Short: "Start all apps",
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandStartAll
+			// TODO: Implement logic to start all apps
 			fmt.Println("Starting all apps...")
 		},
 	}
@@ -180,8 +186,7 @@ func main() {
 		Use:   "debug",
 		Short: "Debug Runtipi",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement debug command
-			fmt.Println("Running debug...")
+			commands.RunDebug()
 		},
 	}
 

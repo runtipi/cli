@@ -6,7 +6,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"runtime"
 )
 
 func GetInternalIP() string {
@@ -19,11 +18,6 @@ func GetInternalIP() string {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP.String()
-}
-
-// GetArchitecture returns the system architecture
-func GetArchitecture() string {
-	return runtime.GOARCH
 }
 
 func GetSeed(rootDir string) (string, error) {
