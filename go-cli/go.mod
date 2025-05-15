@@ -3,14 +3,14 @@ module github.com/runtipi/cli
 go 1.24.1
 
 require (
+	github.com/Delta456/box-cli-maker/v2 v2.3.0
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/briandowns/spinner v1.23.2
-	github.com/fatih/color v1.18.0
 	github.com/spf13/cobra v1.9.1
 )
 
 require (
-	github.com/Delta456/box-cli-maker/v2 v2.3.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/gookit/color v1.5.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

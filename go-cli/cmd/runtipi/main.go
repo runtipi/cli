@@ -81,8 +81,7 @@ func main() {
 				os.Exit(1)
 			}
 			updateArgs.Version = version
-			// TODO: Implement update command using updateArgs
-			fmt.Printf("Updating Runtipi with args: %+v\n", updateArgs)
+			commands.RunUpdate(updateArgs)
 		},
 	}
 	updateCmd.Flags().StringVar(&updateArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")

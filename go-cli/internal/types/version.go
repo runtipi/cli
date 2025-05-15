@@ -21,13 +21,7 @@ func NewVersion(s string) (*VersionType, error) {
 		return &VersionType{kind: "nightly"}, nil
 	}
 
-	// Remove the 'v' prefix if present
-	versionStr := s
-	if strings.HasPrefix(strings.ToLower(s), "v") {
-		versionStr = s[1:]
-	}
-
-	version, err := semver.NewVersion(versionStr)
+	version, err := semver.NewVersion(s)
 	if err != nil {
 		return nil, fmt.Errorf("invalid version format: %w", err)
 	}
@@ -46,7 +40,7 @@ func (v *VersionType) String() string {
 	case "nightly":
 		return "nightly"
 	default:
-		return v.version.String()
+		return fmt.Sprintf("v%s", v.version.String())
 	}
 }
 
