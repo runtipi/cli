@@ -6,6 +6,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/runtipi/cli/internal/config"
@@ -149,7 +150,7 @@ func GenerateEnvFile(customEnvFile string) error {
 	// Create new environment map
 	newEnv := EnvMap{
 		"INTERNAL_IP":           settings.InternalIP,
-		"ARCHITECTURE":          GetArchitecture(),
+		"ARCHITECTURE":          runtime.GOARCH,
 		"TIPI_VERSION":          string(version),
 		"ROOT_FOLDER_HOST":      config.RootFolder,
 		"NGINX_PORT":            RawToString(settings.NginxPort),
