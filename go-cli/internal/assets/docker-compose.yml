@@ -41,12 +41,6 @@ services:
     container_name: runtipi-queue
     image: rabbitmq:4-alpine
     restart: unless-stopped
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 5s
-      timeout: 10s
-      retries: 20
-      start_period: 5s
     environment:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -67,7 +61,7 @@ services:
       runtipi-db:
         condition: service_healthy
       runtipi-queue:
-        condition: service_healthy
+        condition: service_started
     env_file:
       - .env
     volumes:
