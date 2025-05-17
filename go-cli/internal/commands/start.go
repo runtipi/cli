@@ -17,7 +17,7 @@ func RunStart(args types.StartArgs) {
 	if args.EnvFile != "" {
 		if _, err := os.Stat(args.EnvFile); os.IsNotExist(err) {
 			fmt.Printf("Error: file %s does not exist\n", args.EnvFile)
-			os.Exit(1)
+			return
 		}
 	}
 
@@ -25,7 +25,7 @@ func RunStart(args types.StartArgs) {
 	if err := utils.EnsureDocker(); err != nil {
 		spin.Fail(err.Error())
 		spin.Finish()
-		os.Exit(1)
+		return
 	}
 	spin.Succeed("User permissions are ok")
 
@@ -34,7 +34,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to copy system files")
 		spin.Finish()
 		fmt.Printf("\nError: %v\n", err)
-		os.Exit(1)
+		return
 	}
 	spin.Succeed("Copied system files")
 
@@ -43,7 +43,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to generate .env file")
 		spin.Finish()
 		fmt.Printf("\nError: %v\n", err)
-		os.Exit(1)
+		return
 	}
 	spin.Succeed("Generated .env file")
 
@@ -53,7 +53,7 @@ func RunStart(args types.StartArgs) {
 			spin.Fail(err.Error())
 			spin.Finish()
 			fmt.Printf("\nError: %v\n", err)
-			os.Exit(1)
+			return
 		}
 	}
 	spin.Succeed("File permissions ok")
@@ -73,7 +73,7 @@ func RunStart(args types.StartArgs) {
 		spin.Fail("Failed to pull images")
 		spin.Finish()
 		fmt.Printf("\nDebug: %s\n", output)
-		os.Exit(1)
+		return
 	}
 	spin.Succeed("Images pulled")
 
