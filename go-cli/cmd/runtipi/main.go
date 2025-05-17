@@ -87,6 +87,34 @@ func main() {
 	updateCmd.Flags().StringVar(&updateArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
 	updateCmd.Flags().BoolVar(&updateArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
 
+	// Reset password command
+	resetPasswordCmd := &cobra.Command{
+		Use:   "reset-password",
+		Short: "Reset Runtipi password",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.RunResetPassword()
+		},
+	}
+
+	// Debug command
+	debugCmd := &cobra.Command{
+		Use:   "debug",
+		Short: "Debug Runtipi",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.RunDebug()
+		},
+	}
+
+	// Version command
+	versionCmd := &cobra.Command{
+		Use:   "version",
+		Short: "Show Runtipi version",
+		Run: func(cmd *cobra.Command, args []string) {
+			// TODO: Implement version command
+			fmt.Println("Runtipi version...")
+		},
+	}
+
 	// App command and subcommands
 	appCmd := &cobra.Command{
 		Use:   "app",
@@ -171,44 +199,15 @@ func main() {
 	appCmd.AddCommand(appUpdateCmd)
 	appCmd.AddCommand(appStartAllCmd)
 
-	// Reset password command
-	resetPasswordCmd := &cobra.Command{
-		Use:   "reset-password",
-		Short: "Reset Runtipi password",
-		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement reset password command
-			fmt.Println("Resetting password...")
-		},
-	}
-
-	// Debug command
-	debugCmd := &cobra.Command{
-		Use:   "debug",
-		Short: "Debug Runtipi",
-		Run: func(cmd *cobra.Command, args []string) {
-			commands.RunDebug()
-		},
-	}
-
-	// Version command
-	versionCmd := &cobra.Command{
-		Use:   "version",
-		Short: "Show Runtipi version",
-		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement version command
-			fmt.Println("Runtipi version...")
-		},
-	}
-
 	// Add commands to root command
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(stopCmd)
 	rootCmd.AddCommand(restartCmd)
 	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(resetPasswordCmd)
-	rootCmd.AddCommand(appCmd)
 	rootCmd.AddCommand(debugCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(appCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
