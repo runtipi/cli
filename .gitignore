@@ -12,4 +12,3 @@
 # Files
 .env
 /docker-compose.yml
-VERSION
