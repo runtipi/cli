@@ -42,9 +42,8 @@ func CopySystemFiles() error {
 		return fmt.Errorf("failed to write docker-compose.yml: %w", err)
 	}
 
-	versionContent := assets.Version
-
-	err = os.WriteFile(filepath.Join(config.RootFolder, "VERSION"), versionContent, 0664)
+	versionContent := config.Info.Version
+	err = os.WriteFile(filepath.Join(config.RootFolder, "VERSION"), []byte(versionContent), 0664)
 	if err != nil {
 		return fmt.Errorf("failed to write VERSION file: %w", err)
 	}
