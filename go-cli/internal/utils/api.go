@@ -38,6 +38,22 @@ func CreateToken() (string, error) {
 	return tokenString, nil
 }
 
+func GetAPIBaseURL(endpoint string) string {
+	envMap := GetEnvMap()
+
+	internalIP := "localhost"
+	if ip, ok := envMap["INTERNAL_IP"]; ok && ip != "" {
+		internalIP = ip
+	}
+
+	nginxPort := DefaultNginxPort
+	if port, ok := envMap["NGINX_PORT"]; ok && port != "" {
+		nginxPort = port
+	}
+
+	return fmt.Sprintf("http://%s:%s/api/%s", internalIP, nginxPort, endpoint)
+}
+
 func APIRequest(url string, method string, jsonBody string) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: time.Second * 30,
