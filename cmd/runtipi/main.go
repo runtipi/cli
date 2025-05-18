@@ -132,7 +132,7 @@ func main() {
 		Use:   "version",
 		Short: "Show Runtipi version",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Version: %s\nCommit: %s\nBuild Date: %s", config.Info.Version, config.Info.Commit, config.Info.BuildDate)
+			fmt.Printf("Version: %s\nCommit: %s\nBuild Date: %s\n", config.Info.Version, config.Info.Commit, config.Info.BuildDate)
 		},
 	}
 
