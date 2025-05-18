@@ -110,8 +110,7 @@ func main() {
 		Use:   "version",
 		Short: "Show Runtipi version",
 		Run: func(cmd *cobra.Command, args []string) {
-			// TODO: Implement version command
-			fmt.Println("Runtipi version...")
+			commands.RunVersion()
 		},
 	}
 
