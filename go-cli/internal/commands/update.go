@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/runtipi/cli/internal/assets"
 	"github.com/runtipi/cli/internal/components"
 	"github.com/runtipi/cli/internal/config"
 	"github.com/runtipi/cli/internal/types"
@@ -32,7 +31,7 @@ func RunUpdate(args types.UpdateArgs) {
 		wantedVersion = args.Version.String()
 	}
 
-	if utils.IsMajorBump(string(assets.Version), wantedVersion) {
+	if utils.IsMajorBump(config.Info.Version, wantedVersion) {
 		spin.Fail("You are trying to update to a new major version. Please update manually using the update instructions on the website. https://runtipi.io/docs/reference/breaking-updates")
 		spin.Finish()
 		return

@@ -11,6 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	version   string
+	commit    string
+	buildDate string
+)
+
 func init() {
 	var err error
 	config.RootFolder, err = os.Getwd()
@@ -21,6 +27,22 @@ func init() {
 
 	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
 		config.RootFolder = envRootFolder
+	}
+
+	if version == "" {
+		version = "dev"
+	}
+	if commit == "" {
+		commit = "unknown"
+	}
+	if buildDate == "" {
+		buildDate = "unknown"
+	}
+
+	config.Info = config.AppInfo{
+		Version:   version,
+		Commit:    commit,
+		BuildDate: buildDate,
 	}
 }
 
@@ -110,7 +132,7 @@ func main() {
 		Use:   "version",
 		Short: "Show Runtipi version",
 		Run: func(cmd *cobra.Command, args []string) {
-			commands.RunVersion()
+			fmt.Printf("Version: %s\nCommit: %s\nBuild Date: %s", config.Info.Version, config.Info.Commit, config.Info.BuildDate)
 		},
 	}
 
