@@ -7,6 +7,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/briandowns/spinner v1.23.2
 	github.com/fatih/color v1.18.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/olekukonko/tablewriter v1.0.5
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cobra v1.9.1
