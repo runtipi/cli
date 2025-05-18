@@ -8,13 +8,13 @@
 [![All Contributors](https://img.shields.io/github/runtipi/cli](#contributors)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-> 💡 Runtipi CLI is written in Rust! If you want to collaborate on a cool project, join the discussion on Discord!
+> 💡 Runtipi CLI is written in Go! If you want to collaborate on a cool project, join the discussion on Discord!
 
 <img alt="Runtipi CLI" src="images/cli.png" width=50% height=50%>
 
 > ⚠️ Runtipi CLI is built and maintained by volunteers. There is no guarantee of support or security when you use Runtipi CLI. While the system is considered stable, it is still in active development and may contain bugs.
 
-Runtipi CLI is an updated version of the old typescript based CLI that many of you used. The old CLI was slow, big in size and insecure. So we are happy to present you the all new Rust CLI. It is just a few killobytes, extremely fast and very secure. With the new CLI we don't need to depend on a node js runtime so the speed is faster than ever! To get started follow the instructions bellow.
+Runtipi CLI is an updated version of the previous CLI implementations. Written in Go, this version offers improved performance, reliability, and a smaller footprint. It provides a streamlined experience for managing your Runtipi instance directly from the command line. To get started, follow the instructions below.
 
 ## Getting Started
 
@@ -24,23 +24,29 @@ If you already have a runtipi instance you can just stop it delete the old cli a
 
 ## 🔨 Building locally
 
-If you like to you can build the CLI locally in your own machine. To do that you must have cargo and rust installed on your system. Then you can just clone the repository with:
+If you'd like to build the CLI locally on your own machine, you'll need to have Go installed on your system. Then you can clone the repository with:
 
 ```bash
 git clone --depth 1 https://github.com/runtipi/cli
 ```
 
-Then you can just build the CLI with:
+Then you can build the CLI with:
 
 ```bash
-cargo build
+make build
 ```
 
-The CLI will be in the `target/debug/` folder named `runtipi-cli`
+Or you can run it directly with:
+
+```bash
+make run ARGS="command arguments"
+```
+
+The built CLI binary will be in the root folder named `runtipi-cli`.
 
 ## ❤️ Contributing
 
-Rust is a new language for the runtipi team. If you have any rust knowledge we are happy to accept contributions and your name will be added in the "Contributors" section below.
+We welcome contributions to the Runtipi CLI! If you have Go programming experience or ideas to improve the CLI, feel free to submit pull requests or open issues. Your name will be added to the "Contributors" section below when your contributions are merged.
 
 ## 📜 License
 

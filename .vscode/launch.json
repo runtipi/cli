@@ -6,10 +6,10 @@
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "${workspaceRoot}/go-cli/cmd/runtipi",
+      "program": "${workspaceRoot}/cmd/runtipi",
       "args": [
         "update",
-        "v4.1.0"
+        "nightly"
       ]
     }
   ]

@@ -2,6 +2,8 @@ package commands
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"os/exec"
 	"path/filepath"
 
@@ -46,7 +48,7 @@ func RunUpdate(args types.UpdateArgs) {
 	}
 
 	spin.Succeed("Tipi updated successfully. Starting new CLI")
-	spin.SetMessage("Starting Tipi... This may take a while.")
+	spin.Finish()
 
 	newExecutablePath := filepath.Join(config.RootFolder, "runtipi-cli")
 
@@ -62,6 +64,10 @@ func RunUpdate(args types.UpdateArgs) {
 	}
 
 	cmd := exec.Command(newExecutablePath, runArgs...)
+	cmd.Stdout = io.Writer(os.Stdout)
+	cmd.Stderr = io.Writer(os.Stderr)
+	cmd.Stdin = io.Reader(os.Stdin)
+
 	err = cmd.Run()
 	if err != nil {
 		spin.Fail("Failed to start new CLI")
@@ -70,24 +76,4 @@ func RunUpdate(args types.UpdateArgs) {
 	}
 
 	spin.Finish()
-
-	internalIP := utils.GetEnvValue("INTERNAL_IP")
-	if internalIP == "" {
-		internalIP = "localhost"
-	}
-
-	nginxPort := utils.GetEnvValue("NGINX_PORT")
-	if nginxPort == "" {
-		nginxPort = "80"
-	}
-
-	boxTitle := "Runtipi started successfully"
-	ipAndPort := fmt.Sprintf("Visit http://%s:%s to access the dashboard", internalIP, nginxPort)
-	message := fmt.Sprintf("You are now running version %s", wantedVersion)
-	shamelessPlug := "Tipi is entirely written in TypeScript and we are looking for contributors!"
-
-	boxBody := fmt.Sprintf("%s\n\n%s\n\n%s", ipAndPort, message, shamelessPlug)
-
-	consoleBox := components.NewConsoleBox(boxTitle, boxBody, 80, "green")
-	consoleBox.Print()
 }
