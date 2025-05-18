@@ -18,11 +18,12 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 		return
 	}
 
+	defer resp.Body.Close()
+
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		spin.Succeed(successMessage)
 	} else {
 		body, _ := io.ReadAll(resp.Body)
-		defer resp.Body.Close()
 		fmt.Printf("Error code: %d\n", resp.StatusCode)
 		fmt.Printf("Response: %s\n", string(body))
 		spin.Fail(errorMessage)

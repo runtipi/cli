@@ -17,7 +17,7 @@ func CreateToken() (string, error) {
 	jwt_secret := GetEnvValue("JWT_SECRET")
 
 	if jwt_secret == "" {
-		panic("JWT_SECRET is not set")
+		return "", fmt.Errorf("JWT_SECRET environment variable is not set. Please set it before running this command")
 	}
 
 	claims := Claims{
