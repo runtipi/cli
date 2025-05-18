@@ -114,6 +114,15 @@ func main() {
 		},
 	}
 
+	// Installed apps command
+	installedCmd := &cobra.Command{
+		Use:   "installed",
+		Short: "List installed apps",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.RunInstalled()
+		},
+	}
+
 	// App command and subcommands
 	appCmd := &cobra.Command{
 		Use:   "app",
@@ -201,6 +210,7 @@ func main() {
 	rootCmd.AddCommand(debugCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(appCmd)
+	rootCmd.AddCommand(installedCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

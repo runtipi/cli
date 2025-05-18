@@ -32,19 +32,7 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 }
 
 func RunApp(args types.AppArgs) {
-	envMap := utils.GetEnvMap()
-
-	internalIP := "localhost"
-	if ip, ok := envMap["INTERNAL_IP"]; ok && ip != "" {
-		internalIP = ip
-	}
-
-	nginxPort := utils.DefaultNginxPort
-	if port, ok := envMap["NGINX_PORT"]; ok && port != "" {
-		nginxPort = port
-	}
-
-	baseURL := fmt.Sprintf("http://%s:%s/api/app-lifecycle", internalIP, nginxPort)
+	baseURL := utils.GetAPIBaseURL("app-lifecycle")
 
 	switch args.Command {
 	case types.AppCommandStart:
