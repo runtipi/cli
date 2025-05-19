@@ -149,25 +149,26 @@ func GenerateEnvFile(customEnvFile string) error {
 
 	// Create new environment map
 	newEnv := EnvMap{
-		"INTERNAL_IP":           settings.InternalIP,
-		"ARCHITECTURE":          runtime.GOARCH,
-		"TIPI_VERSION":          string(version),
-		"ROOT_FOLDER_HOST":      config.RootFolder,
-		"NGINX_PORT":            RawToString(settings.NginxPort),
-		"NGINX_PORT_SSL":        RawToString(settings.NginxSSLPort),
-		"RUNTIPI_APP_DATA_PATH": appDataPath,
-		"POSTGRES_HOST":         "runtipi-db",
-		"POSTGRES_PORT":         RawToString(settings.PostgresPort),
-		"POSTGRES_DBNAME":       "tipi",
-		"POSTGRES_USERNAME":     "tipi",
-		"POSTGRES_PASSWORD":     postgresPassword,
-		"REDIS_HOST":            "runtipi-redis",
-		"REDIS_PASSWORD":        redisPassword,
-		"DOMAIN":                settings.Domain,
-		"LOCAL_DOMAIN":          settings.LocalDomain,
-		"RABBITMQ_HOST":         "runtipi-queue",
-		"RABBITMQ_USERNAME":     "tipi",
-		"RABBITMQ_PASSWORD":     rabbitmqPassword,
+		"INTERNAL_IP":              settings.InternalIP,
+		"ARCHITECTURE":             runtime.GOARCH,
+		"TIPI_VERSION":             string(version),
+		"ROOT_FOLDER_HOST":         config.RootFolder,
+		"NGINX_PORT":               RawToString(settings.NginxPort),
+		"NGINX_PORT_SSL":           RawToString(settings.NginxSSLPort),
+		"RUNTIPI_APP_DATA_PATH":    appDataPath,
+		"POSTGRES_HOST":            "runtipi-db",
+		"POSTGRES_PORT":            RawToString(settings.PostgresPort),
+		"POSTGRES_DBNAME":          "tipi",
+		"POSTGRES_USERNAME":        "tipi",
+		"POSTGRES_PASSWORD":        postgresPassword,
+		"REDIS_HOST":               "runtipi-redis",
+		"REDIS_PASSWORD":           redisPassword,
+		"DOMAIN":                   settings.Domain,
+		"LOCAL_DOMAIN":             settings.LocalDomain,
+		"RABBITMQ_HOST":            "runtipi-queue",
+		"RABBITMQ_USERNAME":        "tipi",
+		"RABBITMQ_PASSWORD":        rabbitmqPassword,
+		"RUNTIPI_FORWARD_AUTH_URL": settings.ForwardAuthURL,
 	}
 
 	// Set default values if not present
@@ -188,6 +189,9 @@ func GenerateEnvFile(customEnvFile string) error {
 	}
 	if newEnv["LOCAL_DOMAIN"] == "" {
 		newEnv["LOCAL_DOMAIN"] = DefaultLocalDomain
+	}
+	if newEnv["RUNTIPI_FORWARD_AUTH_URL"] == "" {
+		newEnv["RUNTIPI_FORWARD_AUTH_URL"] = DefaultForwardAuthURL
 	}
 
 	// Handle custom env file if provided

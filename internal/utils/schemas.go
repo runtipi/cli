@@ -30,13 +30,13 @@ func RawToString(value json.RawMessage) string {
 
 // SettingsSchema represents the JSON settings file structure
 type SettingsSchema struct {
-	AppDataPath  string          `json:"appDataPath,omitempty"`
-	StoragePath  string          `json:"storagePath,omitempty"`
-	InternalIP   string          `json:"internalIp,omitempty"`
-	NginxPort    json.RawMessage `json:"nginxPort"`
-	NginxSSLPort json.RawMessage `json:"nginxSslPort"`
-	PostgresPort json.RawMessage `json:"postgresPort"`
-	Domain       string          `json:"domain,omitempty"`
-	LocalDomain  string          `json:"localDomain,omitempty"`
+	AppDataPath    string          `json:"appDataPath,omitempty"`
+	StoragePath    string          `json:"storagePath,omitempty"`
+	InternalIP     string          `json:"internalIp,omitempty"`
+	NginxPort      json.RawMessage `json:"nginxPort"`
+	NginxSSLPort   json.RawMessage `json:"nginxSslPort"`
+	PostgresPort   json.RawMessage `json:"postgresPort"`
+	Domain         string          `json:"domain,omitempty"`
+	LocalDomain    string          `json:"localDomain,omitempty"`
+	ForwardAuthURL string          `json:"forwardAuthUrl,omitempty"`
 }
-
