@@ -1,8 +1,8 @@
 package utils
 
 const (
-	DefaultNginxPort      = "80"
-	DefaultNginxPortSSL   = "443"
+	DefaultPort           = "80"
+	DefaultPortSSL        = "443"
 	DefaultPostgresPort   = "5432"
 	DefaultDomain         = "example.com"
 	DefaultLocalDomain    = "tipi.local"

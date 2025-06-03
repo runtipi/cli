@@ -153,8 +153,8 @@ func GenerateEnvFile(customEnvFile string) error {
 		"ARCHITECTURE":             runtime.GOARCH,
 		"TIPI_VERSION":             string(version),
 		"ROOT_FOLDER_HOST":         config.RootFolder,
-		"NGINX_PORT":               RawToString(settings.NginxPort),
-		"NGINX_PORT_SSL":           RawToString(settings.NginxSSLPort),
+		"NGINX_PORT":               RawToString(settings.Port),
+		"NGINX_PORT_SSL":           RawToString(settings.SSLPort),
 		"RUNTIPI_APP_DATA_PATH":    appDataPath,
 		"POSTGRES_HOST":            "runtipi-db",
 		"POSTGRES_PORT":            RawToString(settings.PostgresPort),
@@ -176,10 +176,10 @@ func GenerateEnvFile(customEnvFile string) error {
 		newEnv["INTERNAL_IP"] = GetInternalIP()
 	}
 	if newEnv["NGINX_PORT"] == "" {
-		newEnv["NGINX_PORT"] = DefaultNginxPort
+		newEnv["NGINX_PORT"] = DefaultPort
 	}
 	if newEnv["NGINX_PORT_SSL"] == "" {
-		newEnv["NGINX_PORT_SSL"] = DefaultNginxPortSSL
+		newEnv["NGINX_PORT_SSL"] = DefaultPortSSL
 	}
 	if newEnv["POSTGRES_PORT"] == "" {
 		newEnv["POSTGRES_PORT"] = DefaultPostgresPort

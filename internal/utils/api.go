@@ -46,7 +46,7 @@ func GetAPIBaseURL(endpoint string) string {
 		internalIP = ip
 	}
 
-	nginxPort := DefaultNginxPort
+	nginxPort := DefaultPort
 	if port, ok := envMap["NGINX_PORT"]; ok && port != "" {
 		nginxPort = port
 	}

@@ -33,8 +33,8 @@ type SettingsSchema struct {
 	AppDataPath    string          `json:"appDataPath,omitempty"`
 	StoragePath    string          `json:"storagePath,omitempty"`
 	InternalIP     string          `json:"internalIp,omitempty"`
-	NginxPort      json.RawMessage `json:"nginxPort"`
-	NginxSSLPort   json.RawMessage `json:"nginxSslPort"`
+	Port           json.RawMessage `json:"port"`
+	SSLPort        json.RawMessage `json:"sslPort"`
 	PostgresPort   json.RawMessage `json:"postgresPort"`
 	Domain         string          `json:"domain,omitempty"`
 	LocalDomain    string          `json:"localDomain,omitempty"`
