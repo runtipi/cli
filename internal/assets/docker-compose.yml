@@ -41,6 +41,8 @@ services:
     container_name: runtipi-queue
     image: rabbitmq:4-alpine
     restart: unless-stopped
+    ports:
+      - 5672:5672
     environment:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
