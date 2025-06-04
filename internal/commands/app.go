@@ -1,14 +1,21 @@
 package commands
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/runtipi/cli/internal/components"
 	"github.com/runtipi/cli/internal/types"
 	"github.com/runtipi/cli/internal/utils"
 )
+
+type AppResponseBody struct {
+	RequestId string `json:"requestId"`
+}
 
 func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
 	if err != nil {
@@ -21,7 +28,29 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		spin.Succeed(successMessage)
+		var body AppResponseBody
+		err := json.NewDecoder(resp.Body).Decode(&body)
+
+		if err != nil {
+			spin.Fail("Failed to decode response body")
+			fmt.Printf("Error decoding response: %v\n", err)
+			spin.Finish()
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+
+		_, success := utils.WaitForEvent(ctx, time.Minute*2, func(event utils.EventData) bool {
+			return event.RequestId == body.RequestId
+		})
+
+		if !success {
+			spin.Fail(errorMessage)
+			spin.Finish()
+		} else {
+			spin.Succeed(successMessage)
+		}
 	} else {
 		body, _ := io.ReadAll(resp.Body)
 		fmt.Printf("Error code: %d\n", resp.StatusCode)

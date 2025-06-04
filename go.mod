@@ -9,6 +9,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/olekukonko/tablewriter v1.0.5
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cobra v1.9.1
 )
