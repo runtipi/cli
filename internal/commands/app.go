@@ -28,6 +28,12 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		if resp.StatusCode == 204 || resp.ContentLength == 0 {
+			spin.Succeed(successMessage)
+			spin.Finish()
+			return
+		}
+
 		var body AppResponseBody
 		err := json.NewDecoder(resp.Body).Decode(&body)
 
@@ -47,7 +53,6 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 
 		if !success {
 			spin.Fail(errorMessage)
-			spin.Finish()
 		} else {
 			spin.Succeed(successMessage)
 		}
@@ -57,7 +62,6 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 		fmt.Printf("Response: %s\n", string(body))
 		spin.Fail(errorMessage)
 	}
-	spin.Finish()
 }
 
 func RunApp(args types.AppArgs) {

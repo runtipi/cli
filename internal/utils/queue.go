@@ -133,16 +133,22 @@ func ListenForMessage(ctx context.Context, options QueueOptions, resultChan chan
 				var event EventData
 				err := json.Unmarshal(d.Body, &event)
 				if err != nil {
-					d.Nack(false, false)
+					if nackErr := d.Nack(false, false); nackErr != nil {
+						log.Printf("Failed to nack message after JSON unmarshal error: %v", nackErr)
+					}
 					continue
 				}
 
 				if options.Filter != nil && !options.Filter(event) {
-					d.Ack(false)
+					if ackErr := d.Ack(false); ackErr != nil {
+						log.Printf("Failed to ack filtered message: %v", ackErr)
+					}
 					continue
 				}
 
-				d.Ack(false)
+				if ackErr := d.Ack(false); ackErr != nil {
+					log.Printf("Failed to ack processed message: %v", ackErr)
+				}
 				select {
 				case resultChan <- event:
 				case <-ctx.Done():
