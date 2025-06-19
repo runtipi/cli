@@ -207,6 +207,52 @@ func main() {
 		},
 	}
 
+	appBackupCmd := &cobra.Command{
+		Use:   "backup [app-id]",
+		Short: "Backup an app",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandBackup
+			appArgs.ID = args[0]
+			commands.RunApp(appArgs)
+		},
+	}
+
+	appRestoreCmd := &cobra.Command{
+		Use:   "restore [app-id] [backup-filename]",
+		Short: "Restore an app from a backup",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandRestore
+			appArgs.ID = args[0]
+			appArgs.BackupFilename = args[1]
+			commands.RunApp(appArgs)
+		},
+	}
+
+	appListBackupsCmd := &cobra.Command{
+		Use:   "list-backups [app-id]",
+		Short: "List backups for an app",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandListBackups
+			appArgs.ID = args[0]
+			commands.RunApp(appArgs)
+		},
+	}
+
+	appDeleteBackupCmd := &cobra.Command{
+		Use:   "delete-backup [app-id] [backup-filename]",
+		Short: "Delete a specific backup of an app",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandDeleteBackup
+			appArgs.ID = args[0]
+			appArgs.BackupFilename = args[1]
+			commands.RunApp(appArgs)
+		},
+	}
+
 	appStartAllCmd := &cobra.Command{
 		Use:   "start-all",
 		Short: "Start all apps",
@@ -221,6 +267,10 @@ func main() {
 	appCmd.AddCommand(appUninstallCmd)
 	appCmd.AddCommand(appResetCmd)
 	appCmd.AddCommand(appUpdateCmd)
+	appCmd.AddCommand(appBackupCmd)
+	appCmd.AddCommand(appRestoreCmd)
+	appCmd.AddCommand(appListBackupsCmd)
+	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
 
 	// Add commands to root command

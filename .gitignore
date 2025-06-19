@@ -1,14 +1,21 @@
-# Folders
-/target
-/state
-/data
-/logs
-/repos
-/traefik
-/apps
-/app-data
-/self_update*
+# Runtipi Data
+app-data
+apps
+backups
+cache
+data
+logs
+media
+repos
+state
+traefik
+user-config
 
-# Files
+# CLI generated files
+docker-compose.yml
+VERSION
 .env
-/docker-compose.yml
+
+# Build out
+runtipi-cli
+main

@@ -12,19 +12,23 @@ type UpdateArgs struct {
 }
 
 type AppArgs struct {
-	Command AppCommand
-	ID      string
+	Command        AppCommand
+	ID             string
+	BackupFilename string // Needed only for restore and delete backup commands it can be ommitted for other commands
 }
 
 // AppCommand represents the subcommands available for the app command
 type AppCommand string
 
 const (
-	AppCommandStart     AppCommand = "start"
-	AppCommandStop      AppCommand = "stop"
-	AppCommandUninstall AppCommand = "uninstall"
-	AppCommandReset     AppCommand = "reset"
-	AppCommandUpdate    AppCommand = "update"
-	AppCommandStartAll  AppCommand = "start-all"
+	AppCommandStart        AppCommand = "start"
+	AppCommandStop         AppCommand = "stop"
+	AppCommandUninstall    AppCommand = "uninstall"
+	AppCommandReset        AppCommand = "reset"
+	AppCommandUpdate       AppCommand = "update"
+	AppCommandBackup       AppCommand = "backup"
+	AppCommandRestore      AppCommand = "restore"
+	AppCommandListBackups  AppCommand = "list-backups"
+	AppCommandDeleteBackup AppCommand = "delete-backup"
+	AppCommandStartAll     AppCommand = "start-all"
 )
-

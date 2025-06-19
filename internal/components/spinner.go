@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	colorRed   = "\033[31m"
-	colorGreen = "\033[32m"
-	colorReset = "\033[0m" // Reset to default color
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorReset  = "\033[0m" // Reset to default color
 )
 
 // Spinner wraps the spinner functionality
@@ -38,6 +39,12 @@ func (s *Spinner) Succeed(message string) {
 	fmt.Printf(colorGreen+"✓"+colorReset+" %s\n", message)
 }
 
+// Warn shows a warning message and stops the spinner
+func (s *Spinner) Warn(message string) {
+	s.s.Stop()
+	fmt.Printf(colorYellow+"⚠"+colorReset+" %s\n", message)
+}
+
 // Fail shows a failure message and stops the spinner
 func (s *Spinner) Fail(message string) {
 	s.s.Stop()
@@ -48,4 +55,3 @@ func (s *Spinner) Fail(message string) {
 func (s *Spinner) Finish() {
 	s.s.Stop()
 }
-
