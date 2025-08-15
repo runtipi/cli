@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/config"
@@ -17,6 +19,27 @@ var (
 	buildDate string
 )
 
+func parseEnvContent(envContent string) map[string]string {
+	envMap := make(map[string]string)
+	lines := strings.Split(envContent, "\n")
+	
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			envMap[key] = value
+		}
+	}
+	
+	return envMap
+}
+
 func init() {
 	var err error
 	config.RootFolder, err = os.Getwd()
@@ -25,8 +48,22 @@ func init() {
 		os.Exit(1)
 	}
 
-	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
-		config.RootFolder = envRootFolder
+	envFilePath := filepath.Join(config.RootFolder, ".env")
+	if envContent, err := os.ReadFile(envFilePath); err == nil {
+		envMap := parseEnvContent(string(envContent))
+		if rootFolder, exists := envMap["ROOT_FOLDER_HOST"]; exists && rootFolder != "" {
+			if _, err := os.Stat(rootFolder); os.IsNotExist(err) {
+				fmt.Printf("✗ Error: ROOT_FOLDER_HOST path '%s' from .env does not exist\n", rootFolder)
+				os.Exit(1)
+			}
+			config.RootFolder = rootFolder
+		} else {
+			fmt.Println("✗ Error: You are not in a Runtipi directory. Please run this command from your Runtipi installation folder.")
+			os.Exit(1)
+		}
+	} else {
+		fmt.Println("✗ Error: You are not in a Runtipi directory. Please run this command from your Runtipi installation folder.")
+		os.Exit(1)
 	}
 
 	if version == "" {
@@ -47,7 +84,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := &cobra.Command{
+	rootCmd := &cobra.Command{ 
 		Use:   "./runtipi-cli",
 		Short: "Runtipi CLI tool",
 		Long:  `Runtipi is a home server manager that helps you self-host your services easily.`,
@@ -58,6 +95,7 @@ func main() {
 	var restartArgs types.StartArgs
 	var updateArgs types.UpdateArgs
 	var appArgs types.AppArgs
+	var repoArgs types.RepoArgs
 
 	// Start command
 	startCmd := &cobra.Command{
@@ -273,6 +311,58 @@ func main() {
 	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
 
+	// Repo command and subcommands
+	repoCmd := &cobra.Command{
+		Use:   "repo",
+		Short: "Manage Runtipi app repositories",
+	}
+
+	repoUpdateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update app repositories",
+		Run: func(cmd *cobra.Command, args []string) {
+			repoArgs.Command = types.RepoCommandUpdate
+			commands.RunRepo(repoArgs)
+		},
+	}
+
+	repoListCmd := &cobra.Command{
+		Use:   "list",
+		Short: "List configured repositories",
+		Run: func(cmd *cobra.Command, args []string) {
+			repoArgs.Command = types.RepoCommandList
+			commands.RunRepo(repoArgs)
+		},
+	}
+
+	repoAddCmd := &cobra.Command{
+		Use:   "add [name] [url]",
+		Short: "Add a new repository",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			repoArgs.Command = types.RepoCommandAdd
+			repoArgs.Name = args[0]
+			repoArgs.URL = args[1]
+			commands.RunRepo(repoArgs)
+		},
+	}
+
+	repoRemoveCmd := &cobra.Command{
+		Use:   "remove [name]",
+		Short: "Remove a repository",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			repoArgs.Command = types.RepoCommandRemove
+			repoArgs.Name = args[0]
+			commands.RunRepo(repoArgs)
+		},
+	}
+
+	repoCmd.AddCommand(repoUpdateCmd)
+	repoCmd.AddCommand(repoListCmd)
+	repoCmd.AddCommand(repoAddCmd)
+	repoCmd.AddCommand(repoRemoveCmd)
+
 	// Add commands to root command
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(stopCmd)
@@ -282,6 +372,7 @@ func main() {
 	rootCmd.AddCommand(debugCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(appCmd)
+	rootCmd.AddCommand(repoCmd)
 	rootCmd.AddCommand(installedCmd)
 
 	if err := rootCmd.Execute(); err != nil {

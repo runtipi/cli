@@ -14,10 +14,10 @@ type UpdateArgs struct {
 type AppArgs struct {
 	Command        AppCommand
 	ID             string
-	BackupFilename string // Needed only for restore and delete backup commands it can be ommitted for other commands
+	BackupFilename string
 }
 
-// AppCommand represents the subcommands available for the app command
+
 type AppCommand string
 
 const (
@@ -31,4 +31,19 @@ const (
 	AppCommandListBackups  AppCommand = "list-backups"
 	AppCommandDeleteBackup AppCommand = "delete-backup"
 	AppCommandStartAll     AppCommand = "start-all"
+)
+
+type RepoArgs struct {
+	Command RepoCommand
+	URL     string
+	Name    string
+}
+
+type RepoCommand string
+
+const (
+	RepoCommandUpdate RepoCommand = "update"
+	RepoCommandList   RepoCommand = "list"
+	RepoCommandAdd    RepoCommand = "add"
+	RepoCommandRemove RepoCommand = "remove"
 )
