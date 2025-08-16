@@ -1,3 +1,4 @@
+// Package config provides application configuration details.
 package config
 
 type AppInfo struct {

@@ -22,10 +22,14 @@ var (
 func init() {
 	var err error
 
-	binaryPath, err := os.Executable()
-	if err != nil {
-		fmt.Println("Error getting executable path:", err)
-		os.Exit(1)
+	config.RootFolder = os.Getenv("ROOT_FOLDER_HOST")
+
+	if config.RootFolder == "" {
+		config.RootFolder, err = os.Getwd()
+		if err != nil {
+			fmt.Println("Error getting working directory:", err)
+			os.Exit(1)
+		}
 	}
 
 	evalPath, err := filepath.EvalSymlinks(binaryPath)
