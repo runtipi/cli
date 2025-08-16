@@ -1,3 +1,4 @@
+// Package commands
 package commands
 
 import (
@@ -16,7 +17,7 @@ import (
 )
 
 type AppResponseBody struct {
-	RequestId string `json:"requestId"`
+	RequestID string `json:"requestId"`
 }
 
 func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
@@ -50,7 +51,7 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 		defer cancel()
 
 		_, success := utils.WaitForEvent(ctx, time.Minute*2, func(event utils.EventData) bool {
-			return event.RequestId == body.RequestId
+			return event.RequestID == body.RequestID
 		})
 
 		if !success {
