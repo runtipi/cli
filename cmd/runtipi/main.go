@@ -20,14 +20,10 @@ var (
 func init() {
 	var err error
 
-	config.RootFolder = os.Getenv("ROOT_FOLDER_HOST")
-
-	if config.RootFolder == "" {
-		config.RootFolder, err = os.Getwd()
-		if err != nil {
-			fmt.Println("Error getting working directory:", err)
-			os.Exit(1)
-		}
+	config.RootFolder, err = os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting working directory:", err)
+		os.Exit(1)
 	}
 
 	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
