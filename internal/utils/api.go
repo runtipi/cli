@@ -1,3 +1,4 @@
+// Package utils provides utility functions
 package utils
 
 import (
@@ -14,9 +15,9 @@ type Claims struct {
 }
 
 func CreateToken() (string, error) {
-	jwt_secret := GetEnvValue("JWT_SECRET")
+	jwtSecret := GetEnvValue("JWT_SECRET")
 
-	if jwt_secret == "" {
+	if jwtSecret == "" {
 		return "", fmt.Errorf("JWT_SECRET environment variable is not set. Please set it before running this command")
 	}
 
@@ -30,7 +31,7 @@ func CreateToken() (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(jwt_secret))
+	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}

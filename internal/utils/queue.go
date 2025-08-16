@@ -13,11 +13,11 @@ import (
 type EventData struct {
 	QueueName   string `json:"queueName"`
 	RequestData any    `json:"requestData"`
-	RpcStatus   string `json:"rpcStatus"`
-	RpcMessage  string `json:"rpcMessage"`
+	RPCStatus   string `json:"rpcStatus"`
+	RPCMessage  string `json:"rpcMessage"`
 	Timestamp   string `json:"timestamp"`
-	WorkerId    string `json:"workerId,omitempty"`
-	RequestId   string `json:"requestId,omitempty"`
+	WorkerID    string `json:"workerId,omitempty"`
+	RequestID   string `json:"requestId,omitempty"`
 }
 
 type QueueOptions struct {
@@ -172,7 +172,7 @@ func WaitForEvent(ctx context.Context, timeout time.Duration, filter func(EventD
 
 	select {
 	case event := <-resultChan:
-		return &event, event.RpcStatus == "success"
+		return &event, event.RPCStatus == "success"
 	case <-time.After(timeout):
 		return nil, false
 	case <-ctx.Done():
