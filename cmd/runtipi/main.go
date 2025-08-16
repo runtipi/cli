@@ -22,9 +22,23 @@ var (
 func init() {
 	var err error
 
-	config.RootFolder, err = os.Getwd()
+	binaryPath, err := os.Executable()
 	if err != nil {
-		fmt.Println("Error getting working directory:", err)
+		fmt.Println("Error getting executable path:", err)
+		os.Exit(1)
+	}
+
+	evalPath, err := filepath.EvalSymlinks(binaryPath)
+	if err != nil {
+		fmt.Println("Error getting binary directory:", err)
+		os.Exit(1)
+	}
+
+	executableDir := filepath.Dir(evalPath)
+	config.RootFolder, err = filepath.Abs(executableDir)
+
+	if err != nil {
+		fmt.Println("Error getting absolute path for root folder:", err)
 		os.Exit(1)
 	}
 
