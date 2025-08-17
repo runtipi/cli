@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/config"
 	"github.com/runtipi/cli/internal/types"
+	"github.com/runtipi/cli/internal/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -19,51 +19,31 @@ var (
 	buildDate string
 )
 
-func parseEnvContent(envContent string) map[string]string {
-	envMap := make(map[string]string)
-	lines := strings.Split(envContent, "\n")
-	
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 {
-			key := strings.TrimSpace(parts[0])
-			value := strings.TrimSpace(parts[1])
-			envMap[key] = value
-		}
-	}
-	
-	return envMap
-}
-
 func init() {
 	var err error
-	config.RootFolder, err = os.Getwd()
+
+	binaryPath, err := os.Executable()
 	if err != nil {
-		fmt.Println("Error getting working directory:", err)
+		fmt.Println("Error getting executable path:", err)
 		os.Exit(1)
 	}
 
-	envFilePath := filepath.Join(config.RootFolder, ".env")
-	if envContent, err := os.ReadFile(envFilePath); err == nil {
-		envMap := parseEnvContent(string(envContent))
-		if rootFolder, exists := envMap["ROOT_FOLDER_HOST"]; exists && rootFolder != "" {
-			if _, err := os.Stat(rootFolder); os.IsNotExist(err) {
-				fmt.Printf("✗ Error: ROOT_FOLDER_HOST path '%s' from .env does not exist\n", rootFolder)
-				os.Exit(1)
-			}
-			config.RootFolder = rootFolder
-		} else {
-			fmt.Println("✗ Error: You are not in a Runtipi directory. Please run this command from your Runtipi installation folder.")
-			os.Exit(1)
-		}
-	} else {
-		fmt.Println("✗ Error: You are not in a Runtipi directory. Please run this command from your Runtipi installation folder.")
+	evalPath, err := filepath.EvalSymlinks(binaryPath)
+	if err != nil {
+		fmt.Println("Error getting binary directory:", err)
 		os.Exit(1)
+	}
+
+	executableDir := filepath.Dir(evalPath)
+	config.RootFolder, err = filepath.Abs(executableDir)
+
+	if err != nil {
+		fmt.Println("Error getting absolute path for root folder:", err)
+		os.Exit(1)
+	}
+
+	if envRootFolder := utils.GetEnvValue("ROOT_FOLDER_HOST"); envRootFolder != "" {
+		config.RootFolder = envRootFolder
 	}
 
 	if version == "" {
@@ -95,7 +75,7 @@ func main() {
 	var restartArgs types.StartArgs
 	var updateArgs types.UpdateArgs
 	var appArgs types.AppArgs
-	var repoArgs types.RepoArgs
+	var appStoreArgs types.AppStoreArgs
 
 	// Start command
 	startCmd := &cobra.Command{
@@ -311,57 +291,57 @@ func main() {
 	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
 
-	// Repo command and subcommands
-	repoCmd := &cobra.Command{
-		Use:   "repo",
-		Short: "Manage Runtipi app repositories",
+	// AppStore command and subcommands
+	appStoreCmd := &cobra.Command{
+		Use:   "appstore",
+		Short: "Manage Runtipi app stores",
 	}
 
-	repoUpdateCmd := &cobra.Command{
+	appStoreUpdateCmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update app repositories",
+		Short: "Update app stores",
 		Run: func(cmd *cobra.Command, args []string) {
-			repoArgs.Command = types.RepoCommandUpdate
-			commands.RunRepo(repoArgs)
+			appStoreArgs.Command = types.AppStoreCommandUpdate
+			commands.RunAppStore(appStoreArgs)
 		},
 	}
 
-	repoListCmd := &cobra.Command{
+	appStoreListCmd := &cobra.Command{
 		Use:   "list",
-		Short: "List configured repositories",
+		Short: "List configured app stores",
 		Run: func(cmd *cobra.Command, args []string) {
-			repoArgs.Command = types.RepoCommandList
-			commands.RunRepo(repoArgs)
+			appStoreArgs.Command = types.AppStoreCommandList
+			commands.RunAppStore(appStoreArgs)
 		},
 	}
 
-	repoAddCmd := &cobra.Command{
+	appStoreAddCmd := &cobra.Command{
 		Use:   "add [name] [url]",
-		Short: "Add a new repository",
+		Short: "Add a new app store",
 		Args:  cobra.ExactArgs(2),
 		Run: func(cmd *cobra.Command, args []string) {
-			repoArgs.Command = types.RepoCommandAdd
-			repoArgs.Name = args[0]
-			repoArgs.URL = args[1]
-			commands.RunRepo(repoArgs)
+			appStoreArgs.Command = types.AppStoreCommandAdd
+			appStoreArgs.Name = args[0]
+			appStoreArgs.URL = args[1]
+			commands.RunAppStore(appStoreArgs)
 		},
 	}
 
-	repoRemoveCmd := &cobra.Command{
+	appStoreRemoveCmd := &cobra.Command{
 		Use:   "remove [name]",
-		Short: "Remove a repository",
+		Short: "Remove an app store",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			repoArgs.Command = types.RepoCommandRemove
-			repoArgs.Name = args[0]
-			commands.RunRepo(repoArgs)
+			appStoreArgs.Command = types.AppStoreCommandRemove
+			appStoreArgs.Name = args[0]
+			commands.RunAppStore(appStoreArgs)
 		},
 	}
 
-	repoCmd.AddCommand(repoUpdateCmd)
-	repoCmd.AddCommand(repoListCmd)
-	repoCmd.AddCommand(repoAddCmd)
-	repoCmd.AddCommand(repoRemoveCmd)
+	appStoreCmd.AddCommand(appStoreUpdateCmd)
+	appStoreCmd.AddCommand(appStoreListCmd)
+	appStoreCmd.AddCommand(appStoreAddCmd)
+	appStoreCmd.AddCommand(appStoreRemoveCmd)
 
 	// Add commands to root command
 	rootCmd.AddCommand(startCmd)
@@ -372,7 +352,7 @@ func main() {
 	rootCmd.AddCommand(debugCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(appCmd)
-	rootCmd.AddCommand(repoCmd)
+	rootCmd.AddCommand(appStoreCmd)
 	rootCmd.AddCommand(installedCmd)
 
 	if err := rootCmd.Execute(); err != nil {
