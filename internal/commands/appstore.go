@@ -82,10 +82,10 @@ func printAppStores(appStores []AppStore) {
 	for i, appStore := range appStores {
 		fmt.Printf("%d. ", i+1)
 
-		if appStore.Name != "" && appStore.Slug != "" {
-			fmt.Printf("%s (%s)\n", appStore.Name, appStore.Slug)
+		if appStore.Name == appStore.Slug != "" {
+			fmt.Printf("%s\n", appStore.Name)
 		} else {
-			fmt.Printf(" %s\n", appStore.Name)
+			fmt.Printf(" %s (%s)\n", appStore.Name, appStore.Slug)
 		}
 		
 		if appStore.Url != "" {
