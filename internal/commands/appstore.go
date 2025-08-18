@@ -89,13 +89,13 @@ func printAppStores(appStores []AppStore) {
 		}
 		
 		if appStore.Url != "" {
-			fmt.Printf("   ⎿ %s\n", appStore.Url)
+			fmt.Printf("    ⎿ %s\n", appStore.Url)
 		}
 		
 		if appStore.Enabled {
-			fmt.Printf("   ⎿ "+colorGreen+"✓"+colorReset+" Enabled \n")
+			fmt.Printf("    ⎿ "+colorGreen+"✓"+colorReset+" Enabled \n")
 		} else {
-			fmt.Printf("   ⎿ "+colorRed+"✗"+colorReset+" Disabled\n")
+			fmt.Printf("    ⎿ "+colorRed+"✗"+colorReset+" Disabled\n")
 		}
 		
 		fmt.Println()
