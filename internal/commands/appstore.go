@@ -81,21 +81,21 @@ func printAppStores(appStores []AppStore) {
 	fmt.Printf("Found %d app stores:\n\n", len(appStores))
 	for i, appStore := range appStores {
 		fmt.Printf("%d. ", i+1)
-		
-		if appStore.Name != "" {
-			fmt.Printf("── %s\n", appStore.Name)
-		} else if appStore.Slug != "" {
-			fmt.Printf("── %s\n", appStore.Slug)
+
+		if appStore.Name != "" && appStore.Slug != "" {
+			fmt.Printf("%s (%s)\n", appStore.Name, appStore.Slug)
+		} else {
+			fmt.Printf(" %s\n", appStore.Name)
 		}
 		
 		if appStore.Url != "" {
-			fmt.Printf("    ⎿ %s\n", appStore.Url)
+			fmt.Printf("   ├ %s\n", appStore.Url)
 		}
 		
 		if appStore.Enabled {
-			fmt.Printf("    ⎿ "+colorGreen+"✓"+colorReset+" Enabled \n")
+			fmt.Printf("   ╰ "+colorGreen+"✓"+colorReset+" Enabled \n")
 		} else {
-			fmt.Printf("    ⎿ "+colorRed+"✗"+colorReset+" Disabled\n")
+			fmt.Printf("   ╰ "+colorRed+"✗"+colorReset+" Disabled\n")
 		}
 		
 		fmt.Println()
