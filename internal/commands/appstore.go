@@ -12,6 +12,12 @@ import (
 	"github.com/runtipi/cli/internal/utils"
 )
 
+const (
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorReset  = "\033[0m" // Reset to default color
+)
+
 // AppStore represents a single app store/repository
 type AppStore struct {
 	Slug    string `json:"slug"`
@@ -77,22 +83,20 @@ func printAppStores(appStores []AppStore) {
 		fmt.Printf("%d. ", i+1)
 		
 		if appStore.Name != "" {
-			fmt.Printf("📦 %s", appStore.Name)
+			fmt.Printf("── %s\n", appStore.Name)
 		} else if appStore.Slug != "" {
-			fmt.Printf("📦 %s", appStore.Slug)
+			fmt.Printf("── %s\n", appStore.Slug)
 		}
 		
 		if appStore.Url != "" {
-			fmt.Printf("\n   🔗 %s", appStore.Url)
+			fmt.Printf("   ⎿ %s\n", appStore.Url)
 		}
 		
-		status := "❓ Unknown"
 		if appStore.Enabled {
-			status = "✅ Enabled"
+			fmt.Printf("   ⎿ "+colorGreen+"✓"+colorReset+" Enabled \n")
 		} else {
-			status = "❌ Disabled"
+			fmt.Printf("   ⎿ "+colorRed+"✗"+colorReset+" Disabled\n")
 		}
-		fmt.Printf("\n   %s\n", status)
 		
 		fmt.Println()
 	}
