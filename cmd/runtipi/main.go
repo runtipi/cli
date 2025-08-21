@@ -8,7 +8,6 @@ import (
 	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/config"
 	"github.com/runtipi/cli/internal/types"
-	"github.com/runtipi/cli/internal/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -42,21 +41,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	evalPath, err := filepath.EvalSymlinks(binaryPath)
-	if err != nil {
-		fmt.Println("Error getting binary directory:", err)
-		os.Exit(1)
-	}
-
-	executableDir := filepath.Dir(evalPath)
-	config.RootFolder, err = filepath.Abs(executableDir)
-
-	if err != nil {
-		fmt.Println("Error getting absolute path for root folder:", err)
-		os.Exit(1)
-	}
-
-	if envRootFolder := utils.GetEnvValue("ROOT_FOLDER_HOST"); envRootFolder != "" {
+	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
 		config.RootFolder = envRootFolder
 	}
 
@@ -78,7 +63,7 @@ func init() {
 }
 
 func main() {
-	rootCmd := &cobra.Command{ 
+	rootCmd := &cobra.Command{
 		Use:   "./runtipi-cli",
 		Short: "Runtipi CLI tool",
 		Long:  `Runtipi is a home server manager that helps you self-host your services easily.`,
