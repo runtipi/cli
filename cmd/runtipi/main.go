@@ -74,6 +74,7 @@ func main() {
 	var restartArgs types.StartArgs
 	var updateArgs types.UpdateArgs
 	var appArgs types.AppArgs
+	var appStoreArgs types.AppStoreArgs
 
 	// Start command
 	startCmd := &cobra.Command{
@@ -289,6 +290,58 @@ func main() {
 	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
 
+	// AppStore command and subcommands
+	appStoreCmd := &cobra.Command{
+		Use:   "appstore",
+		Short: "Manage Runtipi app stores",
+	}
+
+	appStoreUpdateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update app stores",
+		Run: func(cmd *cobra.Command, args []string) {
+			appStoreArgs.Command = types.AppStoreCommandUpdate
+			commands.RunAppStore(appStoreArgs)
+		},
+	}
+
+	appStoreListCmd := &cobra.Command{
+		Use:   "list",
+		Short: "List configured app stores",
+		Run: func(cmd *cobra.Command, args []string) {
+			appStoreArgs.Command = types.AppStoreCommandList
+			commands.RunAppStore(appStoreArgs)
+		},
+	}
+
+	appStoreAddCmd := &cobra.Command{
+		Use:   "add [name] [url]",
+		Short: "Add a new app store",
+		Args:  cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			appStoreArgs.Command = types.AppStoreCommandAdd
+			appStoreArgs.Name = args[0]
+			appStoreArgs.URL = args[1]
+			commands.RunAppStore(appStoreArgs)
+		},
+	}
+
+	appStoreRemoveCmd := &cobra.Command{
+		Use:   "remove [name]",
+		Short: "Remove an app store",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			appStoreArgs.Command = types.AppStoreCommandRemove
+			appStoreArgs.Name = args[0]
+			commands.RunAppStore(appStoreArgs)
+		},
+	}
+
+	appStoreCmd.AddCommand(appStoreUpdateCmd)
+	appStoreCmd.AddCommand(appStoreListCmd)
+	appStoreCmd.AddCommand(appStoreAddCmd)
+	appStoreCmd.AddCommand(appStoreRemoveCmd)
+
 	// Add commands to root command
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(stopCmd)
@@ -298,6 +351,7 @@ func main() {
 	rootCmd.AddCommand(debugCmd)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(appCmd)
+	rootCmd.AddCommand(appStoreCmd)
 	rootCmd.AddCommand(installedCmd)
 
 	if err := rootCmd.Execute(); err != nil {

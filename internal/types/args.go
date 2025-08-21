@@ -32,3 +32,19 @@ const (
 	AppCommandDeleteBackup AppCommand = "delete-backup"
 	AppCommandStartAll     AppCommand = "start-all"
 )
+
+type AppStoreArgs struct {
+	Command AppStoreCommand
+	URL     string
+	Name    string
+}
+
+// AppStoreCommand represents the subcommands available for the appstore command
+type AppStoreCommand string
+
+const (
+	AppStoreCommandUpdate AppStoreCommand = "update"
+	AppStoreCommandList   AppStoreCommand = "list"
+	AppStoreCommandAdd    AppStoreCommand = "add"
+	AppStoreCommandRemove AppStoreCommand = "remove"
+)
