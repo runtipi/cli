@@ -18,7 +18,7 @@ type AppArgs struct {
 }
 
 // AppCommand represents the subcommands available for the app command
-type AppCommand string 
+type AppCommand string
 
 const (
 	AppCommandStart        AppCommand = "start"
