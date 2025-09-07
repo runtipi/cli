@@ -194,8 +194,8 @@ func GenerateEnvFile(customEnvFile string) error {
 		newEnv["RUNTIPI_FORWARD_AUTH_URL"] = DefaultForwardAuthURL
 	}
 
-	// Auto-load .env from user-config/.env if it exists
-	autoEnvPath := filepath.Join(config.RootFolder, "user-config", ".env")
+	// Auto-load .env from user-config/tipi.env if it exists
+	autoEnvPath := filepath.Join(config.RootFolder, "user-config", "tipi.env")
 	if autoEnvContent, err := os.ReadFile(autoEnvPath); err == nil {
 		autoEnvMap := EnvStringToMap(string(autoEnvContent))
 		maps.Copy(newEnv, autoEnvMap)
