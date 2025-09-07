@@ -194,6 +194,18 @@ func GenerateEnvFile(customEnvFile string) error {
 		newEnv["RUNTIPI_FORWARD_AUTH_URL"] = DefaultForwardAuthURL
 	}
 
+	// Auto-load .env from user-config/.env if it exists
+	autoEnvPath := filepath.Join(config.RootFolder, "user-config", ".env")
+	if _, err := os.Stat(autoEnvPath); err == nil {
+		autoEnvContent, err := os.ReadFile(autoEnvPath)
+		if err != nil {
+			return fmt.Errorf("failed to read auto-loaded env file: %w", err)
+		}
+
+		autoEnvMap := EnvStringToMap(string(autoEnvContent))
+		maps.Copy(newEnv, autoEnvMap)
+	}
+
 	// Handle custom env file if provided
 	if customEnvFile != "" {
 		customEnvContent, err := os.ReadFile(customEnvFile)

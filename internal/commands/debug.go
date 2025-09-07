@@ -77,9 +77,16 @@ func RunDebug() {
 		configExists = color.YellowString("Yes")
 	}
 
+	envFile := filepath.Join(config.RootFolder, "user-config", ".env")
+	envExists := "No"
+	if _, err := os.Stat(envFile); err == nil {
+		envExists = color.YellowString("Yes")
+	}
+
 	fmt.Printf("\n--- %s ---\n", color.BlueString("Tipi configuration"))
 	configTable := tablewriter.NewWriter(os.Stdout)
 	configTable.Append([]string{"Custom tipi docker config", configExists})
+	configTable.Append([]string{"Custom environment file", envExists})
 	configTable.Render()
 
 	fmt.Printf("\n--- %s ---\n", color.BlueString("Settings.json"))
