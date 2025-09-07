@@ -196,25 +196,21 @@ func GenerateEnvFile(customEnvFile string) error {
 
 	// Auto-load .env from user-config/.env if it exists
 	autoEnvPath := filepath.Join(config.RootFolder, "user-config", ".env")
-	if _, err := os.Stat(autoEnvPath); err == nil {
-		autoEnvContent, err := os.ReadFile(autoEnvPath)
-		if err != nil {
-			return fmt.Errorf("failed to read auto-loaded env file: %w", err)
-		}
-
+	if autoEnvContent, err := os.ReadFile(autoEnvPath); err == nil {
 		autoEnvMap := EnvStringToMap(string(autoEnvContent))
 		maps.Copy(newEnv, autoEnvMap)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("failed to read auto-loaded env file %q: %w", autoEnvPath, err)
 	}
 
 	// Handle custom env file if provided
 	if customEnvFile != "" {
-		customEnvContent, err := os.ReadFile(customEnvFile)
-		if err != nil {
+		if customEnvContent, err := os.ReadFile(customEnvFile); err != nil {
+			customEnvMap := EnvStringToMap(string(customEnvContent))
+			maps.Copy(newEnv, customEnvMap)
+		} else {
 			return fmt.Errorf("failed to read custom env file: %w", err)
 		}
-
-		customEnvMap := EnvStringToMap(string(customEnvContent))
-		maps.Copy(newEnv, customEnvMap)
 	}
 
 	// Write the new env file
