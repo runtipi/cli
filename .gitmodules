@@ -1,0 +1,3 @@
+[submodule "runtipi-docs"]
+	path = runtipi-docs
+	url = git@github.com:runtipi/runtipi-docs.git
