@@ -77,7 +77,7 @@ func RunDebug() {
 		configExists = color.YellowString("Yes")
 	}
 
-	envFile := filepath.Join(config.RootFolder, "user-config", ".env")
+	envFile := filepath.Join(config.RootFolder, "user-config", "tipi.env")
 	envExists := "No"
 	if _, err := os.Stat(envFile); err == nil {
 		envExists = color.YellowString("Yes")
