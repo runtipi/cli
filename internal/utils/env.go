@@ -205,7 +205,7 @@ func GenerateEnvFile(customEnvFile string) error {
 
 	// Handle custom env file if provided
 	if customEnvFile != "" {
-		if customEnvContent, err := os.ReadFile(customEnvFile); err != nil {
+		if customEnvContent, err := os.ReadFile(customEnvFile); err == nil {
 			customEnvMap := EnvStringToMap(string(customEnvContent))
 			maps.Copy(newEnv, customEnvMap)
 		} else {
