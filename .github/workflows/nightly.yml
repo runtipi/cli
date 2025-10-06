@@ -27,6 +27,20 @@ jobs:
             goarch: amd64
             bin_name: runtipi-cli
             artifact_name: runtipi-cli-linux-x86_64
+            
+          - release_for: macos-x86_64
+            os: ubuntu-latest
+            goos: darwin
+            goarch: amd64
+            bin_name: runtipi-cli
+            artifact_name: runtipi-cli-macos-x86_64
+
+          - release_for: macos-apple-aarch64
+            os: ubuntu-latest
+            goos: darwin
+            goarch: arm64
+            bin_name: runtipi-cli
+            artifact_name: runtipi-cli-macos-apple-aarch64
 
     runs-on: ${{ matrix.platform.os }}
     steps:
@@ -55,6 +69,7 @@ jobs:
             ./cmd/runtipi/main.go
 
       - name: Compress with upx
+        if: matrix.platform.goos == 'linux'
         run: |
           sudo apt-get install -y upx
           upx --best --lzma ${{ matrix.platform.bin_name }}
@@ -78,10 +93,10 @@ jobs:
         uses: actions/download-artifact@v5
 
       - name: Move artifacts
-        run: for dir in runtipi-cli-linux-*; do mv "$dir/runtipi-cli" "${dir}.cli" && rm -rf "$dir" && mv "${dir}.cli" "$dir"; done
+        run: for dir in runtipi-cli-*; do mv "$dir/runtipi-cli" "${dir}.cli" && rm -rf "$dir" && mv "${dir}.cli" "$dir"; done
 
       - name: Compress artifacts
-        run: for file in runtipi-cli-linux-*; do tar -czvf "$file.tar.gz" "$file" && rm -rf "$file"; done
+        run: for file in runtipi-cli-*; do tar -czvf "$file.tar.gz" "$file" && rm -rf "$file"; done
 
       - uses: pyTooling/Actions/releaser@r0
         with:
