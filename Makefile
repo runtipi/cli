@@ -41,18 +41,22 @@ available_platforms:
 current_platform:
 	@echo "Current golang target platform: $(TARGET_OS)/$(TARGET_ARCH)"
 
+# String formats to use for output of help command
+header_line_format='--------------------------------------\n%s\n--------------------------------------\n'
+line_format='  %-40s - %s\n' # Fix padding of first column to 40 chars
+
 # Help command
 .PHONY: help
 help:
-	@echo "Available commands:"
-	@echo "  make run ARGS=\"command arguments\"    - Run the program with specified arguments"
-	@echo "  make build                             - Build the program"
-	@echo "  make clean								- Clean build artifacts"
-	@echo "  make available_platforms            	- List golang target platforms available for the build"
-	@echo "  make current_platform					- Print current golang target platform"
-	@echo "  make help								- Show this help message"
-	@echo ""
-	@echo "Example usage:"
-	@echo "  make run ARGS=\"start\"				- Run the program with 'start' command"
-	@echo "  make run ARGS=\"update nightly\"		- Run the program with 'update nightly' command"
-	@echo "  make build GOOS=darwin GOARCH=arm64"	- Build the program for golang target platform 'darwin/arm64' (macOS silicon)
+	@printf -- $(header_line_format) "Available commands"
+	@printf $(line_format) "make run ARGS=\"command arguments\"" 	"Run the program with specified arguments"
+	@printf $(line_format) "make build" 							"Build the program"
+	@printf $(line_format) "make clean"								"Clean build artifacts"
+	@printf $(line_format) "make available_platforms"				"List golang target platforms available for the build"
+	@printf $(line_format) "make current_platform"					"Print current golang target platform"
+	@printf $(line_format) "make help"								"Show this help message"
+	@printf "\n"
+	@printf -- $(header_line_format) "Example usage"
+	@printf $(line_format) "make run ARGS=\"start\""				"Run the program with 'start' command"
+	@printf $(line_format) "make run ARGS=\"update nightly\""		"Run the program with 'update nightly' command"
+	@printf $(line_format) "make build GOOS=darwin GOARCH=arm64"	"Build the program for golang target platform 'darwin/arm64' (macOS silicon)"
