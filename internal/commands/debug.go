@@ -94,10 +94,14 @@ func RunDebug() {
 
 	jsonData, err := os.ReadFile(settingsFilePath)
 	if err == nil {
-		var prettyJSON map[string]any
-		err = json.Unmarshal(jsonData, &prettyJSON)
+		var settingsJSON map[string]any
+		err = json.Unmarshal(jsonData, &settingsJSON)
 		if err == nil {
-			prettyData, err := json.MarshalIndent(prettyJSON, "", "  ")
+			if domain, exists := settingsJSON["domain"]; exists && domain != "" {
+				settingsJSON["domain"] = "<redacted>"
+			}
+
+			prettyData, err := json.MarshalIndent(settingsJSON, "", "  ")
 			if err == nil {
 				fmt.Println(string(prettyData))
 			}
