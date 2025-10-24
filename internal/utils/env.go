@@ -131,6 +131,17 @@ func GenerateEnvFile(customEnvFile string) error {
 		rabbitmqPassword = DeriveEntropy("rabbitmq_password", seed)
 	}
 
+	hashedPassword, err := HashPassword(rabbitmqPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash rabbitmq password: %w", err)
+	}
+
+	lavinmqIniPath := filepath.Join(config.RootFolder, "lavinmq.ini")
+	lavinmqIniContent := fmt.Sprintf("[main]\ndefault_user = tipi\ndefault_password = %s\n", hashedPassword)
+	if err := os.WriteFile(lavinmqIniPath, []byte(lavinmqIniContent), 0644); err != nil {
+		return fmt.Errorf("failed to write lavinmq.ini: %w", err)
+	}
+
 	// Handle app data path
 	appDataPath := settings.AppDataPath
 	if appDataPath == "" {

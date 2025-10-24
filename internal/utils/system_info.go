@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"net"
 	"os"
@@ -33,4 +35,22 @@ func GetSeed(rootDir string) (string, error) {
 func DeriveEntropy(key, seed string) string {
 	hash := sha256.Sum256([]byte(key + seed))
 	return hex.EncodeToString(hash[:])[:32]
+}
+
+func HashPassword(password string) (string, error) {
+	salt := make([]byte, 4)
+	_, err := rand.Read(salt)
+	if err != nil {
+		return "", err
+	}
+
+	salted := append(salt, []byte(password)...)
+
+	hash := sha256.Sum256(salted)
+
+	final := append(salt, hash[:]...)
+
+	encoded := base64.StdEncoding.EncodeToString(final)
+
+	return encoded, nil
 }
