@@ -40,12 +40,6 @@ services:
   runtipi-queue:
     container_name: runtipi-queue
     image: cloudamqp/lavinmq
-    healthcheck:
-      test: ["CMD-SHELL", "lavinmqctl status"]
-      interval: 5s
-      timeout: 10s
-      retries: 20
-      start_period: 5s
     restart: unless-stopped
     volumes:
       - ./lavinmq.ini:/etc/lavinmq/lavinmq.ini
@@ -68,7 +62,7 @@ services:
       runtipi-db:
         condition: service_healthy
       runtipi-queue:
-        condition: service_healthy
+        condition: service_started
     env_file:
       - .env
     volumes:
