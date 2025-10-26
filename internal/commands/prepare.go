@@ -40,8 +40,10 @@ func PrepareEnvironment(args types.StartArgs) error {
 			spin.Finish()
 			return fmt.Errorf("failed to ensure file permissions: %w", err)
 		}
+		spin.Succeed("File permissions ok")
+	} else {
+		spin.Warn("File permissions check skipped")
 	}
-	spin.Succeed("File permissions ok")
 	spin.Finish()
 
 	return nil
