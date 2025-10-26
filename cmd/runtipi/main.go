@@ -71,6 +71,7 @@ func main() {
 
 	// Common flags
 	var startArgs types.StartArgs
+	var prepareArgs types.StartArgs
 	var restartArgs types.StartArgs
 	var updateArgs types.UpdateArgs
 	var appArgs types.AppArgs
@@ -86,6 +87,17 @@ func main() {
 	}
 	startCmd.Flags().StringVar(&startArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
 	startCmd.Flags().BoolVar(&startArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
+
+	prepareCmd := &cobra.Command{
+		Use:   "prepare",
+		Short: "Prepare the environment without starting containers",
+		Long:  "Prepare the Runtipi environment by checking permissions, copying files, and generating configuration. This does not start any Docker containers.",
+		Run: func(cmd *cobra.Command, args []string) {
+			commands.RunPrepare(prepareArgs)
+		},
+	}
+	prepareCmd.Flags().StringVar(&prepareArgs.EnvFile, "env-file", "", "Path to a custom .env file. Can be relative to the current directory or absolute.")
+	prepareCmd.Flags().BoolVar(&prepareArgs.NoPermissions, "no-permissions", false, "Skip setting file permissions (not recommended)")
 
 	// Stop command
 	stopCmd := &cobra.Command{
@@ -344,6 +356,7 @@ func main() {
 
 	// Add commands to root command
 	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(prepareCmd)
 	rootCmd.AddCommand(stopCmd)
 	rootCmd.AddCommand(restartCmd)
 	rootCmd.AddCommand(updateCmd)

@@ -12,53 +12,27 @@ import (
 	"github.com/runtipi/cli/internal/utils"
 )
 
-func RunStart(args types.StartArgs) {
-	// Validate args
+func validateStartArgs(args types.StartArgs) error {
 	if args.EnvFile != "" {
 		if _, err := os.Stat(args.EnvFile); os.IsNotExist(err) {
-			fmt.Printf("Error: file %s does not exist\n", args.EnvFile)
-			return
+			return fmt.Errorf("file %s does not exist", args.EnvFile)
 		}
 	}
+	return nil
+}
 
-	spin := components.NewSpinner("Checking user permissions")
-	if err := utils.EnsureDocker(); err != nil {
-		spin.Fail(err.Error())
-		spin.Finish()
+func RunStart(args types.StartArgs) {
+	if err := validateStartArgs(args); err != nil {
+		fmt.Printf("Error: %v\n", err)
 		return
 	}
-	spin.Succeed("User permissions are ok")
 
-	spin.SetMessage("Copying system files...")
-	if err := utils.CopySystemFiles(); err != nil {
-		spin.Fail("Failed to copy system files")
-		spin.Finish()
+	if err := PrepareEnvironment(args); err != nil {
 		fmt.Printf("\nError: %v\n", err)
 		return
 	}
-	spin.Succeed("Copied system files")
 
-	spin.SetMessage("Generating .env file...")
-	if err := utils.GenerateEnvFile(args.EnvFile); err != nil {
-		spin.Fail("Failed to generate .env file")
-		spin.Finish()
-		fmt.Printf("\nError: %v\n", err)
-		return
-	}
-	spin.Succeed("Generated .env file")
-
-	if !args.NoPermissions {
-		spin.SetMessage("Ensuring file permissions... This may take a while depending on how many files there are to fix")
-		if err := utils.EnsureFilePermissions(); err != nil {
-			spin.Fail(err.Error())
-			spin.Finish()
-			fmt.Printf("\nError: %v\n", err)
-			return
-		}
-	}
-	spin.Succeed("File permissions ok")
-
-	spin.SetMessage("Pulling images...")
+	spin := components.NewSpinner("Pulling images...")
 
 	envFilePath := filepath.Join(config.RootFolder, ".env")
 	cmd := exec.Command(
