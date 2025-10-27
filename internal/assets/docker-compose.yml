@@ -39,23 +39,24 @@ services:
 
   runtipi-queue:
     container_name: runtipi-queue
-    image: cloudamqp/lavinmq
+    image: rabbitmq:4-alpine
     restart: unless-stopped
-    volumes:
-      - ./lavinmq.ini:/etc/lavinmq/lavinmq.ini
     ports:
       - 5672:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: tipi
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     networks:
       - tipi_main_network
 
   runtipi:
     container_name: runtipi
     healthcheck:
+      start_period: 10s
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 5s
       timeout: 10s
       retries: 20
-      start_period: 10s
     image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
     depends_on:
