@@ -64,7 +64,7 @@ jobs:
           upx --best --lzma ${{ matrix.platform.bin_name }}
 
       - name: Upload CLI
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.platform.artifact_name }}
           path: ${{ matrix.platform.bin_name }}
