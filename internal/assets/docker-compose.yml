@@ -42,7 +42,7 @@ services:
     image: rabbitmq:4-alpine
     restart: unless-stopped
     ports:
-      - 5672:5672
+      - 127.0.0.1:5672:5672
     environment:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
