@@ -1,10 +1,10 @@
 module github.com/runtipi/cli
 
-go 1.24.1
+go 1.24.2
 
 require (
-	github.com/Delta456/box-cli-maker/v2 v2.3.0
 	github.com/Masterminds/semver/v3 v3.4.0
+	github.com/box-cli-maker/box-cli-maker/v3 v3.0.0
 	github.com/briandowns/spinner v1.23.2
 	github.com/fatih/color v1.18.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
@@ -15,15 +15,20 @@ require (
 )
 
 require (
+	github.com/charmbracelet/colorprofile v0.4.1 // indirect
+	github.com/charmbracelet/x/ansi v0.11.6 // indirect
+	github.com/charmbracelet/x/term v0.2.2 // indirect
+	github.com/clipperhouse/displaywidth v0.9.0 // indirect
+	github.com/clipperhouse/stringish v0.1.1 // indirect
+	github.com/clipperhouse/uax29/v2 v2.5.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
-	github.com/gookit/color v1.5.2 // indirect
-	github.com/huandu/xstrings v1.3.2 // indirect
+	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/muesli/reflow v0.3.0 // indirect
+	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
 	github.com/olekukonko/ll v0.0.9 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
@@ -33,6 +38,6 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/term v0.1.0 // indirect
 )

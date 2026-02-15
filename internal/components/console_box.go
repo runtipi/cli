@@ -1,7 +1,8 @@
 package components
 
 import (
-	"github.com/Delta456/box-cli-maker/v2"
+	"fmt"
+	"github.com/box-cli-maker/box-cli-maker/v3"
 )
 
 type ConsoleBox struct {
@@ -21,14 +22,12 @@ func NewConsoleBox(title, body string, width int, boxColor string) *ConsoleBox {
 }
 
 func (b *ConsoleBox) Print() {
-	box := box.New(box.Config{
-		Py:           2,
-		Px:           2,
-		Type:         "Double",
-		Color:        b.color,
-		TitlePos:     "Top",
-		ContentAlign: "Center",
-	})
+	box := box.NewBox().
+		Style(box.Double).
+		Padding(2, 2).
+		TitlePosition(box.Top).
+		ContentAlign(box.Center).
+		Color(b.color)
 
-	box.Print(b.title, b.body)
+	fmt.Println(box.MustRender(b.title, b.body))
 }
