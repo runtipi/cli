@@ -79,7 +79,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
 
       - name: Move artifacts
         run: for dir in runtipi-cli-linux-*; do mv "$dir/runtipi-cli" "${dir}.cli" && rm -rf "$dir" && mv "${dir}.cli" "$dir"; done
