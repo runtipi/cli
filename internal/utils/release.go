@@ -8,12 +8,15 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/runtipi/cli/internal/config"
 )
+
+var NonPreReleaseTags = []string{"nightly", "e2e"}
 
 type GitHubRelease struct {
 	TagName     string `json:"tag_name"`
@@ -28,32 +31,40 @@ type GitHubRelease struct {
 	} `json:"assets"`
 }
 
-func GetLatestRelease() (string, error) {
-	url := "https://api.github.com/repos/runtipi/runtipi/releases/latest"
-
+func GetReleases(url string) ([]GitHubRelease, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to create request: %v", err)
+		return nil, fmt.Errorf("failed to create request: %v", err)
 	}
 
 	req.Header.Set("User-Agent", "Runtipi-CLI")
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to send request: %v", err)
+		return nil, fmt.Errorf("failed to send request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to fetch latest release. Status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("failed to fetch releases. Status code: %d", resp.StatusCode)
 	}
 
-	var release GitHubRelease
-	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
-		return "", fmt.Errorf("failed to parse latest release: %v", err)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	return release.TagName, nil
+	// The latest release is not returned in an array so we will try to decode it as a single release
+	var releases []GitHubRelease
+	if err := json.Unmarshal(body, &releases); err != nil {
+		var release GitHubRelease
+		if err := json.Unmarshal(body, &release); err != nil {
+			return nil, fmt.Errorf("failed to parse releases: %v", err)
+		}
+		releases = append(releases, release)
+	}
+
+	return releases, nil
 }
 
 func IsMajorBump(currentVersion, newVersion string) bool {
@@ -189,4 +200,15 @@ func FindReleaseByVersion(version string) (GitHubRelease, error) {
 	}
 
 	return GitHubRelease{}, fmt.Errorf("release not found. Did you forget the v prefix? (e.g. v4.0.0 instead of 4.0.0)")
+}
+
+func FilterNonPreReleases(releases []GitHubRelease) []GitHubRelease {
+	var filtered []GitHubRelease
+	for _, release := range releases {
+		if slices.Contains(NonPreReleaseTags, release.TagName) || !release.Prerelease {
+			continue
+		}
+		filtered = append(filtered, release)
+	}
+	return filtered
 }

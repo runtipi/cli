@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	version   string
-	commit    string
-	buildDate string
+	version   = "dev"
+	commit    = "unknown"
+	buildDate = "unknown"
 )
 
 func init() {
@@ -43,16 +43,6 @@ func init() {
 
 	if envRootFolder := os.Getenv("ROOT_FOLDER_HOST"); envRootFolder != "" {
 		config.RootFolder = envRootFolder
-	}
-
-	if version == "" {
-		version = "dev"
-	}
-	if commit == "" {
-		commit = "unknown"
-	}
-	if buildDate == "" {
-		buildDate = "unknown"
 	}
 
 	config.Info = config.AppInfo{
