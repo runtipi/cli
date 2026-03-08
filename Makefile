@@ -1,5 +1,10 @@
 # Makefile for runtipi CLI
 
+# Build values
+VERSION := nightly
+COMMIT := $(shell git rev-parse HEAD)
+DATE := $(shell date +%Y-%m-%dT%H:%M:%S%z)
+
 # Define the root folder path
 ROOT_FOLDER_HOST := ~/temp/runtipi
 
@@ -7,7 +12,7 @@ ROOT_FOLDER_HOST := ~/temp/runtipi
 .PHONY: run
 run:
 	@mkdir -p $(ROOT_FOLDER_HOST)
-	@ROOT_FOLDER_HOST=$(ROOT_FOLDER_HOST) go run -ldflags="-X main.version=nightly -X main.commit=$(git rev-parse HEAD) -X main.buildDate=$(date +%Y-%m-%dT%H:%M:%S%z)" cmd/runtipi/main.go $(ARGS)
+	@ROOT_FOLDER_HOST=$(ROOT_FOLDER_HOST) go run -ldflags="-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.buildDate=$(DATE)" cmd/runtipi/main.go $(ARGS)
 
 # Build the program
 .PHONY: build

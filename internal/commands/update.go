@@ -13,23 +13,51 @@ import (
 	"github.com/runtipi/cli/internal/utils"
 )
 
+const PreReleaseWarning = "You are updating to pre-release version which may contain bugs, we are not responsible for any issues that may arise"
+
 func RunUpdate(args types.UpdateArgs) {
 	spin := components.NewSpinner("")
 	spin.SetMessage("Grabbing releases from GitHub")
 
 	var wantedVersion string
-	if args.Version.IsLatest() {
-		latest, err := utils.GetLatestRelease()
+
+	switch args.Version.String() {
+	case "latest":
+		latest, err := utils.GetReleases("https://api.github.com/repos/runtipi/runtipi/releases/latest")
 		if err != nil {
 			spin.Fail("Failed to fetch latest release")
 			spin.Finish()
 			fmt.Printf("\nError: %v\n", err)
 			return
 		}
-		wantedVersion = latest
-	} else if args.Version.IsNightly() {
+		if len(latest) == 0 {
+			spin.Fail("Failed to fetch latest release")
+			spin.Finish()
+			fmt.Printf("\nError: No releases found\n")
+			return
+		}
+		wantedVersion = latest[0].TagName
+	case "nightly":
+		spin.Warn(PreReleaseWarning)
 		wantedVersion = "nightly"
-	} else {
+	case "prerelease":
+		spin.Warn(PreReleaseWarning)
+		releases, err := utils.GetReleases("https://api.github.com/repos/runtipi/runtipi/releases")
+		if err != nil {
+			spin.Fail("Failed to fetch latest prerelease")
+			spin.Finish()
+			fmt.Printf("\nError: %v\n", err)
+			return
+		}
+		filtered := utils.FilterNonPreReleases(releases)
+		if len(filtered) == 0 {
+			spin.Fail("Failed to fetch latest prerelease")
+			spin.Finish()
+			fmt.Printf("\nError: No prerelease releases found\n")
+			return
+		}
+		wantedVersion = filtered[0].TagName
+	default:
 		wantedVersion = args.Version.String()
 	}
 
@@ -47,7 +75,7 @@ func RunUpdate(args types.UpdateArgs) {
 		return
 	}
 
-	spin.Succeed("Tipi updated successfully. Starting new CLI")
+	spin.Succeed("Runtipi updated successfully. Starting new CLI")
 	spin.Finish()
 
 	newExecutablePath := filepath.Join(config.RootFolder, "runtipi-cli")

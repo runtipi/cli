@@ -83,9 +83,9 @@ func RunDebug() {
 		envExists = color.YellowString("Yes")
 	}
 
-	fmt.Printf("\n--- %s ---\n", color.BlueString("Tipi configuration"))
+	fmt.Printf("\n--- %s ---\n", color.BlueString("Runtipi configuration"))
 	configTable := tablewriter.NewWriter(os.Stdout)
-	configTable.Append([]string{"Custom tipi docker config", configExists})
+	configTable.Append([]string{"Custom runtipi docker config", configExists})
 	configTable.Append([]string{"Custom environment file", envExists})
 	configTable.Render()
 
