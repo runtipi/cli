@@ -205,7 +205,7 @@ func FindReleaseByVersion(version string) (GitHubRelease, error) {
 func FilterNonPreReleases(releases []GitHubRelease) []GitHubRelease {
 	var filtered []GitHubRelease
 	for _, release := range releases {
-		if slices.Contains(NonPreReleaseTags, release.TagName) {
+		if slices.Contains(NonPreReleaseTags, release.TagName) || !release.Prerelease {
 			continue
 		}
 		filtered = append(filtered, release)
