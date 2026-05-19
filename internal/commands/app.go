@@ -67,6 +67,28 @@ func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error,
 	}
 }
 
+func handleSimpleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
+	if err != nil {
+		spin.Fail(errorMessage)
+		fmt.Printf("Error: %v\n", err)
+		spin.Finish()
+		return
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		spin.Succeed(successMessage)
+	} else {
+		body, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Error code: %d\n", resp.StatusCode)
+		fmt.Printf("Response: %s\n", string(body))
+		spin.Fail(errorMessage)
+	}
+
+	spin.Finish()
+}
+
 func RunApp(args types.AppArgs) {
 	lifecycleURL := utils.GetAPIBaseURL("app-lifecycle")
 	backupsURL := utils.GetAPIBaseURL("backups")
@@ -156,6 +178,17 @@ func RunApp(args types.AppArgs) {
 		handleAPIResponse(spin, resp, err, "App updated successfully!", errorMessage)
 
 	case types.AppCommandStartAll:
-		fmt.Println("Start all apps: Not implemented yet")
+		spin := components.NewSpinner("Starting all apps...")
+		url := fmt.Sprintf("%s/start-all", lifecycleURL)
+		resp, err := utils.APIRequest(url, "POST", "{}")
+		errorMessage := "Failed to start all apps. See logs/error.log for more details."
+		handleSimpleAPIResponse(spin, resp, err, "All apps start queued successfully!", errorMessage)
+
+	case types.AppCommandStopAll:
+		spin := components.NewSpinner("Stopping all apps...")
+		url := fmt.Sprintf("%s/stop-all", lifecycleURL)
+		resp, err := utils.APIRequest(url, "POST", "{}")
+		errorMessage := "Failed to stop all apps. See logs/error.log for more details."
+		handleSimpleAPIResponse(spin, resp, err, "All apps stop queued successfully!", errorMessage)
 	}
 }
