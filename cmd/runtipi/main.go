@@ -7,6 +7,7 @@ import (
 
 	"github.com/runtipi/cli/internal/commands"
 	"github.com/runtipi/cli/internal/config"
+	"github.com/runtipi/cli/internal/flags"
 	"github.com/runtipi/cli/internal/types"
 
 	"github.com/spf13/cobra"
@@ -66,6 +67,7 @@ func main() {
 	var updateArgs types.UpdateArgs
 	var appArgs types.AppArgs
 	var appStoreArgs types.AppStoreArgs
+	var appInstallArgs types.AppInstallFlags
 
 	// Start command
 	startCmd := &cobra.Command{
@@ -192,6 +194,26 @@ func main() {
 		},
 	}
 
+	appInstallCmd := &cobra.Command{
+		Use:   "install [app-urn]",
+		Short: "Install an app",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandInstall
+			appArgs.ID = args[0]
+
+			installOptions, err := flags.BuildAppInstallOptions(cmd, appInstallArgs)
+			if err != nil {
+				fmt.Printf("Error: %v\n", err)
+				os.Exit(1)
+			}
+			appArgs.InstallOptions = installOptions
+
+			commands.RunApp(appArgs)
+		},
+	}
+	flags.BindAppInstallFlags(appInstallCmd, &appInstallArgs)
+
 	appUninstallCmd := &cobra.Command{
 		Use:   "uninstall [app-id]",
 		Short: "Uninstall an app",
@@ -292,6 +314,7 @@ func main() {
 
 	appCmd.AddCommand(appStartCmd)
 	appCmd.AddCommand(appStopCmd)
+	appCmd.AddCommand(appInstallCmd)
 	appCmd.AddCommand(appUninstallCmd)
 	appCmd.AddCommand(appResetCmd)
 	appCmd.AddCommand(appUpdateCmd)

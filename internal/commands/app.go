@@ -94,6 +94,22 @@ func RunApp(args types.AppArgs) {
 	backupsURL := utils.GetAPIBaseURL("backups")
 
 	switch args.Command {
+	case types.AppCommandInstall:
+		spin := components.NewSpinner(fmt.Sprintf("Installing app %s...", args.ID))
+		url := fmt.Sprintf("%s/%s/install", lifecycleURL, args.ID)
+
+		payloadBytes, err := json.Marshal(args.InstallOptions)
+		if err != nil {
+			spin.Fail("Failed to prepare install request payload.")
+			fmt.Printf("Error: %v\n", err)
+			spin.Finish()
+			return
+		}
+
+		resp, err := utils.APIRequest(url, "POST", string(payloadBytes))
+		errorMessage := fmt.Sprintf("Failed to install app %s. See logs/error.log for more details.", args.ID)
+		handleAPIResponse(spin, resp, err, "App installed successfully!", errorMessage)
+
 	case types.AppCommandStart:
 		spin := components.NewSpinner(fmt.Sprintf("Starting app %s...", args.ID))
 		url := fmt.Sprintf("%s/%s/start", lifecycleURL, args.ID)
