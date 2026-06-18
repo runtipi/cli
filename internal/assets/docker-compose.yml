@@ -101,7 +101,7 @@ services:
       # Sane default
       traefik.http.middlewares.runtipi.forwardauth.maxResponseBodySize: 8192
       # Headers below should work for authelia, tinyauth and authentik
-      traefik.http.middlewares.runtipi.forwardAuth.authResponseHeaders: authorization, remote-user, remote-groups, remote-name, remote-email, x-authentik-username, x-authentik-groups, x-authentik-entitlements, x-authentik-email, x-authentik-name, x-authentik-uid, x-authentik-jwt, x-authentik-meta-jwks, x-authentik-meta-outpost, x-authentik-meta-provider, x-authentik-meta-app, x-authentik-meta-version
+      traefik.http.middlewares.runtipi.forwardauth.authResponseHeaders: authorization, remote-user, remote-groups, remote-name, remote-email, x-authentik-username, x-authentik-groups, x-authentik-entitlements, x-authentik-email, x-authentik-name, x-authentik-uid, x-authentik-jwt, x-authentik-meta-jwks, x-authentik-meta-outpost, x-authentik-meta-provider, x-authentik-meta-app, x-authentik-meta-version
 
       # ---- Dashboard ----- #
       traefik.http.services.dashboard.loadbalancer.server.port: 3000
