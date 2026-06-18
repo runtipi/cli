@@ -281,6 +281,15 @@ func main() {
 		},
 	}
 
+	appStopAllCmd := &cobra.Command{
+		Use:   "stop-all",
+		Short: "Stop all apps",
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandStopAll
+			commands.RunApp(appArgs)
+		},
+	}
+
 	appCmd.AddCommand(appStartCmd)
 	appCmd.AddCommand(appStopCmd)
 	appCmd.AddCommand(appUninstallCmd)
@@ -291,6 +300,7 @@ func main() {
 	appCmd.AddCommand(appListBackupsCmd)
 	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
+	appCmd.AddCommand(appStopAllCmd)
 
 	// AppStore command and subcommands
 	appStoreCmd := &cobra.Command{

@@ -31,6 +31,7 @@ const (
 	AppCommandListBackups  AppCommand = "list-backups"
 	AppCommandDeleteBackup AppCommand = "delete-backup"
 	AppCommandStartAll     AppCommand = "start-all"
+	AppCommandStopAll      AppCommand = "stop-all"
 )
 
 type AppStoreArgs struct {
