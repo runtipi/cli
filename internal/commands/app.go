@@ -20,6 +20,26 @@ type AppResponseBody struct {
 	RequestID string `json:"requestId"`
 }
 
+type InstalledAppsResponse struct {
+	Installed []InstalledApp `json:"installed"`
+}
+
+type InstalledApp struct {
+	Info AppInfo `json:"info"`
+}
+
+type AppInfo struct {
+	URN           string `json:"urn"`
+	Version       string `json:"version"`
+	LatestVersion string `json:"latestVersion"`
+}
+
+type appUpdate struct {
+	URN            string
+	CurrentVersion string
+	LatestVersion  string
+}
+
 func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
 	if err != nil {
 		spin.Fail(errorMessage)
@@ -87,6 +107,68 @@ func handleSimpleAPIResponse(spin *components.Spinner, resp *http.Response, err 
 	}
 
 	spin.Finish()
+}
+
+func handleAvailableUpdates() {
+	spin := components.NewSpinner("Checking for available updates...")
+	installedURL := utils.GetAPIBaseURL("apps/installed")
+	resp, err := utils.APIRequest(installedURL, "GET", "")
+
+	if err != nil {
+		spin.Fail("Failed to check for available updates.")
+		fmt.Printf("Error: %v\n", err)
+		spin.Finish()
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		fmt.Printf("Error code: %d\n", resp.StatusCode)
+		fmt.Printf("Response: %s\n", string(body))
+		spin.Fail("Failed to check for available updates.")
+		spin.Finish()
+		return
+	}
+
+	var response InstalledAppsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		spin.Fail("Failed to parse API response.")
+		fmt.Printf("Error: %v\n", err)
+		spin.Finish()
+		return
+	}
+
+	var updates []appUpdate
+	for _, app := range response.Installed {
+		info := app.Info
+		if info.URN == "" || info.Version == "" || info.LatestVersion == "" {
+			continue
+		}
+		if info.Version != info.LatestVersion {
+			updates = append(updates, appUpdate{
+				URN:            info.URN,
+				CurrentVersion: info.Version,
+				LatestVersion:  info.LatestVersion,
+			})
+		}
+	}
+
+	if len(updates) == 0 {
+		spin.Succeed("All apps are up to date.")
+		spin.Finish()
+		return
+	}
+
+	spin.Succeed(fmt.Sprintf("Found %d app(s) with available updates.", len(updates)))
+	spin.Finish()
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header([]string{"App", "Current Version", "Latest Version"})
+	for _, u := range updates {
+		table.Append([]string{u.URN, u.CurrentVersion, u.LatestVersion})
+	}
+	table.Render()
 }
 
 func RunApp(args types.AppArgs) {
@@ -178,99 +260,7 @@ func RunApp(args types.AppArgs) {
 		handleAPIResponse(spin, resp, err, "App updated successfully!", errorMessage)
 
 	case types.AppCommandAvailableUpdates:
-		spin := components.NewSpinner("Checking for available updates...")
-		installedURL := utils.GetAPIBaseURL("apps/installed")
-		resp, err := utils.APIRequest(installedURL, "GET", "")
-		if err != nil {
-			spin.Fail("Failed to check for available updates.")
-			fmt.Printf("Error: %v\n", err)
-			spin.Finish()
-			return
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			body, _ := io.ReadAll(resp.Body)
-			fmt.Printf("Error code: %d\n", resp.StatusCode)
-			fmt.Printf("Response: %s\n", string(body))
-			spin.Fail("Failed to check for available updates.")
-			spin.Finish()
-			return
-		}
-
-		body, readErr := io.ReadAll(resp.Body)
-		if readErr != nil {
-			spin.Fail("Failed to read API response.")
-			fmt.Printf("Error: %v\n", readErr)
-			spin.Finish()
-			return
-		}
-
-		var response map[string]any
-		if jsonErr := json.Unmarshal(body, &response); jsonErr != nil {
-			spin.Fail("Failed to parse API response.")
-			fmt.Printf("Error: %v\n", jsonErr)
-			spin.Finish()
-			return
-		}
-
-		installedApps, ok := response["installed"].([]any)
-		if !ok {
-			spin.Fail("Unexpected response format: 'installed' field is missing or invalid.")
-			spin.Finish()
-			return
-		}
-
-		type appUpdate struct {
-			URN           string
-			CurrentVersion string
-			LatestVersion  string
-		}
-
-		var updates []appUpdate
-		for _, app := range installedApps {
-			appMap, ok := app.(map[string]any)
-			if !ok {
-				continue
-			}
-
-			info, ok := appMap["info"].(map[string]any)
-			if !ok {
-				continue
-			}
-
-			urn, _ := info["urn"].(string)
-			currentVersion, _ := info["version"].(string)
-			latestVersion, _ := info["latestVersion"].(string)
-
-			if urn == "" || currentVersion == "" || latestVersion == "" {
-				continue
-			}
-
-			if currentVersion != latestVersion {
-				updates = append(updates, appUpdate{
-					URN:            urn,
-					CurrentVersion: currentVersion,
-					LatestVersion:  latestVersion,
-				})
-			}
-		}
-
-		if len(updates) == 0 {
-			spin.Succeed("All apps are up to date.")
-			spin.Finish()
-			return
-		}
-
-		spin.Succeed(fmt.Sprintf("Found %d app(s) with available updates.", len(updates)))
-		spin.Finish()
-
-		table := tablewriter.NewWriter(os.Stdout)
-		table.Header([]string{"App", "Current Version", "Latest Version"})
-		for _, u := range updates {
-			table.Append([]string{u.URN, u.CurrentVersion, u.LatestVersion})
-		}
-		table.Render()
+		handleAvailableUpdates()
 
 	case types.AppCommandStartAll:
 		spin := components.NewSpinner("Starting all apps...")
