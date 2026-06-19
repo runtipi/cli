@@ -21,17 +21,18 @@ type AppArgs struct {
 type AppCommand string
 
 const (
-	AppCommandStart        AppCommand = "start"
-	AppCommandStop         AppCommand = "stop"
-	AppCommandUninstall    AppCommand = "uninstall"
-	AppCommandReset        AppCommand = "reset"
-	AppCommandUpdate       AppCommand = "update"
-	AppCommandBackup       AppCommand = "backup"
-	AppCommandRestore      AppCommand = "restore"
-	AppCommandListBackups  AppCommand = "list-backups"
-	AppCommandDeleteBackup AppCommand = "delete-backup"
-	AppCommandStartAll     AppCommand = "start-all"
-	AppCommandStopAll      AppCommand = "stop-all"
+	AppCommandStart        		AppCommand = "start"
+	AppCommandStop         		AppCommand = "stop"
+	AppCommandUninstall    		AppCommand = "uninstall"
+	AppCommandReset        		AppCommand = "reset"
+	AppCommandUpdate       		AppCommand = "update"
+	AppCommandBackup       		AppCommand = "backup"
+	AppCommandRestore      		AppCommand = "restore"
+	AppCommandListBackups  		AppCommand = "list-backups"
+	AppCommandDeleteBackup 		AppCommand = "delete-backup"
+	AppCommandStartAll          AppCommand = "start-all"
+	AppCommandStopAll           AppCommand = "stop-all"
+	AppCommandAvailableUpdates  AppCommand = "available-updates"
 )
 
 type AppStoreArgs struct {

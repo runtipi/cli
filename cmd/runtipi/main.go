@@ -290,6 +290,15 @@ func main() {
 		},
 	}
 
+	appAvailableUpdatesCmd := &cobra.Command{
+		Use:   "available-updates",
+		Short: "List apps with available updates",
+		Run: func(cmd *cobra.Command, args []string) {
+			appArgs.Command = types.AppCommandAvailableUpdates
+			commands.RunApp(appArgs)
+		},
+	}
+
 	appCmd.AddCommand(appStartCmd)
 	appCmd.AddCommand(appStopCmd)
 	appCmd.AddCommand(appUninstallCmd)
@@ -301,6 +310,7 @@ func main() {
 	appCmd.AddCommand(appDeleteBackupCmd)
 	appCmd.AddCommand(appStartAllCmd)
 	appCmd.AddCommand(appStopAllCmd)
+	appCmd.AddCommand(appAvailableUpdatesCmd)
 
 	// AppStore command and subcommands
 	appStoreCmd := &cobra.Command{
