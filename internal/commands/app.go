@@ -25,19 +25,31 @@ type InstalledAppsResponse struct {
 }
 
 type InstalledApp struct {
-	Info AppInfo `json:"info"`
+	Info     AppInfo     `json:"info"`
+	App      AppDetails  `json:"app"`
+	Metadata AppMetadata `json:"metadata"`
 }
 
 type AppInfo struct {
-	URN           string `json:"urn"`
-	Version       string `json:"version"`
-	LatestVersion string `json:"latestVersion"`
+	URN     string `json:"urn"`
+	Version string `json:"version"`
+}
+
+type AppDetails struct {
+	Version int `json:"version"`
+}
+
+type AppMetadata struct {
+	LatestVersion       int    `json:"latestVersion"`
+	LatestDockerVersion string `json:"latestDockerVersion"`
 }
 
 type appUpdate struct {
 	URN            string
 	CurrentVersion string
 	LatestVersion  string
+	TipiVersion    int
+	LatestTipi     int
 }
 
 func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
@@ -141,15 +153,16 @@ func handleAvailableUpdates() {
 
 	var updates []appUpdate
 	for _, app := range response.Installed {
-		info := app.Info
-		if info.URN == "" || info.Version == "" || info.LatestVersion == "" {
+		if app.Info.URN == "" {
 			continue
 		}
-		if info.Version != info.LatestVersion {
+		if app.App.Version < app.Metadata.LatestVersion {
 			updates = append(updates, appUpdate{
-				URN:            info.URN,
-				CurrentVersion: info.Version,
-				LatestVersion:  info.LatestVersion,
+				URN:            app.Info.URN,
+				CurrentVersion: app.Info.Version,
+				LatestVersion:  app.Metadata.LatestDockerVersion,
+				TipiVersion:    app.App.Version,
+				LatestTipi:     app.Metadata.LatestVersion,
 			})
 		}
 	}
@@ -164,9 +177,15 @@ func handleAvailableUpdates() {
 	spin.Finish()
 
 	table := tablewriter.NewWriter(os.Stdout)
-	table.Header([]string{"App", "Current Version", "Latest Version"})
+	table.Header([]string{"App", "Docker Version", "Latest Docker", "Tipi Version", "Latest Tipi"})
 	for _, u := range updates {
-		table.Append([]string{u.URN, u.CurrentVersion, u.LatestVersion})
+		table.Append([]string{
+			u.URN,
+			u.CurrentVersion,
+			u.LatestVersion,
+			fmt.Sprintf("%d", u.TipiVersion),
+			fmt.Sprintf("%d", u.LatestTipi),
+		})
 	}
 	table.Render()
 }
