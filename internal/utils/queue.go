@@ -76,10 +76,10 @@ func ListenForMessage(ctx context.Context, options QueueOptions, resultChan chan
 	observerQueueName := fmt.Sprintf("go_app_events_observer_%d", time.Now().UnixNano())
 	q, err := ch.QueueDeclare(
 		observerQueueName,
-		false,
-		true,
-		false,
-		false,
+		false, // durable
+		true,  // autoDelete
+		true,  // exclusive
+		false, // noWait
 		nil,
 	)
 	if err != nil {
