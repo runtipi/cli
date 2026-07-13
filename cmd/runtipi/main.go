@@ -293,6 +293,7 @@ func main() {
 	appAvailableUpdatesCmd := &cobra.Command{
 		Use:   "available-updates",
 		Short: "List apps with available updates",
+		Args:  cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
 			appArgs.Command = types.AppCommandAvailableUpdates
 			commands.RunApp(appArgs)

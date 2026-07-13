@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/olekukonko/tablewriter"
@@ -21,7 +22,9 @@ type AppResponseBody struct {
 }
 
 type InstalledAppsResponse struct {
-	Installed []InstalledApp `json:"installed"`
+	// A pointer lets us distinguish an empty installed-app list from a
+	// missing or null field in the API response.
+	Installed *[]InstalledApp `json:"installed"`
 }
 
 type InstalledApp struct {
@@ -31,25 +34,65 @@ type InstalledApp struct {
 }
 
 type AppInfo struct {
-	URN     string `json:"urn"`
-	Version string `json:"version"`
+	URN     *string `json:"urn"`
+	Version *string `json:"version"`
 }
 
 type AppDetails struct {
-	Version int `json:"version"`
+	Version *int `json:"version"`
 }
 
 type AppMetadata struct {
-	LatestVersion       int    `json:"latestVersion"`
-	LatestDockerVersion string `json:"latestDockerVersion"`
+	LatestVersion       *int    `json:"latestVersion"`
+	LatestDockerVersion *string `json:"latestDockerVersion"`
 }
 
-type appUpdate struct {
+// AppUpdate describes an app with a newer Tipi version available.
+type AppUpdate struct {
 	URN            string
 	CurrentVersion string
 	LatestVersion  string
 	TipiVersion    int
 	LatestTipi     int
+}
+
+// FindAvailableUpdates validates the installed-app response and returns apps
+// whose Tipi version is behind the latest available version.
+func FindAvailableUpdates(response InstalledAppsResponse) ([]AppUpdate, error) {
+	if response.Installed == nil {
+		return nil, fmt.Errorf("unexpected response format: 'installed' field is missing or null")
+	}
+
+	updates := make([]AppUpdate, 0)
+	for index, app := range *response.Installed {
+		if app.Info.URN == nil || strings.TrimSpace(*app.Info.URN) == "" {
+			return nil, fmt.Errorf("unexpected response format: installed[%d].info.urn is missing or empty", index)
+		}
+		if app.Info.Version == nil || strings.TrimSpace(*app.Info.Version) == "" {
+			return nil, fmt.Errorf("unexpected response format: installed[%d].info.version is missing or empty", index)
+		}
+		if app.App.Version == nil {
+			return nil, fmt.Errorf("unexpected response format: installed[%d].app.version is missing", index)
+		}
+		if app.Metadata.LatestVersion == nil {
+			return nil, fmt.Errorf("unexpected response format: installed[%d].metadata.latestVersion is missing", index)
+		}
+		if app.Metadata.LatestDockerVersion == nil || strings.TrimSpace(*app.Metadata.LatestDockerVersion) == "" {
+			return nil, fmt.Errorf("unexpected response format: installed[%d].metadata.latestDockerVersion is missing or empty", index)
+		}
+
+		if *app.App.Version < *app.Metadata.LatestVersion {
+			updates = append(updates, AppUpdate{
+				URN:            *app.Info.URN,
+				CurrentVersion: *app.Info.Version,
+				LatestVersion:  *app.Metadata.LatestDockerVersion,
+				TipiVersion:    *app.App.Version,
+				LatestTipi:     *app.Metadata.LatestVersion,
+			})
+		}
+	}
+
+	return updates, nil
 }
 
 func handleAPIResponse(spin *components.Spinner, resp *http.Response, err error, successMessage, errorMessage string) {
@@ -151,20 +194,12 @@ func handleAvailableUpdates() {
 		return
 	}
 
-	var updates []appUpdate
-	for _, app := range response.Installed {
-		if app.Info.URN == "" {
-			continue
-		}
-		if app.App.Version < app.Metadata.LatestVersion {
-			updates = append(updates, appUpdate{
-				URN:            app.Info.URN,
-				CurrentVersion: app.Info.Version,
-				LatestVersion:  app.Metadata.LatestDockerVersion,
-				TipiVersion:    app.App.Version,
-				LatestTipi:     app.Metadata.LatestVersion,
-			})
-		}
+	updates, err := FindAvailableUpdates(response)
+	if err != nil {
+		spin.Fail("Failed to validate API response.")
+		fmt.Printf("Error: %v\n", err)
+		spin.Finish()
+		return
 	}
 
 	if len(updates) == 0 {

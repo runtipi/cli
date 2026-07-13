@@ -42,3 +42,6 @@ jobs:
 
       - name: Build Go binary
         run: go build ./cmd/runtipi/main.go
+
+      - name: Run Go tests
+        run: go test ./...
