@@ -93,6 +93,7 @@ services:
     labels:
       # ---- General ----- #
       traefik.enable: true
+      traefik.docker.network: runtipi_tipi_main_network
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       traefik.http.middlewares.runtipi.forwardauth.address: ${RUNTIPI_FORWARD_AUTH_URL:-http://runtipi:3000/api/auth/traefik}
       traefik.http.middlewares.runtipi.forwardauth.authRequestHeaders: Cookie
