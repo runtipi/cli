@@ -35,7 +35,7 @@ services:
       retries: 20
       start_period: 5s
     networks:
-      - tipi_main_network
+      - tipi_core_network
 
   runtipi-queue:
     container_name: runtipi-queue
@@ -47,7 +47,7 @@ services:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     networks:
-      - tipi_main_network
+      - tipi_core_network
 
   runtipi:
     container_name: runtipi
@@ -88,10 +88,13 @@ services:
     environment:
       NODE_ENV: production
     networks:
-      - tipi_main_network
+      tipi_main_network:
+        gw_priority: 1
+      tipi_core_network:
     labels:
       # ---- General ----- #
       traefik.enable: true
+      traefik.docker.network: runtipi_tipi_main_network
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       traefik.http.middlewares.runtipi.forwardauth.address: ${RUNTIPI_FORWARD_AUTH_URL:-http://runtipi:3000/api/auth/traefik}
       traefik.http.middlewares.runtipi.forwardauth.authRequestHeaders: Cookie
@@ -125,6 +128,10 @@ services:
       traefik.http.routers.dashboard-local.service: dashboard
 
 networks:
+  tipi_core_network:
+    driver: bridge
+    internal: true
+    name: runtipi_tipi_core_network
   tipi_main_network:
     driver: bridge
     name: runtipi_tipi_main_network

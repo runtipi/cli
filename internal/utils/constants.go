@@ -7,5 +7,6 @@ const (
 	DefaultDomain         = "example.com"
 	DefaultLocalDomain    = "tipi.local"
 	MinimumDockerVersion  = 28
+	MinimumComposeVersion = "2.33.1"
 	DefaultForwardAuthURL = "http://runtipi:3000/api/auth/traefik"
 )
