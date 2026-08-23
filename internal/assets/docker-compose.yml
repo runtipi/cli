@@ -35,7 +35,7 @@ services:
       retries: 20
       start_period: 5s
     networks:
-      - tipi_main_network
+      - tipi_core_network
 
   runtipi-queue:
     container_name: runtipi-queue
@@ -47,7 +47,7 @@ services:
       RABBITMQ_DEFAULT_USER: tipi
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     networks:
-      - tipi_main_network
+      - tipi_core_network
 
   runtipi:
     container_name: runtipi
@@ -89,6 +89,7 @@ services:
       NODE_ENV: production
     networks:
       - tipi_main_network
+      - tipi_core_network
     labels:
       # ---- General ----- #
       traefik.enable: true
@@ -125,6 +126,10 @@ services:
       traefik.http.routers.dashboard-local.service: dashboard
 
 networks:
+  tipi_core_network:
+    driver: bridge
+    internal: true
+    name: runtipi_tipi_core_network
   tipi_main_network:
     driver: bridge
     name: runtipi_tipi_main_network
