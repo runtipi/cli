@@ -17,6 +17,14 @@ func PrepareEnvironment(args types.StartArgs) error {
 	}
 	spin.Succeed("User permissions are ok")
 
+	spin.SetMessage("Checking Docker Compose version...")
+	if err := utils.EnsureDockerCompose(); err != nil {
+		spin.Fail(err.Error())
+		spin.Finish()
+		return err
+	}
+	spin.Succeed("Docker Compose version is supported")
+
 	spin.SetMessage("Copying system files...")
 	if err := utils.CopySystemFiles(); err != nil {
 		spin.Fail("Failed to copy system files")

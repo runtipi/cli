@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/runtipi/cli/internal/assets"
 	"github.com/runtipi/cli/internal/config"
 )
@@ -32,6 +33,35 @@ func EnsureDocker() error {
 	}
 
 	return nil
+}
+
+func validateDockerComposeVersion(version string) error {
+	installedVersion, err := semver.NewVersion(strings.TrimSpace(version))
+	if err != nil {
+		return fmt.Errorf("failed to parse Docker Compose version %q: %w", version, err)
+	}
+
+	minimumVersion := semver.MustParse(MinimumComposeVersion)
+	installedCoreVersion, err := installedVersion.SetPrerelease("")
+	if err != nil {
+		return fmt.Errorf("failed to normalize Docker Compose version %q: %w", version, err)
+	}
+	if installedCoreVersion.LessThan(minimumVersion) {
+		return fmt.Errorf("Docker Compose version %s is not supported, please update to at least version %s", installedVersion, minimumVersion)
+	}
+
+	return nil
+}
+
+func EnsureDockerCompose() error {
+	cmd := exec.Command("docker", "compose", "version", "--short")
+	outputBytes, err := cmd.Output()
+	if err != nil {
+		return fmt.Errorf("failed to get Docker Compose version: %w", err)
+	}
+
+	version := string(outputBytes)
+	return validateDockerComposeVersion(version)
 }
 
 func CopySystemFiles() error {
