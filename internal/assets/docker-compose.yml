@@ -88,8 +88,9 @@ services:
     environment:
       NODE_ENV: production
     networks:
-      - tipi_main_network
-      - tipi_core_network
+      tipi_main_network:
+        gw_priority: 1
+      tipi_core_network:
     labels:
       # ---- General ----- #
       traefik.enable: true
