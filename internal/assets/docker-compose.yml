@@ -97,9 +97,14 @@ services:
       traefik.docker.network: runtipi_tipi_main_network
       traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
       traefik.http.middlewares.runtipi.forwardauth.address: ${RUNTIPI_FORWARD_AUTH_URL:-http://runtipi:3000/api/auth/traefik}
-      traefik.http.middlewares.runtipi.forwardauth.authRequestHeaders: Cookie
-      traefik.http.middlewares.runtipi.forwardauth.trustForwardHeader: "false"
-      traefik.http.middlewares.runtipi.forwardauth.maxResponseBodySize: "8192"
+      # authRequestHeaders could be added to use more strict headers for the forward auth request,
+      # but it could break some auth providers
+      # Recommended by authelia and authentik
+      traefik.http.middlewares.runtipi.forwardauth.trustForwardHeader: true
+      # Sane default
+      traefik.http.middlewares.runtipi.forwardauth.maxResponseBodySize: 8192
+      # Headers below should work for authelia, tinyauth and authentik
+      traefik.http.middlewares.runtipi.forwardauth.authResponseHeaders: authorization, remote-user, remote-groups, remote-name, remote-email, x-authentik-username, x-authentik-groups, x-authentik-entitlements, x-authentik-email, x-authentik-name, x-authentik-uid, x-authentik-jwt, x-authentik-meta-jwks, x-authentik-meta-outpost, x-authentik-meta-provider, x-authentik-meta-app, x-authentik-meta-version
 
       # ---- Dashboard ----- #
       traefik.http.services.dashboard.loadbalancer.server.port: 3000
