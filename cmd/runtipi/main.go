@@ -225,6 +225,9 @@ func main() {
 			commands.RunApp(appArgs)
 		},
 	}
+	appUpdateCmd.Flags().BoolVar(&appArgs.PerformBackup, "backup", false, "Create a backup before updating (disabled by default)")
+	appUpdateCmd.Flags().BoolVar(&appArgs.NoBackup, "no-backup", false, "Update without creating a backup")
+	appUpdateCmd.MarkFlagsMutuallyExclusive("backup", "no-backup")
 
 	appBackupCmd := &cobra.Command{
 		Use:   "backup [app-id]",

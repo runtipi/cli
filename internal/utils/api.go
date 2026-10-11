@@ -3,6 +3,7 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -56,6 +57,10 @@ func GetAPIBaseURL(endpoint string) string {
 }
 
 func APIRequest(url string, method string, jsonBody string) (*http.Response, error) {
+	return APIRequestWithContext(context.Background(), url, method, jsonBody)
+}
+
+func APIRequestWithContext(ctx context.Context, url string, method string, jsonBody string) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: time.Second * 30,
 	}
@@ -68,9 +73,9 @@ func APIRequest(url string, method string, jsonBody string) (*http.Response, err
 	var req *http.Request
 
 	if jsonBody != "" {
-		req, err = http.NewRequest(method, url, bytes.NewBuffer([]byte(jsonBody)))
+		req, err = http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer([]byte(jsonBody)))
 	} else {
-		req, err = http.NewRequest(method, url, nil)
+		req, err = http.NewRequestWithContext(ctx, method, url, nil)
 	}
 
 	if err != nil {

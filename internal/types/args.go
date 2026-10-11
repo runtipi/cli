@@ -15,6 +15,8 @@ type AppArgs struct {
 	Command        AppCommand
 	ID             string
 	BackupFilename string // Needed only for restore and delete backup commands it can be ommitted for other commands
+	PerformBackup  bool
+	NoBackup       bool
 }
 
 // AppCommand represents the subcommands available for the app command

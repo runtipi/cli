@@ -52,6 +52,13 @@ func RunStart(args types.StartArgs) {
 	spin.Succeed("Images pulled")
 
 	spin.SetMessage("Stopping existing containers...")
+	if err := stopBackend("runtipi"); err != nil {
+		spin.Fail("Failed to drain the backend")
+		spin.Finish()
+		fmt.Printf("\nError: %v\n", err)
+		return
+	}
+
 	containerNames := []string{
 		"runtipi",
 		"runtipi-reverse-proxy",
@@ -61,7 +68,9 @@ func RunStart(args types.StartArgs) {
 	}
 
 	for _, container := range containerNames {
-		exec.Command("docker", "stop", container).Run()
+		if container != "runtipi" {
+			exec.Command("docker", "stop", container).Run()
+		}
 		exec.Command("docker", "rm", container).Run()
 	}
 	spin.Succeed("Existing containers stopped")

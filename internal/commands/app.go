@@ -263,7 +263,7 @@ func RunApp(args types.AppArgs) {
 		url := fmt.Sprintf("%s/%s/backup", backupsURL, args.ID)
 		resp, err := utils.APIRequest(url, "POST", "{}")
 		errorMessage := fmt.Sprintf("Failed to backup app %s. See logs/error.log for more details.", args.ID)
-		handleAPIResponse(spin, resp, err, "App backup created successfully!", errorMessage)
+		handleAppJobResponse(args.ID, spin, resp, err, "App backup created successfully!", errorMessage)
 
 	case types.AppCommandRestore:
 		spin := components.NewSpinner(fmt.Sprintf("Restoring app %s from %s backup...", args.ID, args.BackupFilename))
@@ -309,9 +309,9 @@ func RunApp(args types.AppArgs) {
 	case types.AppCommandUpdate:
 		spin := components.NewSpinner(fmt.Sprintf("Updating app %s...", args.ID))
 		url := fmt.Sprintf("%s/%s/update", lifecycleURL, args.ID)
-		resp, err := utils.APIRequest(url, "PATCH", `{"performBackup": true}`)
+		resp, err := utils.APIRequest(url, "PATCH", fmt.Sprintf(`{"performBackup": %t}`, args.PerformBackup && !args.NoBackup))
 		errorMessage := fmt.Sprintf("Failed to update app %s. See logs/error.log for more details.", args.ID)
-		handleAPIResponse(spin, resp, err, "App updated successfully!", errorMessage)
+		handleAppJobResponse(args.ID, spin, resp, err, "App updated successfully!", errorMessage)
 
 	case types.AppCommandAvailableUpdates:
 		handleAvailableUpdates()
