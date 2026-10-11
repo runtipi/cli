@@ -1,21 +1,21 @@
 # Runtipi Data
-app-data
-apps
-backups
-cache
-data
-logs
-media
-repos
-state
-traefik
-user-config
+/app-data
+/apps
+/backups
+/cache
+/data
+/logs
+/media
+/repos
+/state
+/traefik
+/user-config
 
 # CLI generated files
-docker-compose.yml
-VERSION
-.env
+/docker-compose.yml
+/VERSION
+/.env
 
 # Build out
-runtipi-cli
-main
+/runtipi-cli
+/main
