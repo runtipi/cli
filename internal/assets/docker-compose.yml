@@ -59,7 +59,7 @@ services:
       retries: 20
     image: ghcr.io/runtipi/runtipi:${TIPI_VERSION}
     restart: unless-stopped
-    stop_grace_period: 1h
+    stop_grace_period: 1m
     depends_on:
       runtipi-db:
         condition: service_healthy
