@@ -1,10 +1,12 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/runtipi/cli/internal/components"
 	"github.com/runtipi/cli/internal/config"
@@ -66,7 +68,25 @@ func stopBackend(containerName string) error {
 		return nil
 	}
 
-	if output, err := exec.Command("docker", "stop", "--timeout", "-1", containerID).CombinedOutput(); err != nil {
+	stopCtx, cancelStop := context.WithTimeout(context.Background(), time.Minute)
+	defer cancelStop()
+
+	stopCmd := exec.CommandContext(stopCtx, "docker", "stop", "--timeout", "-1", containerID)
+	stopCmd.WaitDelay = time.Second
+	output, err = stopCmd.CombinedOutput()
+	if stopCtx.Err() == context.DeadlineExceeded {
+		killCtx, cancelKill := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancelKill()
+
+		killCmd := exec.CommandContext(killCtx, "docker", "kill", containerID)
+		killCmd.WaitDelay = time.Second
+		output, err = killCmd.CombinedOutput()
+		if err != nil && strings.Contains(string(output), "is not running") {
+			return nil
+		}
+	}
+
+	if err != nil {
 		return fmt.Errorf("stop backend container: %w: %s", err, strings.TrimSpace(string(output)))
 	}
 
