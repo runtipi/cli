@@ -7,9 +7,11 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/runtipi/cli/internal/config"
+	"github.com/shirou/gopsutil/v3/mem"
 )
 
 type EnvMap map[string]string
@@ -170,6 +172,10 @@ func GenerateEnvFile(customEnvFile string) error {
 		"RABBITMQ_USERNAME":        "tipi",
 		"RABBITMQ_PASSWORD":        rabbitmqPassword,
 		"RUNTIPI_FORWARD_AUTH_URL": settings.ForwardAuthURL,
+	}
+
+	if memory, err := mem.VirtualMemory(); err == nil {
+		newEnv["RUNTIPI_HOST_MEMORY_TOTAL"] = strconv.FormatUint(memory.Total, 10)
 	}
 
 	// Set default values if not present

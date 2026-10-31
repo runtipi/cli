@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/runtipi/cli/internal/assets"
 	"github.com/runtipi/cli/internal/config"
 )
 
@@ -65,9 +64,12 @@ func EnsureDockerCompose() error {
 }
 
 func CopySystemFiles() error {
-	dockerComposeContent := assets.DockerCompose
+	dockerComposeContent, err := renderDockerCompose("/sys/fs/cgroup")
+	if err != nil {
+		return fmt.Errorf("failed to render docker-compose.yml: %w", err)
+	}
 
-	err := os.WriteFile(filepath.Join(config.RootFolder, "docker-compose.yml"), dockerComposeContent, 0664)
+	err = os.WriteFile(filepath.Join(config.RootFolder, "docker-compose.yml"), dockerComposeContent, 0664)
 	if err != nil {
 		return fmt.Errorf("failed to write docker-compose.yml: %w", err)
 	}
