@@ -114,7 +114,7 @@ func EnsureFilePermissions() error {
 		perms string
 		paths []string
 	}{
-		{"777", []string{"state", "data", "apps", "logs", "traefik", "repos", "user-config", "state"}},
+		{"777", []string{"state", "data", "apps", "logs", "traefik", "repos", "user-config"}},
 		{"666", []string{"state/settings.json"}},
 		{"664", []string{".env", "docker-compose.yml", "VERSION"}},
 		{"600", []string{"traefik/shared/acme.json", "state/seed"}},

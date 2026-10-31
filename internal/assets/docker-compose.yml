@@ -78,6 +78,7 @@ services:
       - ${RUNTIPI_USER_CONFIG_PATH:-.}/user-config:/data/user-config
       - ${RUNTIPI_APP_DATA_PATH:-.}/app-data:/app-data
       - ${RUNTIPI_BACKUPS_PATH:-.}/backups:/data/backups
+      - runtipi_auth:/data/.secrets
       # Static
       - ./.env:/data/.env
       - ./cache:/cache
@@ -136,3 +137,6 @@ networks:
   tipi_main_network:
     driver: bridge
     name: runtipi_tipi_main_network
+
+volumes:
+  runtipi_auth:

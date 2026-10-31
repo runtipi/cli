@@ -153,6 +153,7 @@ func GenerateEnvFile(customEnvFile string) error {
 		"ARCHITECTURE":             runtime.GOARCH,
 		"TIPI_VERSION":             string(version),
 		"ROOT_FOLDER_HOST":         config.RootFolder,
+		"JWT_SECRET":               envMap["JWT_SECRET"],
 		"NGINX_PORT":               RawToString(settings.Port),
 		"NGINX_PORT_SSL":           RawToString(settings.SSLPort),
 		"RUNTIPI_APP_DATA_PATH":    appDataPath,

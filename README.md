@@ -17,6 +17,10 @@ The CLI is a core component of Runtipi, so it already exists in your installatio
 ./runtipi-cli help
 ```
 
+CLI authentication uses a private key created by the backend at `/data/.secrets/cli-secret` in the persistent Docker-managed `runtipi_auth` volume. Upgrade the CLI and backend together and recreate the backend with the updated Compose file before running authenticated CLI commands. The CLI reads the key through `docker exec`, so Docker-enabled users can authenticate without reading root-owned host files. Keep this volume when recreating the backend; deleting it invalidates existing CLI tokens.
+
+Shared app/configuration permissions, installation-root modes, and `--no-permissions` retain their existing behavior. Existing `JWT_SECRET` and seed values remain in use for encryption.
+
 ## 🔨 Building locally
 
 If you would like to build the CLI locally on your own machine, you will need to have Go installed on your system. Then you can clone the repository with:

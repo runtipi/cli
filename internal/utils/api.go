@@ -4,8 +4,10 @@ package utils
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"fmt"
 	"net/http"
+	"os/exec"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -16,10 +18,24 @@ type Claims struct {
 }
 
 func CreateToken() (string, error) {
-	jwtSecret := GetEnvValue("JWT_SECRET")
+	return CreateTokenWithContext(context.Background())
+}
 
-	if jwtSecret == "" {
-		return "", fmt.Errorf("JWT_SECRET environment variable is not set. Please set it before running this command")
+func CreateTokenWithContext(ctx context.Context) (string, error) {
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	secret, err := exec.CommandContext(ctx, "docker", "exec", "runtipi", "cat", "/data/.secrets/cli-secret").Output()
+	if ctx.Err() != nil {
+		return "", fmt.Errorf("reading CLI authentication key: %w", ctx.Err())
+	}
+	if err != nil {
+		return "", fmt.Errorf("unable to read CLI authentication key through Docker; start the updated backend first: %w", err)
+	}
+
+	decoded, err := hex.DecodeString(string(secret))
+	if err != nil || len(decoded) != 32 || string(secret) != hex.EncodeToString(decoded) {
+		return "", fmt.Errorf("invalid CLI authentication key; restart the backend")
 	}
 
 	claims := Claims{
@@ -32,7 +48,7 @@ func CreateToken() (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(jwtSecret))
+	tokenString, err := token.SignedString(secret)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %v", err)
 	}
@@ -65,9 +81,9 @@ func APIRequestWithContext(ctx context.Context, url string, method string, jsonB
 		Timeout: time.Second * 30,
 	}
 
-	token, err := CreateToken()
+	token, err := CreateTokenWithContext(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create token: %v", err)
+		return nil, fmt.Errorf("failed to create token: %w", err)
 	}
 
 	var req *http.Request
@@ -87,7 +103,7 @@ func APIRequestWithContext(ctx context.Context, url string, method string, jsonB
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %v", err)
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
 
 	return resp, nil
