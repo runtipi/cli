@@ -15,6 +15,8 @@ import (
 
 type scriptedTransport struct {
 	input        *bytes.Reader
+	output       bytes.Buffer
+	outputMu     sync.Mutex
 	blockAtEnd   bool
 	closed       chan struct{}
 	closeOnce    sync.Once
@@ -44,8 +46,56 @@ func (transport *scriptedTransport) Read(output []byte) (int, error) {
 	return 0, io.EOF
 }
 
-func (*scriptedTransport) Write(input []byte) (int, error) {
-	return len(input), nil
+func (transport *scriptedTransport) Write(input []byte) (int, error) {
+	transport.outputMu.Lock()
+	defer transport.outputMu.Unlock()
+
+	return transport.output.Write(input)
+}
+
+func (transport *scriptedTransport) handshakeMethods(t *testing.T) map[uint16][]byte {
+	t.Helper()
+
+	transport.outputMu.Lock()
+	data := bytes.Clone(transport.output.Bytes())
+	transport.outputMu.Unlock()
+
+	protocolHeader := []byte{'A', 'M', 'Q', 'P', 0, 0, 9, 1}
+	if !bytes.HasPrefix(data, protocolHeader) {
+		t.Fatal("client did not send the AMQP protocol header")
+	}
+	data = data[len(protocolHeader):]
+	methods := make(map[uint16][]byte)
+
+	for _, expectedMethod := range []uint16{11, 31, 40} {
+		if len(data) < 8 {
+			t.Fatalf("missing or truncated client handshake method %d", expectedMethod)
+		}
+
+		size := int(binary.BigEndian.Uint32(data[3:7]))
+		if size < 4 || size > len(data)-8 {
+			t.Fatalf("invalid client handshake payload size %d", size)
+		}
+		end := 7 + size
+		if data[0] != 1 || binary.BigEndian.Uint16(data[1:3]) != 0 || data[end] != 0xce {
+			t.Fatal("invalid client handshake frame envelope")
+		}
+
+		payload := data[7:end]
+		class := binary.BigEndian.Uint16(payload[:2])
+		method := binary.BigEndian.Uint16(payload[2:4])
+		if class != 10 || method != expectedMethod {
+			t.Fatalf("client sent class %d method %d, want connection method %d", class, method, expectedMethod)
+		}
+		methods[method] = payload[4:]
+		data = data[end+1:]
+	}
+
+	if len(data) != 0 {
+		t.Fatal("unexpected client data after the connection-open method")
+	}
+
+	return methods
 }
 
 func (transport *scriptedTransport) Close() error {
@@ -64,7 +114,7 @@ func TestRejectsOversizedFramesBeforeAuthentication(t *testing.T) {
 		{name: "large body", frameType: 3, size: 2 * 1024 * 1024},
 		{name: "large method", frameType: 1, size: 2 * 1024 * 1024},
 		{name: "large content header", frameType: 2, size: 2 * 1024 * 1024},
-		{name: "larger configured limit", frameType: 3, size: 2 * 1024 * 1024, frameSize: 131072},
+		{name: "body beyond initial limit within configured limit", frameType: 3, size: 8192, frameSize: 131072},
 	}
 
 	for _, test := range tests {
@@ -174,6 +224,27 @@ func TestAcceptsNormalConnectionHandshake(t *testing.T) {
 			}
 			if vhost := connection.Config.Vhost; vhost != "/" {
 				t.Fatalf("negotiated vhost = %q, want /", vhost)
+			}
+
+			methods := transport.handshakeMethods(t)
+			tuneOK := methods[31]
+			if len(tuneOK) != 8 {
+				t.Fatalf("connection.tune-ok has %d field bytes, want 8", len(tuneOK))
+			}
+			if frameSize := binary.BigEndian.Uint32(tuneOK[2:6]); frameSize != 131072 {
+				t.Fatalf("client requested frame size %d on the wire, want 131072", frameSize)
+			}
+
+			open := methods[40]
+			if len(open) == 0 {
+				t.Fatal("connection.open is missing the vhost field")
+			}
+			vhostLength := int(open[0])
+			if vhostLength > len(open)-1 {
+				t.Fatal("connection.open contains a truncated vhost")
+			}
+			if vhost := string(open[1 : 1+vhostLength]); vhost != "/" {
+				t.Fatalf("client requested vhost %q on the wire, want /", vhost)
 			}
 
 			closed := connection.NotifyClose(make(chan *amqp.Error, 1))
