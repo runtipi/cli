@@ -47,9 +47,9 @@ The built CLI binary will be in the root folder named `runtipi-cli`.
 
 Renovate opens dependency update pull requests for Go modules (including indirect dependencies), the Go toolchain, GitHub Actions, and container images. CI and release workflows read the Go version from `go.mod` so toolchain updates stay consistent.
 
-The embedded `internal/assets/docker-compose.yml.tmpl` uses a custom image extractor because it contains Go template directives. It tracks Traefik, PostgreSQL, and RabbitMQ while leaving the runtime-selected `${TIPI_VERSION}` unchanged. PostgreSQL stays on major version 14; moving to another major requires a separate data migration.
+The embedded `internal/assets/docker-compose.yml.tmpl` uses a custom image extractor because it contains Go template directives. It tracks explicit release tags for Traefik, PostgreSQL, and RabbitMQ while leaving the runtime-selected `${TIPI_VERSION}` unchanged. PostgreSQL stays on major version 14; moving to another major requires a separate data migration.
 
-New releases wait two days, or three days for Go dependencies; GitHub Actions digest pins and refreshes are exempt. Go module minor and patch updates are grouped, GitHub Actions are pinned to commit digests, and merging remains manual.
+New releases wait two days, or three days for Go dependencies; GitHub Actions digest pins and refreshes are exempt. Go module minor and patch updates are grouped. Renovate proposes commit-digest pins for GitHub Actions, and merging remains manual.
 
 ## 🗣 Community
 

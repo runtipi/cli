@@ -19,7 +19,7 @@ services:
 
   runtipi-db:
     container_name: runtipi-db
-    image: postgres:14
+    image: postgres:14.24
     restart: unless-stopped
     stop_grace_period: 1m
     volumes:
@@ -39,7 +39,7 @@ services:
 
   runtipi-queue:
     container_name: runtipi-queue
-    image: rabbitmq:4-alpine
+    image: rabbitmq:4.4.0-alpine
     restart: unless-stopped
     ports:
       - 127.0.0.1:5672:5672
