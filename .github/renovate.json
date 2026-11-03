@@ -1,0 +1,62 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "enabledManagers": [
+    "gomod",
+    "github-actions",
+    "docker-compose",
+    "dockerfile",
+    "custom.regex"
+  ],
+  "minimumReleaseAge": "2 days",
+  "rangeStrategy": "bump",
+  "automerge": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^internal/assets/docker-compose\\.yml\\.tmpl$/"
+      ],
+      "matchStrings": [
+        "(?:^|\\r?\\n)[ \\t]*image:[ \\t]*(?<depName>[a-zA-Z0-9./_-]+):(?<currentValue>[a-zA-Z0-9._-]+)[ \\t]*(?:\\r?\\n|$)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "minimumReleaseAge": null
+    },
+    {
+      "matchManagers": ["gomod"],
+      "minimumReleaseAge": "3 days",
+      "postUpdateOptions": ["gomodTidy"]
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["indirect"],
+      "enabled": true
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchDatasources": ["go"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Go module minor and patch dependencies"
+    },
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["golang", "toolchain"],
+      "rangeStrategy": "bump",
+      "groupName": "Go toolchain"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["postgres"],
+      "allowedVersions": "/^14(?:\\.|$)/",
+      "description": "PostgreSQL major upgrades require an explicit data migration."
+    }
+  ]
+}
