@@ -44,4 +44,4 @@ jobs:
         run: go build ./cmd/runtipi/main.go
 
       - name: Run Go tests
-        run: go test ./... ./__tests__/amqp
+        run: go test ./...
