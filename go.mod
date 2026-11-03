@@ -9,9 +9,10 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/olekukonko/tablewriter v1.1.3
-	github.com/rabbitmq/amqp091-go v1.10.0
+	github.com/rabbitmq/amqp091-go v1.16.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cobra v1.10.2
+	golang.org/x/term v0.1.0
 )
 
 require (
@@ -39,5 +40,4 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/term v0.1.0 // indirect
 )
