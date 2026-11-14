@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -9,11 +10,18 @@ import (
 
 type VersionType struct {
 	version *semver.Version
-	kind    string // "latest", "nightly", "prerelease", or "version"
+	kind    string
+	commit  string
 }
+
+var commitVersionPattern = regexp.MustCompile(`^sha-[0-9a-f]{40}$`)
 
 func NewVersion(s string) (*VersionType, error) {
 	s = strings.TrimSpace(s)
+
+	if commitVersionPattern.MatchString(s) {
+		return &VersionType{kind: "commit", commit: s}, nil
+	}
 
 	switch s {
 	case "latest":
@@ -34,9 +42,10 @@ func NewVersion(s string) (*VersionType, error) {
 	}
 }
 
-// The string representation of the version
 func (v *VersionType) String() string {
 	switch v.kind {
+	case "commit":
+		return v.commit
 	case "latest":
 		return "latest"
 	case "nightly":
@@ -58,6 +67,10 @@ func (v *VersionType) IsNightly() bool {
 
 func (v *VersionType) IsPrerelease() bool {
 	return v.kind == "prerelease"
+}
+
+func (v *VersionType) IsCommit() bool {
+	return v.kind == "commit"
 }
 
 func (v *VersionType) Version() *semver.Version {

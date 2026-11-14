@@ -58,6 +58,9 @@ func RunUpdate(args types.UpdateArgs) {
 		}
 		wantedVersion = filtered[0].TagName
 	default:
+		if args.Version.IsCommit() {
+			spin.Warn(PreReleaseWarning)
+		}
 		wantedVersion = args.Version.String()
 	}
 

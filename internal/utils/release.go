@@ -199,13 +199,16 @@ func FindReleaseByVersion(version string) (GitHubRelease, error) {
 		return release, nil
 	}
 
-	return GitHubRelease{}, fmt.Errorf("release not found. Did you forget the v prefix? (e.g. v4.0.0 instead of 4.0.0)")
+	return GitHubRelease{}, fmt.Errorf("release %q not found", version)
 }
 
 func FilterNonPreReleases(releases []GitHubRelease) []GitHubRelease {
 	var filtered []GitHubRelease
 	for _, release := range releases {
-		if slices.Contains(NonPreReleaseTags, release.TagName) || !release.Prerelease {
+		if !release.Prerelease {
+			continue
+		}
+		if slices.Contains(NonPreReleaseTags, release.TagName) || strings.HasPrefix(release.TagName, "sha-") {
 			continue
 		}
 		filtered = append(filtered, release)

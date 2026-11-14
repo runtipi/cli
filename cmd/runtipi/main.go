@@ -114,6 +114,7 @@ func main() {
 	updateCmd := &cobra.Command{
 		Use:   "update [version]",
 		Short: "Update Runtipi",
+		Long:  "Update to latest, nightly, prerelease, a release version, or sha-<full-commit-sha> for a branch build.",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			version, err := types.NewVersion(args[0])
